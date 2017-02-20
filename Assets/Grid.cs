@@ -9,7 +9,7 @@ public class Grid : MonoBehaviour {
      * Création, supression, etc... Il est censé resservir à chaque nouvelle partie.
      */
 
-    public Dictionary<int, Cell> coordinates = new Dictionary<int, Cell>(); // les clefs sont un encodage des coordonnées X/Y d'une case : key = 100*X+Y
+    public Dictionary<int, Cell> coordinates = new Dictionary<int, Cell>(); // les clefs sont un encodage des coordonnées ligneX/colonneY d'une case : key = X+100*Y
     public GameObject firstCell; // cellule invisible, attribuée de base (objet CellGrid), à dupliquer pour toute création de grille.
 
     // Use this for initialization
@@ -37,7 +37,8 @@ public class Grid : MonoBehaviour {
                 cellData.transform.SetParent(gameObject.transform);
 
                 coordinates.Add(100 * i + j, cellData);
-                // Considérations spatiales à adapter ou déplacer hors d'ici
+                cellData.coordinates = 100 * i + j;
+                // Considérations spatiales de la ligne suivante à adapter ou déplacer hors d'ici
                 newCell.GetComponent<Transform>().localPosition = new Vector3(i-3, j-3, 0);
 
                 newCell.SetActive(true);
@@ -69,9 +70,9 @@ public class Grid : MonoBehaviour {
                 Destroy(child);
         coordinates = new Dictionary<int, Cell>();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 }
