@@ -22,10 +22,10 @@ public class Cell : MonoBehaviour {
         myHandler = GameObject.Find("GeneralHandler").GetComponent<GameHandler>();
 	}
 
-    public void Selected()
+    void OnMouseDown() // déclenché avec clic sur la grille
     {
         if (available)
-            myHandler.PutAPawn(coordinates);
+            myHandler.PutAPawn(this);
     }
 	
 	// Update is called once per frame

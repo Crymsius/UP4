@@ -10,7 +10,7 @@ public class Grid : MonoBehaviour {
      */
 
     public Dictionary<int, Cell> coordinates = new Dictionary<int, Cell>(); // les clefs sont un encodage des coordonnées ligneX/colonneY d'une case : key = X+100*Y
-    public GameObject firstCell; // cellule invisible, attribuée de base (objet CellGrid), à dupliquer pour toute création de grille.
+    public GameObject firstCell; // Linkée depuis le dossier Prefabs
 
     // Use this for initialization
     void Start () {
@@ -36,8 +36,8 @@ public class Grid : MonoBehaviour {
                 Cell cellData = newCell.GetComponent<Cell>();
                 cellData.transform.SetParent(gameObject.transform);
 
-                coordinates.Add(100 * i + j, cellData);
-                cellData.coordinates = 100 * i + j;
+                coordinates.Add(100 * j + i, cellData);
+                cellData.coordinates = 100 * j + i;
                 // Considérations spatiales de la ligne suivante à adapter ou déplacer hors d'ici
                 newCell.GetComponent<Transform>().localPosition = new Vector3(i-3, j-3, 0);
 
