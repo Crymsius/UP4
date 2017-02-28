@@ -23,8 +23,10 @@ public class GameHandler : MonoBehaviour {
     }
 
     public void PutAPawn(Cell callingCell) { // fonction déclenchée par un clic sur cellule de la grille
-        myMecanisms.PawnFallCalculation(callingCell, activePlayer);
-        NextTurn();
+        if (!myMecanisms.PawnFallCalculation(callingCell, activePlayer)) //renvoie TRUE si le joueur remporte la partie
+            NextTurn();
+        else
+            print("It's over"); // Déclencher un script de fin de partie quand on pourra gérer correctement l'event.
     }
     public void NextTurn()
     {

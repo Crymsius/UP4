@@ -16,7 +16,7 @@ public class MecanismHandler : MonoBehaviour {
     public Sprite currentSprite { get; set; }
 
     public string gravity { get; set; } // direction de chute des pions
-    public Dictionary<string, int> fallIntegers = new Dictionary<string, int>() { { "up", 100 }, { "down", -100 }, { "left", -1 }, { "right", 1 } };
+    public Dictionary<string, int> fallIntegers = new Dictionary<string, int>() { { "up", 100 }, { "down", -100 }, { "left", -1 }, { "right", 1 }, { "UL", 99 }, { "UR", 101 }};
 
     // Use this for initialization
     void Start () {
@@ -26,7 +26,7 @@ public class MecanismHandler : MonoBehaviour {
         myGrid.createGrid("N-N-N-N-N-N-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-N-N-N-N-N-N"); // grille 5*5
 	}
 
-    public void PawnFallCalculation(Cell startCell, int player) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
+    public bool PawnFallCalculation(Cell startCell, int player) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
     {
         /* Calcule où le pion va s'arrêter de chuter depuis les coordonnées ou il a été lâché.
          * Retient tous les triggers qui ont été déclenchés au passage du pion.
@@ -52,24 +52,45 @@ public class MecanismHandler : MonoBehaviour {
             else
                 falling = false;
         }
-        //TODO : méthode plaçant le pion et lançant le visuel
+        //script plaçant le pion et lançant le visuel
         GameObject newPawn = Instantiate(neutralPawn);
         newPawn.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = currentSprite;
         newPawn.transform.SetParent(startCell.transform);
         newPawn.GetComponent<Transform>().localPosition = Vector3.zero;
-        PawnFallDo(newPawn, currentCell);
+        PawnFallDo(newPawn, currentCell, player);
         //TODO : méthode activant tous les triggers et lançant le visuel
-        //TODO : méthode de vérification de la puissance 4 et lançant le visuel
+        //script de vérification de la puissance 4 et lançant le visuel
+        return checkAlign4(currentCell, player);
     }
-    public void PawnFallDo(GameObject pawn, Cell endCell) // possibilité d'exporter plus tard la partie graphique de la méthode ailleurs
+    public void PawnFallDo(GameObject pawn, Cell endCell, int player) // possibilité d'exporter plus tard la partie graphique de la méthode ailleurs
     {
         pawn.transform.SetParent(endCell.transform);
         float coeff = 1f;
-        while (coeff > 0) { //not working : pas d'update visuel depuis une while
+        while (coeff > 0) { //not working : pas d'update visuel depuis une while loop
             pawn.GetComponent<Transform>().localPosition = coeff * pawn.GetComponent<Transform>().localPosition;
             coeff -= Time.deltaTime;
         }
         endCell.available = false;
+        endCell.content = player.ToString();
+    }
+    public bool checkAlign4(Cell newFilled, int player) { //ne prend pas encore les murs en compte
+
+        int currentCoords = newFilled.coordinates;
+        int startCoords; bool isWinner = false;
+        foreach (string i in new List<string>() { "right", "UR", "up", "UL" }) //test selon les 4 directions
+        {
+            startCoords = currentCoords;
+            while (startCoords / 100 > 0 && startCoords % 100 > 0)
+                startCoords -= fallIntegers[i]; // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+            int count = 0;
+            while (myGrid.coordinates.ContainsKey(startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
+            {
+                if (myGrid.coordinates[startCoords].content == player.ToString()) { if (count+1 >= 4) isWinner = true; else count++; }
+                else count = 0;
+                startCoords += fallIntegers[i];
+            }
+        }
+        return isWinner;
     }
 
     // Update is called once per frame
