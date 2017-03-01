@@ -16,16 +16,16 @@ public class MecanismHandler : MonoBehaviour {
     public Sprite currentSprite { get; set; }
 
     public string gravity { get; set; } // direction de chute des pions
-    public Dictionary<string, int> fallIntegers = new Dictionary<string, int>() { { "up", 100 }, { "down", -100 }, { "left", -1 }, { "right", 1 }, { "UL", 99 }, { "UR", 101 }};
-
+    public Dictionary<string, int> fallIntegers = new Dictionary<string, int>() { { "up", 1 }, { "down", -1 }, { "left", -100 }, { "right", 100 }, { "UL", -99 }, { "UR", 101 }};
+    
     // Use this for initialization
     void Start () {
         gravity = "down";
         // following instructions are a test
         myGrid = GameObject.Find("GridRecipient").GetComponent<Grid>();
-        myGrid.createGrid("N-N-N-N-N-N-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-V-V-V-V-V-N+N-N-N-N-N-N-N"); // grille 5*5
+        myGrid.createGrid("N-N-N-N-N-N-N-N+N-VD-V-V-V-V-V-N+N-V-VC-VB-V-VD-VC-N+N-V-V-V-V-V-V-N+N-V-V-V-V-V-V-N+N-V-V-V-V-V-V-N+N-V-VC-VB-V-V-VC-N+N-N-N-N-N-N-N-N");
 	}
-
+    
     public bool PawnFallCalculation(Cell startCell, int player) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
     {
         /* Calcule où le pion va s'arrêter de chuter depuis les coordonnées ou il a été lâché.
@@ -73,7 +73,7 @@ public class MecanismHandler : MonoBehaviour {
         endCell.available = false;
         endCell.content = player.ToString();
     }
-    public bool checkAlign4(Cell newFilled, int player) { //ne prend pas encore les murs en compte
+    public bool checkAlign4(Cell newFilled, int player) { //ne doit pas prendre les murs en compte correctement si rotation de grille... a tester
 
         int currentCoords = newFilled.coordinates;
         int startCoords; bool isWinner = false;
@@ -85,12 +85,27 @@ public class MecanismHandler : MonoBehaviour {
             int count = 0;
             while (myGrid.coordinates.ContainsKey(startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
             {
-                if (myGrid.coordinates[startCoords].content == player.ToString()) { if (count+1 >= 4) isWinner = true; else count++; }
+                if (myGrid.coordinates[startCoords].content == player.ToString())
+                {
+                    if (count + 1 >= 4)
+                        isWinner = true;
+                    else if (!isBlocked(startCoords, i)) count++;
+                    else count = 0;
+                }
                 else count = 0;
                 startCoords += fallIntegers[i];
             }
         }
         return isWinner;
+    }
+    public bool isBlocked(int coords, string direction) {//vérifie si un mur ne bloque pas l'établissement de la puissance 4
+        if (direction == "right" && myGrid.coordinates[coords].walls.Contains("D")
+            || direction == "up" && myGrid.coordinates[coords + 1].walls.Contains("B")
+            || direction == "UR" && myGrid.coordinates[coords + 101].walls.Contains("C")
+            || direction == "UL" && myGrid.coordinates[coords + 1].walls.Contains("C")
+            )
+            return true;
+        else return false;
     }
 
     // Update is called once per frame

@@ -11,6 +11,9 @@ public class Grid : MonoBehaviour {
 
     public Dictionary<int, Cell> coordinates = new Dictionary<int, Cell>(); // les clefs sont un encodage des coordonnées ligneX/colonneY d'une case : key = X+100*Y
     public GameObject firstCell; // Linkée depuis le dossier Prefabs
+    public GameObject firstWallD;
+    public GameObject firstWallB;
+    public GameObject firstWallC;
 
     // Use this for initialization
     void Start () {
@@ -39,10 +42,11 @@ public class Grid : MonoBehaviour {
                 coordinates.Add(100 * j + i, cellData);
                 cellData.coordinates = 100 * j + i;
                 // Considérations spatiales de la ligne suivante à adapter ou déplacer hors d'ici
-                newCell.GetComponent<Transform>().localPosition = new Vector3(i-3, j-3, 0);
+                newCell.GetComponent<Transform>().localPosition = new Vector3(j-3, i-3, 0);
 
                 newCell.SetActive(true);
 
+                GameObject newWall;
                 foreach (char C in ind[j]) // Attribution des éléments spéciaux à la cellule
                 {
                     switch (C){
@@ -52,6 +56,24 @@ public class Grid : MonoBehaviour {
                         case 'V':
                             cellData.available = true;
                             newCell.GetComponent<SpriteRenderer>().sprite = Resources.Load("Empty", typeof(Sprite)) as Sprite;
+                            break;
+                        case 'D':
+                            cellData.walls.Add("D");
+                            newWall = Instantiate(firstWallD);
+                            newWall.transform.SetParent(newCell.transform);
+                            newWall.GetComponent<Transform>().localPosition = new Vector3(0.5f,0,-1f);
+                            break;
+                        case 'B':
+                            cellData.walls.Add("B");
+                            newWall = Instantiate(firstWallB);
+                            newWall.transform.SetParent(newCell.transform);
+                            newWall.GetComponent<Transform>().localPosition = new Vector3(0, -0.5f, -1f);
+                            break;
+                        case 'C':
+                            cellData.walls.Add("C");
+                            newWall = Instantiate(firstWallC);
+                            newWall.transform.SetParent(newCell.transform);
+                            newWall.GetComponent<Transform>().localPosition = new Vector3(-0.5f, -0.5f, -1f);
                             break;
                         default:
                             break;

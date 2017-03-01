@@ -330,6 +330,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firstCell: {fileID: 1435903871238618, guid: a3d6d2fae650d254e804e3fbf9d300f7, type: 2}
+  firstWallD: {fileID: 1346586481551566, guid: 93e05c66a0db4b84c86ca6ed332a0170, type: 2}
+  firstWallB: {fileID: 1280385771188098, guid: 64ad4e36273b031429d3a7f0b1780419, type: 2}
+  firstWallC: {fileID: 1203185562740402, guid: 314b88d38dd97ed4480792159f154726, type: 2}
 --- !u!4 &1366619130
 Transform:
   m_ObjectHideFlags: 0
