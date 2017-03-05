@@ -11,9 +11,9 @@ public class Cell : MonoBehaviour {
      */
     public GameHandler myHandler { get; set; }
 
-    public List<string> walls = new List<string>(); // comprend les murs à droite (D), en bas (B), et coin bas-gauche (C)
+    public List<string> wallsAndTriggers = new List<string>(); // comprend les murs à droite (D), en bas (B), et coin bas-gauche (C) + triggers droit (R) et gauche (L)
     public bool available { get; set; } // Peut-on placer un pion dessus ?
-    public string content { get; set; } // Y a-t-il un trigger, pion ou autre élément spécial ? 
+    public string content { get; set; } // A quel joueur appartient le pion ? 
 
     public int coordinates { get; set; }
 

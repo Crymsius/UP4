@@ -14,6 +14,8 @@ public class Grid : MonoBehaviour {
     public GameObject firstWallD;
     public GameObject firstWallB;
     public GameObject firstWallC;
+    public GameObject rotateR;
+    public GameObject rotateL;
 
     // Use this for initialization
     void Start () {
@@ -49,7 +51,7 @@ public class Grid : MonoBehaviour {
                 GameObject newWall;
                 foreach (char C in ind[j]) // Attribution des éléments spéciaux à la cellule
                 {
-                    switch (C){
+                    switch (C){ // A factoriser
                         case 'N':
                             cellData.available = false;
                             break;
@@ -58,22 +60,34 @@ public class Grid : MonoBehaviour {
                             newCell.GetComponent<SpriteRenderer>().sprite = Resources.Load("Empty", typeof(Sprite)) as Sprite;
                             break;
                         case 'D':
-                            cellData.walls.Add("D");
+                            cellData.wallsAndTriggers.Add("D");
                             newWall = Instantiate(firstWallD);
                             newWall.transform.SetParent(newCell.transform);
                             newWall.GetComponent<Transform>().localPosition = new Vector3(0.5f,0,-1f);
                             break;
                         case 'B':
-                            cellData.walls.Add("B");
+                            cellData.wallsAndTriggers.Add("B");
                             newWall = Instantiate(firstWallB);
                             newWall.transform.SetParent(newCell.transform);
                             newWall.GetComponent<Transform>().localPosition = new Vector3(0, -0.5f, -1f);
                             break;
                         case 'C':
-                            cellData.walls.Add("C");
+                            cellData.wallsAndTriggers.Add("C");
                             newWall = Instantiate(firstWallC);
                             newWall.transform.SetParent(newCell.transform);
                             newWall.GetComponent<Transform>().localPosition = new Vector3(-0.5f, -0.5f, -1f);
+                            break;
+                        case 'R':
+                            cellData.wallsAndTriggers.Add("R");
+                            newWall = Instantiate(rotateR);
+                            newWall.transform.SetParent(newCell.transform);
+                            newWall.GetComponent<Transform>().localPosition = new Vector3(0f, 0f, -1f);
+                            break;
+                        case 'L':
+                            cellData.wallsAndTriggers.Add("L");
+                            newWall = Instantiate(rotateL);
+                            newWall.transform.SetParent(newCell.transform);
+                            newWall.GetComponent<Transform>().localPosition = new Vector3(0f, 0f, -1f);
                             break;
                         default:
                             break;
