@@ -42,6 +42,11 @@ public class LevelEditor : EditorWindow {
             gridWidthPrivate = gridWidth;
         }
 
+		GUILayout.Label ("N : Néant\n" +
+			"V : Vide (case vide = V)\n" +
+			"L : trigger rotation gauche\n" +
+			"R : trigger rotation droite",EditorStyles.helpBox);
+
         GUILayout.Label ("Grid customization", EditorStyles.boldLabel);
         for (int i = 0; i < gridHeightPrivate; i++) 
 		{
@@ -127,7 +132,7 @@ public class LevelEditor : EditorWindow {
                     resultString = string.Concat (resultString, "B");
 				}
 				if (l != gridWidth -1 && k != gridHeight -1 && gridLayoutIntersection[k,l]) {
-					resultString = string.Concat (resultString, "I");
+					resultString = string.Concat (resultString, "C");
 				}
             }
 			resultString = string.Concat(resultString, "-N+");
@@ -149,11 +154,18 @@ public class LevelEditor : EditorWindow {
 	**/
     public string stringTranslator(string content) {
         switch (content) {
-        case "N":
+        case "N": //case néant
             return "N";
-        case "switch":
-            return "S";
-        default:
+        case "L": //trigger rotation gauche
+            return "L";
+		case "R": //trigger rotation droite
+            return "R";
+		case "V": //case vide
+			return "V";
+		
+		/* ajouter des cas ici*/
+        
+		default: //par défaut : case vide
             return "V";
             break;
         }
