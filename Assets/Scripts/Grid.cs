@@ -44,11 +44,16 @@ public class Grid : MonoBehaviour {
                 coordinates.Add(100 * j + i, cellData);
                 cellData.coordinates = 100 * j + i;
                 // Considérations spatiales de la ligne suivante à adapter ou déplacer hors d'ici
-                newCell.GetComponent<Transform>().localPosition = new Vector3(j-3, i-3, 0);
+                // newCell.GetComponent<Transform>().localPosition = new Vector3(j-3, i-3, 0);
+                newCell.GetComponent<RectTransform>().anchorMin = new Vector3((float)j / rows.Length, (float)i / ind.Length,0);
+                newCell.GetComponent<RectTransform>().anchorMax = new Vector3((float)(j + 1) / rows.Length, (float)(i + 1) / ind.Length,0);
+                newCell.GetComponent<RectTransform>().offsetMin = Vector3.zero;
+                newCell.GetComponent<RectTransform>().offsetMax = Vector3.zero;
+                newCell.GetComponent<RectTransform>().localScale = Vector3.one*35f;
 
                 newCell.SetActive(true);
 
-                GameObject newWall;
+                GameObject newWall = gameObject; // L'instantiation ne sert à rien
                 foreach (char C in ind[j]) // Attribution des éléments spéciaux à la cellule
                 {
                     switch (C){ // A factoriser
@@ -63,36 +68,44 @@ public class Grid : MonoBehaviour {
                             cellData.wallsAndTriggers.Add("D");
                             newWall = Instantiate(firstWallD);
                             newWall.transform.SetParent(newCell.transform);
-                            newWall.GetComponent<Transform>().localPosition = new Vector3(0.5f,0,-1f);
+                            newWall.GetComponent<RectTransform>().anchorMin = new Vector2(0.9f,0);
+                            newWall.GetComponent<RectTransform>().anchorMax = new Vector2(1.1f,1);
                             break;
                         case 'B':
                             cellData.wallsAndTriggers.Add("B");
                             newWall = Instantiate(firstWallB);
                             newWall.transform.SetParent(newCell.transform);
-                            newWall.GetComponent<Transform>().localPosition = new Vector3(0, -0.5f, -1f);
+                            newWall.GetComponent<RectTransform>().anchorMin = new Vector2(0, -0.1f);
+                            newWall.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0.1f);
                             break;
                         case 'C':
                             cellData.wallsAndTriggers.Add("C");
                             newWall = Instantiate(firstWallC);
                             newWall.transform.SetParent(newCell.transform);
-                            newWall.GetComponent<Transform>().localPosition = new Vector3(-0.5f, -0.5f, -1f);
+                            newWall.GetComponent<RectTransform>().anchorMin = new Vector2(-0.1f, -0.1f);
+                            newWall.GetComponent<RectTransform>().anchorMax = new Vector2(0.1f, 0.1f);
                             break;
                         case 'R':
                             cellData.wallsAndTriggers.Add("R");
                             newWall = Instantiate(rotateR);
                             newWall.transform.SetParent(newCell.transform);
-                            newWall.GetComponent<Transform>().localPosition = new Vector3(0f, 0f, -1f);
+                            newWall.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                            newWall.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
                             break;
                         case 'L':
                             cellData.wallsAndTriggers.Add("L");
                             newWall = Instantiate(rotateL);
                             newWall.transform.SetParent(newCell.transform);
-                            newWall.GetComponent<Transform>().localPosition = new Vector3(0f, 0f, -1f);
+                            newWall.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                            newWall.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
                             break;
                         default:
                             break;
                     }
                 }
+                newWall.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+                newWall.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+                newWall.GetComponent<RectTransform>().localScale = Vector3.one;
 
             }
         }

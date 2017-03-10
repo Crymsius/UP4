@@ -24,7 +24,7 @@ public class MecanismHandler : MonoBehaviour {
         gravity = "down";
         gravityAngle = -90;
         // following instructions are a test
-        myGrid = GameObject.Find("GridRecipient").GetComponent<Grid>();
+        myGrid = GameObject.Find("GridPlace").GetComponent<Grid>();
         myGrid.createGrid("N-N-N-N-N-N-N-N+N-VD-V-V-V-V-V-N+N-V-VC-VB-V-VD-VC-N+N-V-V-VR-V-V-V-N+N-V-V-V-V-V-V-N+N-V-V-V-V-V-V-N+N-V-VC-VB-V-V-VC-N+N-N-N-N-N-N-N-N");
 	}
     
@@ -53,7 +53,7 @@ public class MecanismHandler : MonoBehaviour {
         }
         //script plaçant le pion et lançant le visuel
         GameObject newPawn = Instantiate(neutralPawn);
-        newPawn.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = currentSprite;
+        newPawn.GetComponent<SpriteRenderer>().sprite = currentSprite;
         newPawn.transform.SetParent(startCell.transform);
         newPawn.GetComponent<Transform>().localPosition = Vector3.zero;
         PawnFallDo(newPawn, currentCell, player);
