@@ -167,7 +167,6 @@ public class LevelEditor : EditorWindow {
         
 		default: //par défaut : case vide
             return "V";
-            break;
         }
     }
 }
