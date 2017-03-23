@@ -59,23 +59,6 @@ public class GridGenerator : MonoBehaviour {
 	}
 
 	Vector3 CoordToPosition(int x, int y) {
-		return new Vector3 (-currentGrid.gridSize.x / 2 + x, -currentGrid.gridSize.y / 2 + y, 0);
+		return new Vector3 (-currentGrid.gridSize.x / 2 + 0.5f + x, -currentGrid.gridSize.y / 2 + 0.5f + y, 0);
 	}
-
-	[System.Serializable]
-	public class Grid {
-		
-		public Coord gridSize;
-
-
-//			public GameObject firstCell; // Linkée depuis le dossier Prefabs
-//			public GameObject firstWallD;
-//			public GameObject firstWallB;
-//			public GameObject firstWallC;
-//			public GameObject rotateR;
-//			public GameObject rotateL;
-
-		//public Dictionary<Coord, Cell> dictionaryCoordCells;
-	}
-
 }
