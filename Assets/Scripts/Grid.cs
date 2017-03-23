@@ -12,12 +12,12 @@ public class Grid {
 
 //	public List<Coord> allCellCoords;
 
-//	public GameObject firstTile; // Linkée depuis le dossier Prefabs
-//	public GameObject firstWallD;
-//	public GameObject firstWallB;
-//	public GameObject firstWallC;
-//	public GameObject rotateR;
-//	public GameObject rotateL;
+	public GameObject firstTile; // Linkée depuis le dossier Prefabs
+	public GameObject firstWallD;
+	public GameObject firstWallB;
+	public GameObject firstWallC;
+	public GameObject rotateR;
+	public GameObject rotateL;
 
-	//public Dictionary<Coord, Cell> dictionaryCoordCells;
+	public Dictionary<Coord, Cell> dictionaryCoordCells;
 }

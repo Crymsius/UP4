@@ -23,15 +23,8 @@ public class GridGenerator : MonoBehaviour {
 	public void GenerateGrid() {
 
 		currentGrid = grids[gridIndex]; //on setup l'index de la grid qu'on modifie.
-
-
-		// Generates coords
 		allCellCoords = new List<Coord> ();
-		for (int x = 0; x < currentGrid.gridSize.x; x ++) {
-			for (int y = 0; y < currentGrid.gridSize.y; y ++) {
-				
-			}
-		}
+		currentGrid.dictionaryCoordCells = new Dictionary <Coord,Cell> ();
 
 		// Create grid holder object
 		string holderName = "Generated Grid";
@@ -43,19 +36,23 @@ public class GridGenerator : MonoBehaviour {
 		gridHolder.parent = transform;
 
 		// Spawning cells
-		for (int x = 0; x < currentGrid.gridSize.x; x ++) {
-			for (int y = 0; y < currentGrid.gridSize.y; y ++) {
-				Vector3 cellPosition = CoordToPosition (x,y);
-				Transform newCell = Instantiate(cellPrefab, cellPosition, Quaternion.identity) as Transform;
+		for (int x = 0; x < currentGrid.gridSize.x; x++) {
+			for (int y = 0; y < currentGrid.gridSize.y; y++) {
+				Vector3 cellPosition = CoordToPosition (x, y);
+				Transform newCell = Instantiate (cellPrefab, cellPosition, Quaternion.identity) as Transform;
 				newCell.localScale = Vector3.one * (1 - outlinePercent);
 				newCell.parent = gridHolder;
 
-				Cell CellScript = newCell.GetComponent<Cell>();
-				CellScript.coordinates = new Coord (x, y); //ajoute les coordonnées de chacune des Cells
-				allCellCoords.Add(new Coord(x,y));
-			//	currentGrid.dictionaryCoordCells.Add(new Coord(x,y), CellScript);
+				Cell cellScript = newCell.GetComponent<Cell> ();
+				cellScript.coordinates = new Coord (x, y); //ajoute les coordonnées de chacune des Cells
+				allCellCoords.Add (new Coord (x, y));
+				currentGrid.dictionaryCoordCells.Add (cellScript.coordinates, cellScript);
 			}
 		}
+
+		// Generates coords
+
+		//currentGrid.dictionaryCoordCells.Add (cellScript.coordinates, cellScript);
 	}
 
 	Vector3 CoordToPosition(int x, int y) {

@@ -10,7 +10,7 @@ public class MechanismHandler : MonoBehaviour {
      * OUTPUTS : fin de tour auprès du GestionnairePartie, avec info puissance 4
     */
 
-	public GridGenerator.Grid myGrid { get; set; }
+	public Grid myGrid { get; set; }
 
 	public GameObject neutralPawn; // Linked depuis le dossier Prefabs
 	public Sprite currentSprite { get; set; }
