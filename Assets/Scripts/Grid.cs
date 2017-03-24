@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Grid {
+public class Grid : MonoBehaviour {
 	public Coord gridSize;
 
 //	[Range(0,1)]
 //	public float outlinePercent;
-		
-
-//	public List<Coord> allCellCoords;
 
 	public GameObject firstTile; // Linkée depuis le dossier Prefabs
 	public GameObject firstWallD;

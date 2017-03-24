@@ -24,7 +24,7 @@ public class MechanismHandler : MonoBehaviour {
 		gravity = 0; //0 : bas, 1: haut, 2: gauche, 3: droite;
 		gravityAngle = -90;
 		// following instructions are a test
-	//	myGrid 	= GameObject.Find("Generated Grid").GetComponent<GridGenerator.Grid> ();
+		myGrid 	= GameObject.Find("Generated Grid").GetComponent<Grid> ();
 	}
 
 	public bool PawnFallCalculation (Cell startCell, int player) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
