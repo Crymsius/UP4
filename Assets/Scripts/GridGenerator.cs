@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class GridGenerator : MonoBehaviour {
 
 	public GridHolder[] grids; //liste de tous les lvls
+
 	public int gridIndex; //index de la grid qu'on regarde
 
 	public Transform cellPrefab;
@@ -17,34 +18,35 @@ public class GridGenerator : MonoBehaviour {
 
 	GridHolder currentGrid;
 
-	void Start() {
+	void Start () {
 		GenerateGrid ();
 	}
 
-	public void GenerateGrid() {
+	public void GenerateGrid () {
 
 		currentGrid = grids[gridIndex]; //on setup l'index de la grid qu'on modifie.
-
 		allCellCoords = new List<Coord> ();
 
-		// Create grid holder object
+		// Vérifier que l'object n'existe pas déjà, en cas, le détruire
 		string holderName = "Generated Grid(Clone)";
 		if (transform.FindChild (holderName)) {
 			DestroyImmediate(transform.FindChild(holderName).gameObject);
 		}
-
-//		Transform gridHolder = new GameObject (holderName).transform;
-//		gridHolder.parent = transform;
-
+		// instantiation du gridPrefab qui va host le script Grid et les Cells filles.
 		Transform newGrid = Instantiate (gridPrefab, Vector3.zero, Quaternion.identity) as Transform; 
 		newGrid.parent = transform;
 		Grid gridScript = newGrid.GetComponent<Grid> ();
 		gridScript.gridSize = currentGrid.gridSize;	
-
-		//currentGrid.dictionaryCoordCells = new Dictionary <Coord,Cell> ();
+		//gridScript.dictionaryCoordCells = new UniTools.UniDictionary <Coord,Cell> ();
+		//gridScript.dictionaryCoordCells = new MyDictionary <Coord,Cell> ();
+		//gridScript.dictionaryCoordCells = new Dictionary <Coord,Cell> ();
+//		List<Coord> coords = new List<Coord> ();
+//		List<Cell> cells = new List<Cell> ();
+	
 		// Spawning cells
 		for (int x = 0; x < currentGrid.gridSize.x; x++) {
 			for (int y = 0; y < currentGrid.gridSize.y; y++) {
+
 				Vector3 cellPosition = CoordToPosition (x, y);
 				Transform newCell = Instantiate (cellPrefab, cellPosition, Quaternion.identity) as Transform;
 				newCell.localScale = Vector3.one * (1 - outlinePercent);
@@ -56,16 +58,24 @@ public class GridGenerator : MonoBehaviour {
 				allCellCoords.Add (new Coord (x, y));
 
 				// ajoute le couple coordonnée - cell dans le dictionaire de la grille
-				//currentGrid.dictionaryCoordCells.Add (cellScript.coordinates, cellScript); 
+				//gridScript.dictionaryCoordCells.Add (cellScript.coordinates, cellScript); 
+//				cells.Add (cellScript);
+//				coords.Add (cellScript.coordinates);
 			}
 		}
+//		Cell testCell;
+//		//Debug.Log(gridScript.dictionaryCoordCells.TryGetValue(new Coord(1,1), out testCell).ToString());
+//		Coord testCoord = new Coord(1,1);
+//		int indexTestCell = gridScript.coords.IndexOf(testCoord);
+//		Debug.Log(gridScript.cells[indexTestCell]);
 	}
 
-	Vector3 CoordToPosition(int x, int y) {
-		
+	// Transforme les coordonnées en position
+	Vector3 CoordToPosition (int x, int y) {
 		return new Vector3 (-currentGrid.gridSize.x / 2 + 0.5f + x, -currentGrid.gridSize.y / 2 + 0.5f + y, 0);
 	}
 
+	//gridHolder:  permet d'avoir une fausse grille pour host les coordonnées, tout en ensuite transmis au Grid
 	[System.Serializable]
 	public class GridHolder {
 		public Coord gridSize;

@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 [System.Serializable]
 public class Grid : MonoBehaviour {
@@ -16,5 +16,14 @@ public class Grid : MonoBehaviour {
 	public GameObject rotateR;
 	public GameObject rotateL;
 
-	public Dictionary<Coord, Cell> dictionaryCoordCells;
+
+	//public UniTools.UniDictionary<Coord, Cell> dictionaryCoordCells;
+	//public MyDictionary<Coord, Cell> dictionaryCoordCells;
+//	[SerializeField]
+//	public List<Coord> coords;
+//
+//	[SerializeField]
+//	public List<Cell> cells;
+//
+
 }

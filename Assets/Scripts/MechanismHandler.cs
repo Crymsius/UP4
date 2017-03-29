@@ -12,6 +12,8 @@ public class MechanismHandler : MonoBehaviour {
 
 	public Grid myGrid { get; set; }
 
+	public Atlas gridAtlas;
+
 	public GameObject neutralPawn; // Linked depuis le dossier Prefabs
 	public Sprite currentSprite { get; set; }
 
@@ -24,7 +26,18 @@ public class MechanismHandler : MonoBehaviour {
 		gravity = 0; //0 : bas, 1: haut, 2: gauche, 3: droite;
 		gravityAngle = -90;
 		// following instructions are a test
-		myGrid 	= GameObject.Find("Generated Grid").GetComponent<Grid> ();
+		myGrid 	= GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
+		gridAtlas = GenerateAtlas ();
+	}
+
+	public Atlas GenerateAtlas () {
+		Atlas gridAtlas = new Atlas ();
+		gridAtlas.gridDictionary = new Dictionary<Coord, Cell> ();
+		// On parcourt l'ensemble des cases et on crée un Dictionary avec comme key les coordonnées de chacune des Cells
+		foreach (Transform cellChild in myGrid.GetComponent<Transform>()) {
+			gridAtlas.gridDictionary.Add (cellChild.GetComponent<Cell>().coordinates, cellChild.GetComponent<Cell>());
+		}
+		return gridAtlas;
 	}
 
 	public bool PawnFallCalculation (Cell startCell, int player) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
@@ -32,29 +45,31 @@ public class MechanismHandler : MonoBehaviour {
 		// Calcule où le pion va s'arrêter de chuter depuis les coordonnées ou il a été lâché.
 		Coord interCoords = startCell.coordinates;
 		Cell currentCell = startCell;
+		Cell testCell;
 		bool falling = true;
 
 		while (falling)
 		{
-//			currentCell = myGrid.dictionaryCoordCells[interCoords] as Cell;
-//			Cell nextCell = NextCell (currentCell, gravity);
-//			if (nextCell.available &&
+			
+			currentCell = gridAtlas.gridDictionary[interCoords] as Cell;
+			Cell nextCell = NextCell (currentCell, gravity);
+			if (nextCell.available && !nextCell.Equals (currentCell))
 //				/*(gravity == "down" && !currentCell.wallsAndTriggers.Contains("B")
 //					|| gravity == "up" && !nextCell.wallsAndTriggers.Contains("B")
 //					|| gravity == "right" && !currentCell.wallsAndTriggers.Contains("D")
 //					|| gravity == "left" && !nextCell.wallsAndTriggers.Contains("D")
-//				)*/true)
-//			{
-//				interCoords += fallIntegers[gravity];
-//			}
-//			else
-//				falling = false;
+//				)*/
+			{
+			interCoords = nextCell.coordinates;
+			}
+			else
+				falling = false;
 		}
 		//script plaçant le pion et lançant le visuel
-		GameObject newPawn = Instantiate(neutralPawn);
-		newPawn.GetComponent<SpriteRenderer>().sprite = currentSprite;
-		newPawn.transform.SetParent(startCell.transform);
-		newPawn.GetComponent<Transform>().localPosition = Vector3.zero;
+		GameObject newPawn = Instantiate (neutralPawn);
+		newPawn.GetComponent<SpriteRenderer> ().sprite = currentSprite;
+		newPawn.transform.SetParent (startCell.transform);
+		newPawn.GetComponent<Transform> ().localPosition = Vector3.zero;
 //		currentCell.GetComponentInChildren<SpriteRenderer>().sprite = currentSprite;
 
 		PawnFallDo (newPawn, currentCell, player);
@@ -95,30 +110,44 @@ public class MechanismHandler : MonoBehaviour {
 //			foreach (string str in triggers)
 //				ExecuteTrigger(str);
 	}
-
+		
 	public Cell NextCell (Cell currentCell, int gravity) {
 		Coord currentCoordinates = currentCell.coordinates; 
-
-		switch (gravity) {
-//		case 0: //vers le bas
-//			currentCoordinates.y = currentCoordinates.y-1;
-//			return myGrid.dictionaryCoordCells[currentCoordinates] as Cell;
-//			break;
-//		case 1: // vers le haut
-//			currentCoordinates.y = currentCoordinates.y+1;
-//			return myGrid.dictionaryCoordCells[currentCoordinates] as Cell;
-//			break;
-//		case 2: // vers la gauche
-//			currentCoordinates.x = currentCoordinates.x-1;
-//			return myGrid.dictionaryCoordCells[currentCoordinates] as Cell;
-//			break;
-//		case 3: // vers la droite
-//			currentCoordinates.x = currentCoordinates.x-1;
-//			return myGrid.dictionaryCoordCells[currentCoordinates] as Cell;
-//			break;
-		default:
+		try {
+			switch (gravity) {
+			case 0: //vers le bas
+				currentCoordinates.y = currentCoordinates.y-1;
+				print(currentCoordinates.y.ToString ());
+				return gridAtlas.gridDictionary[currentCoordinates];
+				break;
+			case 1: // vers le haut
+				currentCoordinates.y = currentCoordinates.y+1;
+				print(currentCoordinates.y.ToString ());
+				//myGrid.dictionaryCoordCells.TryGetValue(currentCoordinates, out currentCell);
+				//currentCell = myGrid.dictionaryCoordCells[currentCoordinates];
+				return currentCell;
+				break;
+			case 2: // vers la gauche
+				currentCoordinates.x = currentCoordinates.x-1;
+				print(currentCoordinates.x.ToString ());
+				//myGrid.dictionaryCoordCells.TryGetValue(currentCoordinates, out currentCell);
+				//currentCell = myGrid.dictionaryCoordCells[currentCoordinates];
+				return currentCell;
+				break;
+			case 3: // vers la droite
+				currentCoordinates.x = currentCoordinates.x-1;
+				print(currentCoordinates.x.ToString ());
+				//myGrid.dictionaryCoordCells.TryGetValue(currentCoordinates, out currentCell);
+				//currentCell = myGrid.dictionaryCoordCells[currentCoordinates];
+				return currentCell;
+				break;
+			default:
+				return currentCell;
+				break;
+			}
+		} catch (System.Exception ex) {
+			print (ex);
 			return currentCell;
-			break;
 		}
 	}
 

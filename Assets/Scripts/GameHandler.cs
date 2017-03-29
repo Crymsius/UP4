@@ -18,17 +18,18 @@ public class GameHandler : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		activePlayer = 0; 
-		myMechanisms = gameObject.GetComponent<MechanismHandler>();
+		myMechanisms = gameObject.GetComponent<MechanismHandler> ();
 		NextTurn();
 	}
 
-	public void PutAPawn(Cell callingCell) { // fonction déclenchée par un clic sur cellule de la grille
-		if (!myMechanisms.PawnFallCalculation(callingCell, activePlayer)) //renvoie TRUE si le joueur remporte la partie
-			NextTurn();
+	public void PutAPawn (Cell callingCell) { // fonction déclenchée par un clic sur cellule de la grille
+
+		if (!myMechanisms.PawnFallCalculation (callingCell, activePlayer)) //renvoie TRUE si le joueur remporte la partie
+			NextTurn ();
 		else
-			print("It's over"); // Déclencher un script de fin de partie quand on pourra gérer correctement l'event.
+			print ("It's over"); // Déclencher un script de fin de partie quand on pourra gérer correctement l'event.
 	}
-	public void NextTurn()
+	public void NextTurn ()
 	{
 		activePlayer = 1 - activePlayer; // si jamais partie à plus de 2, ne marche plus
 		myMechanisms.currentSprite = (activePlayer == 1) ? player1 : player2;
