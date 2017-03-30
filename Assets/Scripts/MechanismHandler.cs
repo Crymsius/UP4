@@ -67,12 +67,10 @@ public class MechanismHandler : MonoBehaviour {
 			else
 				falling = false;
 		}
+
 		//script plaçant le pion et lançant le visuel
 		GameObject newPawn = Instantiate (neutralPawn);
 		newPawn.GetComponent<SpriteRenderer> ().sprite = currentSprite;
-//		newPawn.transform.SetParent (currentCell.transform);
-//		newPawn.GetComponent<Transform> ().localPosition = Vector3.zero;
-//		currentCell.GetComponentInChildren<SpriteRenderer>().sprite = currentSprite;
 
 		PawnFallDo (newPawn, currentCell, player);
 		//TODO : méthode activant tous les triggers et lançant le visuel
@@ -90,8 +88,10 @@ public class MechanismHandler : MonoBehaviour {
 //			pawn.GetComponent<Transform>().localPosition = coeff * pawn.GetComponent<Transform>().localPosition;
 //			coeff -= Time.deltaTime;
 //		}
+
 		endCell.available = false;
 		endCell.content = player.ToString();
+
 		//la partie suivante stocke tous les triggers traversés
 //		int startCoords = endCell.coordinates.y;
 //		do
@@ -193,15 +193,34 @@ public class MechanismHandler : MonoBehaviour {
 			
 		return isWinner;
 	}
+	//vérifie si un mur ne bloque pas l'établissement de la puissance 4
+	public bool IsBlocked (Coord coords, string direction) {
+		switch (direction) {
 
-	public bool IsBlocked (Coord coords, string direction) { //vérifie si un mur ne bloque pas l'établissement de la puissance 4
-//		if (direction == "right" && myGrid.coordinates[coords].wallsAndTriggers.Contains("D")
-//			|| direction == "up" && myGrid.coordinates[coords + 1].wallsAndTriggers.Contains("B")
-//			|| direction == "UR" && myGrid.coordinates[coords + 101].wallsAndTriggers.Contains("C")
-//			|| direction == "UL" && myGrid.coordinates[coords + 1].wallsAndTriggers.Contains("C")
-//		)
-		//	return true;
-		//else
+		case "right":
+			if (gridAtlas.gridDictionary [coords].walls.wallx) {
+				return true;
+			} else
+				break;
+		case "up":
+			if (gridAtlas.gridDictionary.ContainsKey(coords + new Coord(0,1)) && gridAtlas.gridDictionary[coords + new Coord(0,1)].walls.wally) {
+
+				return true;
+			} else
+				break;
+		case "UR":
+			if (gridAtlas.gridDictionary.ContainsKey(coords + new Coord(1,1)) && gridAtlas.gridDictionary[coords + new Coord(1,1)].walls.wallxy) {
+				return true;
+			} else
+				break;
+		case "UL":
+			if (gridAtlas.gridDictionary.ContainsKey(coords + new Coord(-1,1)) &&gridAtlas.gridDictionary[coords + new Coord(-1,1)].walls.wallxy) {
+				return true;
+			} else
+				break;
+		default:
+			break;
+		}
 			return false;
 	}
 
