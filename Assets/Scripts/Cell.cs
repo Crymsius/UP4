@@ -8,6 +8,8 @@ public class Cell : MonoBehaviour {
 	public Coord coordinates;
 	public GameHandler myHandler { get; set; }
 
+	public Walls walls;
+
 	public bool available;	// Peut-on placer un pion dessus ?
 	public string content { get; set; }		// A quel joueur appartient le pion ? 
 
@@ -25,6 +27,14 @@ public class Cell : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
 	}
+
+	[System.Serializable]
+	public struct Walls
+	{
+		public bool wallx;
+		public bool wally;
+		public bool wallxy;
+	}
+	
 }

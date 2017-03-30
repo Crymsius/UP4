@@ -11,4 +11,15 @@ public struct Coord {
 		x = _x;
 		y = _y;
 	}
+
+	// Operator + for coordinates
+	public static Coord operator+(Coord a, Coord b){
+		return new Coord (a.x + b.x, a.y + b.y);
+	}
+
+	// Operator - for coordinates
+	public static Coord operator-(Coord a, Coord b){
+		return new Coord (a.x - b.x, a.y - b.y);
+	}
+
 }

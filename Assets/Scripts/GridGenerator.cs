@@ -55,6 +55,46 @@ public class GridGenerator : MonoBehaviour {
 		}
 	}
 
+	public void UpdateCells () {
+		Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
+		foreach (Transform cellChild in grid.GetComponent<Transform>()) {
+			SpawnWalls (cellChild, grid);
+		}
+	}
+
+	void SpawnWalls (Transform cellTransform, Grid grid) {
+		Cell cell = cellTransform.GetComponent<Cell> ();
+		Cell.Walls walls = cell.walls;
+
+		if (walls.wallx) {
+			DeleteExistingWalls (cellTransform, "WallX(Clone)");
+			GameObject newWallX = Instantiate (grid.firstWallX);
+			newWallX.transform.SetParent(cellTransform);
+			newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.627f, 0, 0);
+		}
+
+		if (walls.wally) {
+			DeleteExistingWalls (cellTransform, "WallY(Clone)");
+			GameObject newWallY = Instantiate (grid.firstWallY);
+			newWallY.transform.SetParent(cellTransform);
+			newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.627f, 0);
+		}
+
+		if (walls.wallxy) {
+			DeleteExistingWalls (cellTransform, "WallXY(Clone)");
+			GameObject newWallXY = Instantiate (grid.firstWallXY);
+			newWallXY.transform.SetParent(cellTransform);
+			newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.627f, -0.627f, 0);
+		}
+
+	}
+
+	void DeleteExistingWalls (Transform cell, string holderName) {
+		if (cell.FindChild (holderName)) {
+			DestroyImmediate(cell.FindChild(holderName).gameObject);
+		}
+	}
+
 	// Transforme les coordonnées en position
 	Vector3 CoordToPosition (int x, int y) {
 		return new Vector3 (-currentGrid.gridSize.x / 2 + 0.5f + x, -currentGrid.gridSize.y / 2 + 0.5f + y, 0);

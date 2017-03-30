@@ -16,6 +16,11 @@ public class GridEditor : Editor {
 		if (GUILayout.Button ("Generate Grid")) {
 			grid.GenerateGrid ();
 		}
+
+		if (GUILayout.Button ("Update Cells")) {
+			grid.UpdateCells ();
+		}
+
 	}
 
 }

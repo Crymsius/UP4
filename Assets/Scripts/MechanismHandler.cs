@@ -19,7 +19,7 @@ public class MechanismHandler : MonoBehaviour {
 
 	public int gravity { get; set; } // direction de chute des pions
 	public int gravityAngle { get; set; }
-	//public Dictionary<string, int> fallIntegers = new Dictionary<string, int> () { { "up", 1 }, { "down", -1 }, { "left", -100 }, { "right", 100 }, { "UL", -99 }, { "UR", 101 }};
+	public Dictionary<string, Coord> fallIntegers = new Dictionary<string, Coord> () { { "up", new Coord (0,1) }, { "down", new Coord (0,-1) }, { "left", new Coord (-1,0) }, { "right", new Coord (1,0) }, { "UL", new Coord (-1,1) }, { "UR", new Coord (1,1)}};
 
 	// Use this for initialization
 	IEnumerator Start () {
@@ -31,7 +31,6 @@ public class MechanismHandler : MonoBehaviour {
 
 		myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
 		gridAtlas = GenerateAtlas ();
-
 	}
 
 	public Atlas GenerateAtlas () {
@@ -70,8 +69,8 @@ public class MechanismHandler : MonoBehaviour {
 		//script plaçant le pion et lançant le visuel
 		GameObject newPawn = Instantiate (neutralPawn);
 		newPawn.GetComponent<SpriteRenderer> ().sprite = currentSprite;
-		newPawn.transform.SetParent (currentCell.transform);
-		newPawn.GetComponent<Transform> ().localPosition = Vector3.zero;
+//		newPawn.transform.SetParent (currentCell.transform);
+//		newPawn.GetComponent<Transform> ().localPosition = Vector3.zero;
 //		currentCell.GetComponentInChildren<SpriteRenderer>().sprite = currentSprite;
 
 		PawnFallDo (newPawn, currentCell, player);
@@ -83,15 +82,15 @@ public class MechanismHandler : MonoBehaviour {
 
 	public void PawnFallDo (GameObject pawn, Cell endCell, int player) // Place le pion, détecte et exécute tous les triggers
 	{
-//		pawn.transform.SetParent(endCell.transform);
-//		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
+		pawn.transform.SetParent(endCell.transform);
+		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
 		//float coeff = 1f;
 //		while (coeff > 0) { //not working : pas d'update visuel depuis une while loop
 //			pawn.GetComponent<Transform>().localPosition = coeff * pawn.GetComponent<Transform>().localPosition;
 //			coeff -= Time.deltaTime;
 //		}
 		endCell.available = false;
-		//endCell.content = player.ToString();
+		endCell.content = player.ToString();
 		//la partie suivante stocke tous les triggers traversés
 //		int startCoords = endCell.coordinates.y;
 //		do
@@ -165,34 +164,36 @@ public class MechanismHandler : MonoBehaviour {
 	}
 
 	public bool CheckAlign4 (Cell newFilled, int player) {
-//
-//		int currentCoords = newFilled.coordinates.y;
-//		int startCoords; bool isWinner = false;
-//		foreach (string i in new List<string>() { "right", "UR", "up", "UL" }) //test selon les 4 directions
-//		{
-//			startCoords = currentCoords;
-//			//while (startCoords / 100 > 0 && startCoords % 100 > 0)
-//			while(myGrid.allCellCoords.ContainsKey(startCoords- fallIntegers[i]))
-//				startCoords -= fallIntegers[i]; // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
-//			int count = 0;
-//			while (myGrid.allCellCoords.ContainsKey(startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
-//			{
-//				if (myGrid.allCellCoords[startCoords].content == player.ToString())
-//				{
-//					if (count + 1 >= 4)
-//						isWinner = true;
-//					else if (!IsBlocked(startCoords, i)) count++;
-//					else count = 0;
-//				}
-//				else count = 0;
-//				startCoords += fallIntegers[i];
-//			}
-//		}
-//		return isWinner;
-		return true;
+
+		Coord currentCoords = newFilled.coordinates;
+		Coord startCoords; 
+		bool isWinner = false;
+
+		foreach (string i in new List<string> () { "right", "UR", "up", "UL" }) //test selon les 4 directions
+		{
+			startCoords = currentCoords;
+			//while (startCoords / 100 > 0 && startCoords % 100 > 0)
+			while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[i]))
+				startCoords -= fallIntegers[i]; // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+			int count = 0;
+			while (gridAtlas.gridDictionary.ContainsKey (startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
+			{
+				if (gridAtlas.gridDictionary[startCoords].content == player.ToString ())
+				{
+					if (count + 1 >= 4)
+						isWinner = true;
+					else if (!IsBlocked (startCoords, i)) count++;
+					else count = 0;
+				}
+				else count = 0;
+				startCoords += fallIntegers[i];
+			}
+		}
+			
+		return isWinner;
 	}
 
-	public bool IsBlocked (int coords, string direction) { //vérifie si un mur ne bloque pas l'établissement de la puissance 4
+	public bool IsBlocked (Coord coords, string direction) { //vérifie si un mur ne bloque pas l'établissement de la puissance 4
 //		if (direction == "right" && myGrid.coordinates[coords].wallsAndTriggers.Contains("D")
 //			|| direction == "up" && myGrid.coordinates[coords + 1].wallsAndTriggers.Contains("B")
 //			|| direction == "UR" && myGrid.coordinates[coords + 101].wallsAndTriggers.Contains("C")

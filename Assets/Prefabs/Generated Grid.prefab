@@ -55,8 +55,9 @@ MonoBehaviour:
     x: 0
     y: 0
   firstTile: {fileID: 0}
-  firstWallD: {fileID: 0}
-  firstWallB: {fileID: 0}
-  firstWallC: {fileID: 0}
-  rotateR: {fileID: 0}
-  rotateL: {fileID: 0}
+  firstWallX: {fileID: 1346586481551566, guid: 93e05c66a0db4b84c86ca6ed332a0170, type: 2}
+  firstWallY: {fileID: 1280385771188098, guid: 64ad4e36273b031429d3a7f0b1780419, type: 2}
+  firstWallXY: {fileID: 1203185562740402, guid: 314b88d38dd97ed4480792159f154726,
+    type: 2}
+  rotateR: {fileID: 1960648795104178, guid: b57220551f9583e4eb14624ebe240b7e, type: 2}
+  rotateL: {fileID: 1053597508785658, guid: 6aabc9837a1112742b4060e5daf16e1c, type: 2}
