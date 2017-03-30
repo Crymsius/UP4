@@ -54,12 +54,13 @@ public class MechanismHandler : MonoBehaviour {
 		{
 			currentCell = gridAtlas.gridDictionary[interCoords] as Cell;
 			Cell nextCell = NextCell (currentCell, gravity);
-			if (nextCell.available && !nextCell.Equals (currentCell))
-//				/*(gravity == "down" && !currentCell.wallsAndTriggers.Contains("B")
-//					|| gravity == "up" && !nextCell.wallsAndTriggers.Contains("B")
-//					|| gravity == "right" && !currentCell.wallsAndTriggers.Contains("D")
-//					|| gravity == "left" && !nextCell.wallsAndTriggers.Contains("D")
-//				)*/
+			if (nextCell.available &&
+				!nextCell.Equals (currentCell) &&
+				(gravity == 0 && !currentCell.walls.wally
+					|| gravity == 1 && !nextCell.walls.wally
+					|| gravity == 2 && !currentCell.walls.wallx
+					|| gravity == 3 && !nextCell.walls.wallx
+				))
 			{
 			interCoords = nextCell.coordinates;
 			}
