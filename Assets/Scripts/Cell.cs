@@ -12,6 +12,7 @@ public class Cell : MonoBehaviour {
 	public string content { get; set; }		// A quel joueur appartient le pion ? 
 
 	void Start () {
+		available = true;
 		myHandler = GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ();
 	}
 

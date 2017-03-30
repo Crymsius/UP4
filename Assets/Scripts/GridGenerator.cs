@@ -37,11 +37,6 @@ public class GridGenerator : MonoBehaviour {
 		newGrid.parent = transform;
 		Grid gridScript = newGrid.GetComponent<Grid> ();
 		gridScript.gridSize = currentGrid.gridSize;	
-		//gridScript.dictionaryCoordCells = new UniTools.UniDictionary <Coord,Cell> ();
-		//gridScript.dictionaryCoordCells = new MyDictionary <Coord,Cell> ();
-		//gridScript.dictionaryCoordCells = new Dictionary <Coord,Cell> ();
-//		List<Coord> coords = new List<Coord> ();
-//		List<Cell> cells = new List<Cell> ();
 	
 		// Spawning cells
 		for (int x = 0; x < currentGrid.gridSize.x; x++) {
@@ -56,18 +51,8 @@ public class GridGenerator : MonoBehaviour {
 				//ajoute les coordonnées de chacune des Cells
 				cellScript.coordinates = new Coord (x, y); 
 				allCellCoords.Add (new Coord (x, y));
-
-				// ajoute le couple coordonnée - cell dans le dictionaire de la grille
-				//gridScript.dictionaryCoordCells.Add (cellScript.coordinates, cellScript); 
-//				cells.Add (cellScript);
-//				coords.Add (cellScript.coordinates);
 			}
 		}
-//		Cell testCell;
-//		//Debug.Log(gridScript.dictionaryCoordCells.TryGetValue(new Coord(1,1), out testCell).ToString());
-//		Coord testCoord = new Coord(1,1);
-//		int indexTestCell = gridScript.coords.IndexOf(testCoord);
-//		Debug.Log(gridScript.cells[indexTestCell]);
 	}
 
 	// Transforme les coordonnées en position
