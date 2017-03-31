@@ -9,6 +9,7 @@ public class Cell : MonoBehaviour {
 	public GameHandler myHandler { get; set; }
 
 	public Walls walls;
+	public Trigger trigger;
 
 	public bool available;	// Peut-on placer un pion dessus ?
 	public string content { get; set; }		// A quel joueur appartient le pion ? 
@@ -36,5 +37,12 @@ public class Cell : MonoBehaviour {
 		public bool wally;
 		public bool wallxy;
 	}
-	
+
+	[System.Serializable]
+	public struct Trigger
+	{
+		public bool isTrigger;
+		[Range(0,2)]
+		public int triggerType; //0 : 90r | 1 : 90l | 2 : 180
+	}
 }

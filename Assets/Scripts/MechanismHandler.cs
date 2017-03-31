@@ -18,13 +18,19 @@ public class MechanismHandler : MonoBehaviour {
 	public Sprite currentSprite { get; set; }
 
 	public int gravity { get; set; } // direction de chute des pions
-	public int gravityAngle { get; set; }
-	public Dictionary<string, Coord> fallIntegers = new Dictionary<string, Coord> () { { "up", new Coord (0,1) }, { "down", new Coord (0,-1) }, { "left", new Coord (-1,0) }, { "right", new Coord (1,0) }, { "UL", new Coord (-1,1) }, { "UR", new Coord (1,1)}};
+	//0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
+	public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
+		{ 0, new Coord (0,-1) },
+		{ 1, new Coord (-1,0) },
+		{ 2, new Coord (0,1) },
+		{ 3, new Coord (1,0) },
+		{ 4, new Coord (-1,1) },
+		{ 5, new Coord (1,1) }
+	};
 
 	// Use this for initialization
 	IEnumerator Start () {
-		gravity = 0; //0 : bas, 1: haut, 2: gauche, 3: droite;
-		gravityAngle = -90;
+		gravity = 0; //0: down | 1: left | 2: up | 3: right 
 
 		//attente que la grille d'editor soit détruite puis que la grille de jeu soit chargée.
 		yield return new WaitForSeconds(2f); // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
@@ -79,9 +85,39 @@ public class MechanismHandler : MonoBehaviour {
 		return CheckAlign4 (currentCell, player);
 	}
 
+	public Cell NextCell (Cell currentCell, int gravity) {
+		//0: down | 1: left | 2: up | 3: right 
+		Coord currentCoordinates = currentCell.coordinates; 
+		switch (gravity) {
+		case 0:
+			currentCoordinates.y = currentCoordinates.y-1;
+			if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+				break;
+			} else return currentCell;
+		case 1:
+			currentCoordinates.x = currentCoordinates.x-1;
+			if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+				break;
+			} else return currentCell;
+		case 2:
+			currentCoordinates.y = currentCoordinates.y+1;
+			if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+				break;
+			} else return currentCell;
+		case 3:
+			currentCoordinates.x = currentCoordinates.x+1;
+			if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+				break;
+			} else return currentCell;
+		default:
+			return currentCell;
+		}
+		return gridAtlas.gridDictionary[currentCoordinates];
+	}
+
 	public void PawnFallDo (GameObject pawn, Cell endCell, int player) // Place le pion, détecte et exécute tous les triggers
 	{
-		pawn.transform.SetParent(endCell.transform);
+		pawn.transform.SetParent (endCell.transform);
 		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
 		//float coeff = 1f;
 //		while (coeff > 0) { //not working : pas d'update visuel depuis une while loop
@@ -89,79 +125,61 @@ public class MechanismHandler : MonoBehaviour {
 //			coeff -= Time.deltaTime;
 //		}
 
+		//rend la case finale non disponible pour les futurs pions
 		endCell.available = false;
-		endCell.content = player.ToString();
 
-		//la partie suivante stocke tous les triggers traversés
-//		int startCoords = endCell.coordinates.y;
-//		do
-//		{
-//			startCoords -= fallIntegers[gravity];
-//		} while (myGrid.allCellCoords.ContainsKey(startCoords)); // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
-//
-//		List<string> triggers = new List<string>();
-//		do
-//		{
-//			startCoords += fallIntegers[gravity];
-//		//	foreach (string str in new List<string>() { "R", "L" })
-//				//if (myGrid.coordinates[startCoords].wallsAndTriggers.Contains(str))
-//				//	triggers.Add(str);
-//		} 
-//		while (startCoords != endCell.coordinates.y) ; // On a collecté tous les triggers traversés
-//
-//		if (triggers.Count != 0)
-//			foreach (string str in triggers)
-//				ExecuteTrigger(str);
-	}
-		
-	public Cell NextCell (Cell currentCell, int gravity) {
-		Coord currentCoordinates = currentCell.coordinates; 
-		switch (gravity) {
-		case 0: //vers le bas
-			currentCoordinates.y = currentCoordinates.y-1;
-			if (gridAtlas.gridDictionary.ContainsKey(currentCoordinates)) {
-				return gridAtlas.gridDictionary[currentCoordinates];
-			} else return currentCell;
-		case 1: // vers le haut
-			currentCoordinates.y = currentCoordinates.y+1;
-			if (gridAtlas.gridDictionary.ContainsKey(currentCoordinates)) {
-				return gridAtlas.gridDictionary[currentCoordinates];
-			} else return currentCell;
-		case 2: // vers la gauche
-			currentCoordinates.x = currentCoordinates.x-1;
-			if (gridAtlas.gridDictionary.ContainsKey(currentCoordinates)) {
-				return gridAtlas.gridDictionary[currentCoordinates];
-			} else return currentCell;
-		case 3: // vers la droite
-			currentCoordinates.x = currentCoordinates.x-1;
-			if (gridAtlas.gridDictionary.ContainsKey(currentCoordinates)) {
-				return gridAtlas.gridDictionary[currentCoordinates];
-			} else return currentCell;
-		default:
-			return currentCell;
+		//ajoute le pion du joueur en mémoire dans la case (servira pour le check p4)
+		endCell.content = player.ToString ();
+
+		//Stockage de tous les triggers traversés
+		Coord startCoords = endCell.coordinates;
+
+		do {
+			startCoords -= fallIntegers[gravity];
+		} while (gridAtlas.gridDictionary.ContainsKey (startCoords)); // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+
+		List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
+
+		do {
+			startCoords += fallIntegers[gravity];
+			if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
+				print(startCoords.Stringify ());
+				triggers.Add (gridAtlas.gridDictionary[startCoords].trigger);
+			}
+		} while (!startCoords.Equals (endCell.coordinates)) ; // On a collecté tous les triggers traversés
+
+		if (triggers.Count != 0) {
+			foreach (Cell.Trigger trigger in triggers) {
+				ExecuteTrigger (trigger.triggerType);
+			}
 		}
 	}
 
-	public void ExecuteTrigger (string triggerName) // rotatifs 90° uniquement pour l'instant
+	public void ExecuteTrigger (int triggerType) // rotatifs 90° uniquement pour l'instant
 	{
-//		int rotate;
-//		Dictionary<int, string> gravityDirections = new Dictionary<int, string>() { {270,"down" }, {0,"right" }, {90,"up" }, {180,"left" } };
-//		switch (triggerName)
-//		{
-//		case "R":
-//			rotate = 90;
-//			gravityAngle = (gravityAngle + 270) % 360;
-//			break;
-//		case "L":
-//			rotate = 270;
-//			gravityAngle = (gravityAngle + 90) % 360;
-//			break;
-//		default:
-//			rotate = 0;
-//			break;
-//		}
-//		myGrid.gameObject.transform.eulerAngles = new Vector3(0, 0, (myGrid.gameObject.transform.eulerAngles.z + rotate) % 360);
-//		gravity = gravityDirections[gravityAngle];
+		int rotate;
+		switch (triggerType)
+		{
+
+		//0: down | 1: left | 2: up | 3: right 
+		case 0: //90r
+			rotate = 90;
+			gravity = (gravity + 3) % 4;
+			break;
+		case 1: //90l
+			rotate = 270;
+			gravity = (gravity + 1) % 4;
+			break;
+		case 2: //180
+			rotate = 180;
+			gravity = (gravity + 2) % 4;
+			break;
+		default:
+			rotate = 0;
+			break;
+		}
+		GameObject mainCamera = GameObject.Find ("Main Camera");
+		mainCamera.GetComponent<Transform> ().Rotate (new Vector3 (0, 0, rotate));
 	}
 
 	public bool CheckAlign4 (Cell newFilled, int player) {
@@ -170,12 +188,12 @@ public class MechanismHandler : MonoBehaviour {
 		Coord startCoords; 
 		bool isWinner = false;
 
-		foreach (string i in new List<string> () { "right", "UR", "up", "UL" }) //test selon les 4 directions
+		foreach (string i in new List<string> () {"right", "UR", "up", "UL"}) //test selon les 4 directions
 		{
 			startCoords = currentCoords;
 			//while (startCoords / 100 > 0 && startCoords % 100 > 0)
-			while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[i]))
-				startCoords -= fallIntegers[i]; // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+			while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[directionConversionString(i)]))
+				startCoords -= fallIntegers[directionConversionString(i)]; // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
 			int count = 0;
 			while (gridAtlas.gridDictionary.ContainsKey (startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
 			{
@@ -187,7 +205,7 @@ public class MechanismHandler : MonoBehaviour {
 					else count = 0;
 				}
 				else count = 0;
-				startCoords += fallIntegers[i];
+				startCoords += fallIntegers[directionConversionString(i)];
 			}
 		}
 			
@@ -196,25 +214,23 @@ public class MechanismHandler : MonoBehaviour {
 	//vérifie si un mur ne bloque pas l'établissement de la puissance 4
 	public bool IsBlocked (Coord coords, string direction) {
 		switch (direction) {
-
 		case "right":
 			if (gridAtlas.gridDictionary [coords].walls.wallx) {
 				return true;
 			} else
 				break;
 		case "up":
-			if (gridAtlas.gridDictionary.ContainsKey(coords + new Coord(0,1)) && gridAtlas.gridDictionary[coords + new Coord(0,1)].walls.wally) {
-
+			if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(0,1)) && gridAtlas.gridDictionary[coords + new Coord(0,1)].walls.wally) {
 				return true;
 			} else
 				break;
 		case "UR":
-			if (gridAtlas.gridDictionary.ContainsKey(coords + new Coord(1,1)) && gridAtlas.gridDictionary[coords + new Coord(1,1)].walls.wallxy) {
+			if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(1,1)) && gridAtlas.gridDictionary[coords + new Coord(1,1)].walls.wallxy) {
 				return true;
 			} else
 				break;
 		case "UL":
-			if (gridAtlas.gridDictionary.ContainsKey(coords + new Coord(-1,1)) &&gridAtlas.gridDictionary[coords + new Coord(-1,1)].walls.wallxy) {
+			if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(-1,1)) &&gridAtlas.gridDictionary[coords + new Coord(-1,1)].walls.wallxy) {
 				return true;
 			} else
 				break;
@@ -223,6 +239,49 @@ public class MechanismHandler : MonoBehaviour {
 		}
 			return false;
 	}
+
+	public int directionConversionString (string direction) {
+		//0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
+		try {
+			switch (direction.ToLower()) {
+			case "down":
+				return 0;
+			case "d":
+				return 0;
+
+			case "left":
+				return 1;
+			case "l":
+				return 1;
+
+			case "up":
+				return 2;
+			case "u":
+				return 2;
+
+			case "right":
+				return 3;
+			case "r":
+				return 3;
+
+			case "upleft":
+				return 4;
+			case "ul":
+				return 4;
+
+			case "upright":
+				return 5;
+			case "ur":
+				return 5;
+
+			default:
+				return -1;
+			}	
+		} catch (System.Exception ex) {
+			throw (ex);
+		}
+	}
+
 
 	// Update is called once per frame
 	void Update () {

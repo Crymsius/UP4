@@ -57,8 +57,9 @@ public class GridGenerator : MonoBehaviour {
 
 	public void UpdateCells () {
 		Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
-		foreach (Transform cellChild in grid.GetComponent<Transform>()) {
+		foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
 			SpawnWalls (cellChild, grid);
+			SpawnTriggers (cellChild, grid);
 		}
 	}
 
@@ -67,31 +68,61 @@ public class GridGenerator : MonoBehaviour {
 		Cell.Walls walls = cell.walls;
 
 		if (walls.wallx) {
-			DeleteExistingWalls (cellTransform, "WallX(Clone)");
+			DeleteExistingCellChild (cellTransform, "WallX(Clone)");
 			GameObject newWallX = Instantiate (grid.firstWallX);
-			newWallX.transform.SetParent(cellTransform);
+			newWallX.transform.SetParent (cellTransform);
 			newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.627f, 0, 0);
 		}
 
 		if (walls.wally) {
-			DeleteExistingWalls (cellTransform, "WallY(Clone)");
+			DeleteExistingCellChild (cellTransform, "WallY(Clone)");
 			GameObject newWallY = Instantiate (grid.firstWallY);
-			newWallY.transform.SetParent(cellTransform);
+			newWallY.transform.SetParent (cellTransform);
 			newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.627f, 0);
 		}
 
 		if (walls.wallxy) {
-			DeleteExistingWalls (cellTransform, "WallXY(Clone)");
+			DeleteExistingCellChild (cellTransform, "WallXY(Clone)");
 			GameObject newWallXY = Instantiate (grid.firstWallXY);
-			newWallXY.transform.SetParent(cellTransform);
+			newWallXY.transform.SetParent (cellTransform);
 			newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.627f, -0.627f, 0);
 		}
-
 	}
 
-	void DeleteExistingWalls (Transform cell, string holderName) {
+	void SpawnTriggers (Transform cellTransform, Grid grid) {
+		Cell cell = cellTransform.GetComponent<Cell> ();
+		Cell.Trigger trigger = cell.trigger;
+
+		if (trigger.isTrigger) {
+			switch (trigger.triggerType) {
+			case 0: //trigger right 
+				DeleteExistingCellChild (cellTransform, "TurnRight(Clone)");
+				GameObject newTriggerR = Instantiate (grid.rotateR);
+				newTriggerR.transform.SetParent (cellTransform);
+				newTriggerR.GetComponent<Transform> ().localPosition = Vector3.zero;
+				break;
+			case 1: //trigger left
+				DeleteExistingCellChild (cellTransform, "TurnLeft(Clone)");
+				GameObject newTriggerL = Instantiate (grid.rotateL);
+				newTriggerL.transform.SetParent (cellTransform);
+				newTriggerL.GetComponent<Transform> ().localPosition = Vector3.zero;
+				break;
+			case 2: //trigger upside down
+				DeleteExistingCellChild (cellTransform, "TurnUpsideDown(Clone)");
+				GameObject newTriggerUD = Instantiate (grid.rotateUD);
+				newTriggerUD.transform.SetParent (cellTransform);
+				newTriggerUD.GetComponent<Transform> ().localPosition = Vector3.zero;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	//Delete existing wall or trigger 
+	void DeleteExistingCellChild (Transform cell, string holderName) {
 		if (cell.FindChild (holderName)) {
-			DestroyImmediate(cell.FindChild(holderName).gameObject);
+			DestroyImmediate (cell.FindChild (holderName).gameObject);
 		}
 	}
 
