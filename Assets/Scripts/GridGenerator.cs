@@ -57,7 +57,11 @@ public class GridGenerator : MonoBehaviour {
 
 	public void UpdateCells () {
 		Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
+		List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)"};
 		foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
+			foreach (string content in contentNames) {
+				DeleteExistingCellChild (cellChild, content);
+			}
 			SpawnWalls (cellChild, grid);
 			SpawnTriggers (cellChild, grid);
 		}
@@ -68,21 +72,18 @@ public class GridGenerator : MonoBehaviour {
 		Cell.Walls walls = cell.walls;
 
 		if (walls.wallx) {
-			DeleteExistingCellChild (cellTransform, "WallX(Clone)");
 			GameObject newWallX = Instantiate (grid.firstWallX);
 			newWallX.transform.SetParent (cellTransform);
 			newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.627f, 0, 0);
 		}
 
 		if (walls.wally) {
-			DeleteExistingCellChild (cellTransform, "WallY(Clone)");
 			GameObject newWallY = Instantiate (grid.firstWallY);
 			newWallY.transform.SetParent (cellTransform);
 			newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.627f, 0);
 		}
 
 		if (walls.wallxy) {
-			DeleteExistingCellChild (cellTransform, "WallXY(Clone)");
 			GameObject newWallXY = Instantiate (grid.firstWallXY);
 			newWallXY.transform.SetParent (cellTransform);
 			newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.627f, -0.627f, 0);
@@ -96,19 +97,16 @@ public class GridGenerator : MonoBehaviour {
 		if (trigger.isTrigger) {
 			switch (trigger.triggerType) {
 			case 0: //trigger right 
-				DeleteExistingCellChild (cellTransform, "TurnRight(Clone)");
 				GameObject newTriggerR = Instantiate (grid.rotateR);
 				newTriggerR.transform.SetParent (cellTransform);
 				newTriggerR.GetComponent<Transform> ().localPosition = Vector3.zero;
 				break;
 			case 1: //trigger left
-				DeleteExistingCellChild (cellTransform, "TurnLeft(Clone)");
 				GameObject newTriggerL = Instantiate (grid.rotateL);
 				newTriggerL.transform.SetParent (cellTransform);
 				newTriggerL.GetComponent<Transform> ().localPosition = Vector3.zero;
 				break;
 			case 2: //trigger upside down
-				DeleteExistingCellChild (cellTransform, "TurnUpsideDown(Clone)");
 				GameObject newTriggerUD = Instantiate (grid.rotateUD);
 				newTriggerUD.transform.SetParent (cellTransform);
 				newTriggerUD.GetComponent<Transform> ().localPosition = Vector3.zero;
