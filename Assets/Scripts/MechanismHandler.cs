@@ -79,7 +79,7 @@ public class MechanismHandler : MonoBehaviour {
 		newPawn.GetComponent<SpriteRenderer> ().sprite = currentSprite;
 
 		PawnFallDo (newPawn, currentCell, player);
-		//TODO : méthode activant tous les triggers et lançant le visuel
+		//TODO : méthode lançant le visuel
 
 		//script de vérification de la puissance 4 et lançant le visuel
 		return CheckAlign4 (currentCell, player);
@@ -191,7 +191,7 @@ public class MechanismHandler : MonoBehaviour {
 		foreach (string i in new List<string> () {"right", "UR", "up", "UL"}) //test selon les 4 directions
 		{
 			startCoords = currentCoords;
-			//while (startCoords / 100 > 0 && startCoords % 100 > 0)
+
 			while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[directionConversionString(i)]))
 				startCoords -= fallIntegers[directionConversionString(i)]; // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
 			int count = 0;
@@ -243,7 +243,7 @@ public class MechanismHandler : MonoBehaviour {
 	public int directionConversionString (string direction) {
 		//0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
 		try {
-			switch (direction.ToLower()) {
+			switch (direction.ToLower ()) {
 			case "down":
 				return 0;
 			case "d":
@@ -281,7 +281,6 @@ public class MechanismHandler : MonoBehaviour {
 			throw (ex);
 		}
 	}
-
 
 	// Update is called once per frame
 	void Update () {

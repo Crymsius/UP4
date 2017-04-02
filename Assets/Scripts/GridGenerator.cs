@@ -129,7 +129,7 @@ public class GridGenerator : MonoBehaviour {
 		return new Vector3 (-currentGrid.gridSize.x / 2 + 0.5f + x, -currentGrid.gridSize.y / 2 + 0.5f + y, 0);
 	}
 
-	//gridHolder:  permet d'avoir une fausse grille pour host les coordonnées, tout en ensuite transmis au Grid
+	//gridHolder:  permet d'avoir une fausse grille pour host les coordonnées lors de la génération
 	[System.Serializable]
 	public class GridHolder {
 		public Coord gridSize;

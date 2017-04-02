@@ -22,7 +22,7 @@ public struct Coord {
 		return new Coord (a.x - b.x, a.y - b.y);
 	}
 
-	// Method Stringify renvois le string (x;y) 
+	// Method Stringify returns the string (x;y) 
 	public string Stringify () {
 		return "(" + x.ToString () + ";" + y.ToString () + ")";
 	}

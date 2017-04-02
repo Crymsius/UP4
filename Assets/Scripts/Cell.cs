@@ -21,7 +21,7 @@ public class Cell : MonoBehaviour {
 
 	void OnMouseDown () // déclenché avec clic sur la grille
 	{
-		print (coordinates.x + " ; " + coordinates.y);
+		print (coordinates.Stringify ());
 		if (available)
 			myHandler.PutAPawn (this);
 	}
