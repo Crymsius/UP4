@@ -2,34 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Cell : MonoBehaviour {
+	
+	public Coord coordinates;
+	public GameHandler myHandler { get; set; }
 
-    /* La cellule constitue une case de la grille
-     * Elle retient les informations à propos de la case qu'elle décrit
-     * De base, ce script est automatiquement attaché à chaque nouvelle case créée. Il suffit d'écrire "gameobject" pour obtenir l'instance du GameObject parent
-     * OUTPUT : Envoie à la grille ses coordonnées si un joueur l'a sélectionnée
-     */
-    public GameHandler myHandler { get; set; }
+	public Walls walls;
+	public Trigger trigger;
 
-    public List<string> walls = new List<string>(); // comprend les murs à droite (D), en bas (B), et coin bas-gauche (C)
-    public bool available { get; set; } // Peut-on placer un pion dessus ?
-    public string content { get; set; } // Y a-t-il un trigger, pion ou autre élément spécial ? 
+	public bool available;	// Peut-on placer un pion dessus ?
+	public string content { get; set; }		// A quel joueur appartient le pion ? 
 
-    public int coordinates { get; set; }
-
-    // Use this for initialization
-    void Start () {
-        myHandler = GameObject.Find("GeneralHandler").GetComponent<GameHandler>();
+	void Start () {
+		available = true;
+		myHandler = GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ();
 	}
 
-    void OnMouseDown() // déclenché avec clic sur la grille
-    {
-        if (available)
-            myHandler.PutAPawn(this);
-    }
-	
+	void OnMouseDown () // déclenché avec clic sur la grille
+	{
+		print (coordinates.Stringify ());
+		if (available)
+			myHandler.PutAPawn (this);
+	}
+
 	// Update is called once per frame
 	void Update () {
-		
+	}
+
+	[System.Serializable]
+	public struct Walls
+	{
+		public bool wallx;
+		public bool wally;
+		public bool wallxy;
+	}
+
+	[System.Serializable]
+	public struct Trigger
+	{
+		public bool isTrigger;
+		[Range(0,2)]
+		public int triggerType; //0 : 90r | 1 : 90l | 2 : 180
 	}
 }

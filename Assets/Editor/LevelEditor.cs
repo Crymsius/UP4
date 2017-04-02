@@ -7,8 +7,9 @@ public class LevelEditor : EditorWindow {
 
     //TODO link avec des gameobjects, link les assets et tout ce qui va bien
 
-    public int gridWidth = 2;
-    public int gridHeight = 2;
+
+    public int gridWidth;
+    public int gridHeight;
     private int gridWidthPrivate;
     private int gridHeightPrivate;
     public string[,] gridContent = new string[0,0];
@@ -27,11 +28,15 @@ public class LevelEditor : EditorWindow {
 
     void OnGUI () {
 
+		GameObject currentGameObject = Selection.activeGameObject;
+
+		Grid currentGrid = currentGameObject.GetComponent<Grid> ();
+
         // The actual window code goes here
         GUILayout.Label ("Grid Size", EditorStyles.boldLabel);
         //TODO mettre des checks sur les valeurs possibles de width/height (ex: pas de negatifs)
-        gridWidth = EditorGUILayout.IntField ("Grid Width", gridWidth);
-        gridHeight = EditorGUILayout.IntField ("Grid Height", gridHeight);
+		gridWidth = currentGrid.gridSize.x;// EditorGUILayout.IntField ("Grid Width", gridWidth);
+		gridHeight = currentGrid.gridSize.y;// EditorGUILayout.IntField ("Grid Height", gridHeight);
         gridString = EditorGUILayout.TextField ("Grid String", gridString);
         if (GUILayout.Button("Reload Grid")) {
             gridContent = new string[gridHeight,gridWidth];
@@ -167,7 +172,6 @@ public class LevelEditor : EditorWindow {
         
 		default: //par défaut : case vide
             return "V";
-            break;
         }
     }
 }
