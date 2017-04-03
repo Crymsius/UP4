@@ -116,7 +116,6 @@ public class MechanismHandler : MonoBehaviour {
 	}
 
 	IEnumerator AnimateFall (GameObject pawn, Cell endCell) {
-		print ("coucou");
 		Transform pawnTransform = pawn.GetComponent<Transform> ();
 
 		//continuous speed for now, will improve later
@@ -207,14 +206,16 @@ public class MechanismHandler : MonoBehaviour {
 
 		if (triggers.Count != 0) {
 			foreach (Cell.Trigger trigger in triggers) {
-				ExecuteTrigger (trigger.triggerType);
+				StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
 			}
 		}
 	}
 
-	public void ExecuteTrigger (int triggerType) // rotatifs 90° uniquement pour l'instant
+	IEnumerator ExecuteTrigger (int triggerType, float time) // rotatifs 90° uniquement pour l'instant
 	{
 		int rotate;
+		float startRotate;
+		float elapsedTime = 0.0f;
 		switch (triggerType)
 		{
 
@@ -224,7 +225,7 @@ public class MechanismHandler : MonoBehaviour {
 			gravity = (gravity + 3) % 4;
 			break;
 		case 1: //90l
-			rotate = 270;
+			rotate = -90;
 			gravity = (gravity + 1) % 4;
 			break;
 		case 2: //180
@@ -236,7 +237,17 @@ public class MechanismHandler : MonoBehaviour {
 			break;
 		}
 		GameObject mainCamera = GameObject.Find ("Main Camera");
-		mainCamera.GetComponent<Transform> ().Rotate (new Vector3 (0, 0, rotate));
+
+		Quaternion startingRotation = mainCamera.GetComponent<Transform> ().rotation;
+		Quaternion targetRotation = Quaternion.Euler ( new Vector3 ( 0.0f, 0.0f, startingRotation.eulerAngles.z + rotate ) );
+		print (targetRotation.eulerAngles.z.ToString ());
+		while (elapsedTime < time) {
+			elapsedTime += Time.deltaTime; // <- move elapsedTime increment here 
+			// Rotations
+			mainCamera.GetComponent<Transform> ().rotation = Quaternion.Slerp(startingRotation, targetRotation,  (elapsedTime / time)  );
+			yield return new WaitForEndOfFrame ();
+		}
+
 	}
 
 	public bool CheckAlign4 (Cell newFilled, int player) {
