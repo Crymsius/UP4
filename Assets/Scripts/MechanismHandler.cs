@@ -63,9 +63,9 @@ public class MechanismHandler : MonoBehaviour {
 			if (nextCell.available &&
 				!nextCell.Equals (currentCell) &&
 				(gravity == 0 && !currentCell.walls.wally
-					|| gravity == 1 && !nextCell.walls.wally
-					|| gravity == 2 && !currentCell.walls.wallx
-					|| gravity == 3 && !nextCell.walls.wallx
+					|| gravity == 1 && !nextCell.walls.wallx
+					|| gravity == 2 && !nextCell.walls.wally
+					|| gravity == 3 && !currentCell.walls.wallx
 				))
 			{
 			interCoords = nextCell.coordinates;
