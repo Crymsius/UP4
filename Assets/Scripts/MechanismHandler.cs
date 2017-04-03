@@ -115,16 +115,48 @@ public class MechanismHandler : MonoBehaviour {
 		return gridAtlas.gridDictionary[currentCoordinates];
 	}
 
+	IEnumerator AnimateFall (GameObject pawn, Cell endCell) {
+		Transform pawnTransform = pawn.GetComponent<Transform> ();
+
+		//continuous speed for now, will improve later
+		float speed = 10f;
+		switch (gravity) {
+		case 0:
+			while (pawnTransform.position.y > endCell.GetComponent<Transform> ().position.y) {
+				pawnTransform.Translate (Vector3.down * Time.deltaTime * speed);
+				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
+				yield return null;
+			}
+			break;
+		case 1:
+			while (pawnTransform.position.x > endCell.GetComponent<Transform> ().position.x) {
+				pawnTransform.Translate (Vector3.left * Time.deltaTime * speed);
+				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
+				yield return null;
+			}
+			break;
+		case 2:
+			while (pawnTransform.position.y < endCell.GetComponent<Transform> ().position.y) {
+				pawnTransform.Translate (Vector3.up * Time.deltaTime * speed);
+				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
+				yield return null;
+			}
+			break;
+		case 3:
+			while (pawnTransform.position.x < endCell.GetComponent<Transform> ().position.x) {
+				pawnTransform.Translate (Vector3.right * Time.deltaTime * speed);
+				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
+				yield return null;
+			}
+			break;
+		default:
+			break;
+		}
+		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
+	}
+
 	public void PawnFallDo (GameObject pawn, Cell endCell, int player) // Place le pion, détecte et exécute tous les triggers
 	{
-		pawn.transform.SetParent (endCell.transform);
-		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
-		//float coeff = 1f;
-//		while (coeff > 0) { //not working : pas d'update visuel depuis une while loop
-//			pawn.GetComponent<Transform>().localPosition = coeff * pawn.GetComponent<Transform>().localPosition;
-//			coeff -= Time.deltaTime;
-//		}
-
 		//rend la case finale non disponible pour les futurs pions
 		endCell.available = false;
 
@@ -133,10 +165,34 @@ public class MechanismHandler : MonoBehaviour {
 
 		//Stockage de tous les triggers traversés
 		Coord startCoords = endCell.coordinates;
-
+		Cell topCell;
 		do {
 			startCoords -= fallIntegers[gravity];
 		} while (gridAtlas.gridDictionary.ContainsKey (startCoords)); // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+
+		switch (gravity) {
+		case 0:
+			topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
+			break;
+		case 1:
+			topCell = gridAtlas.gridDictionary [startCoords - new Coord (1, 0)];
+			break;
+		case 2:
+			topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, -1)];
+			break;
+		case 3:
+			topCell = gridAtlas.gridDictionary [startCoords - new Coord (-1, 0)];
+			break;
+		default:
+			topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
+			break;
+		}
+
+		pawn.transform.SetParent (topCell.GetComponent<Transform> ()); // on part du haut
+		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
+
+		pawn.transform.SetParent (endCell.transform);
+		StartCoroutine (AnimateFall(pawn, endCell));
 
 		List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
 
@@ -150,14 +206,16 @@ public class MechanismHandler : MonoBehaviour {
 
 		if (triggers.Count != 0) {
 			foreach (Cell.Trigger trigger in triggers) {
-				ExecuteTrigger (trigger.triggerType);
+				StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
 			}
 		}
 	}
 
-	public void ExecuteTrigger (int triggerType) // rotatifs 90° uniquement pour l'instant
+	IEnumerator ExecuteTrigger (int triggerType, float time) // rotatifs 90° uniquement pour l'instant
 	{
 		int rotate;
+		float startRotate;
+		float elapsedTime = 0.0f;
 		switch (triggerType)
 		{
 
@@ -167,7 +225,7 @@ public class MechanismHandler : MonoBehaviour {
 			gravity = (gravity + 3) % 4;
 			break;
 		case 1: //90l
-			rotate = 270;
+			rotate = -90;
 			gravity = (gravity + 1) % 4;
 			break;
 		case 2: //180
@@ -179,7 +237,17 @@ public class MechanismHandler : MonoBehaviour {
 			break;
 		}
 		GameObject mainCamera = GameObject.Find ("Main Camera");
-		mainCamera.GetComponent<Transform> ().Rotate (new Vector3 (0, 0, rotate));
+
+		Quaternion startingRotation = mainCamera.GetComponent<Transform> ().rotation;
+		Quaternion targetRotation = Quaternion.Euler ( new Vector3 ( 0.0f, 0.0f, startingRotation.eulerAngles.z + rotate ) );
+		print (targetRotation.eulerAngles.z.ToString ());
+		while (elapsedTime < time) {
+			elapsedTime += Time.deltaTime; // <- move elapsedTime increment here 
+			// Rotations
+			mainCamera.GetComponent<Transform> ().rotation = Quaternion.Slerp(startingRotation, targetRotation,  (elapsedTime / time)  );
+			yield return new WaitForEndOfFrame ();
+		}
+
 	}
 
 	public bool CheckAlign4 (Cell newFilled, int player) {
