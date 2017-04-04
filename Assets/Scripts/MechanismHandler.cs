@@ -199,7 +199,6 @@ public class MechanismHandler : MonoBehaviour {
 		do {
 			startCoords += fallIntegers[gravity];
 			if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
-				print(startCoords.Stringify ());
 				triggers.Add (gridAtlas.gridDictionary[startCoords].trigger);
 			}
 		} while (!startCoords.Equals (endCell.coordinates)) ; // On a collecté tous les triggers traversés
