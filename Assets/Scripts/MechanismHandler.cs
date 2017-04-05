@@ -15,7 +15,8 @@ public class MechanismHandler : MonoBehaviour {
 	public Atlas gridAtlas;
 
 	public GameObject neutralPawn; // Linked depuis le dossier Prefabs
-	public Sprite currentSprite { get; set; }
+	//public Sprite currentSprite { get; set; }
+	public GameObject currentPawn { get; set; }
 
 	public int gravity { get; set; } // direction de chute des pions
 	//0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
@@ -75,8 +76,7 @@ public class MechanismHandler : MonoBehaviour {
 		}
 
 		//script plaçant le pion et lançant le visuel
-		GameObject newPawn = Instantiate (neutralPawn);
-		newPawn.GetComponent<SpriteRenderer> ().sprite = currentSprite;
+		GameObject newPawn = Instantiate (currentPawn);
 
 		PawnFallDo (newPawn, currentCell, player);
 		//TODO : méthode lançant le visuel

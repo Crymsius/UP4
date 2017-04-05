@@ -10,8 +10,8 @@ public class GameHandler : MonoBehaviour {
      */ 
 
 	public int activePlayer { get; set; }
-	public Sprite player1;
-	public Sprite player2;
+	public GameObject player1;
+	public GameObject player2;
 
 	public MechanismHandler myMechanisms { get; set; }
 
@@ -32,7 +32,7 @@ public class GameHandler : MonoBehaviour {
 	public void NextTurn ()
 	{
 		activePlayer = 1 - activePlayer; // si jamais partie à plus de 2, ne marche plus
-		myMechanisms.currentSprite = (activePlayer == 1) ? player1 : player2;
+		myMechanisms.currentPawn = (activePlayer == 1) ? player1 : player2;
 	}
 
 	// Update is called once per frame

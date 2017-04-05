@@ -74,19 +74,19 @@ public class GridGenerator : MonoBehaviour {
 		if (walls.wallx) {
 			GameObject newWallX = Instantiate (grid.firstWallX);
 			newWallX.transform.SetParent (cellTransform);
-			newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.627f, 0, 0);
+			newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.627f, 0, -10);
 		}
 
 		if (walls.wally) {
 			GameObject newWallY = Instantiate (grid.firstWallY);
 			newWallY.transform.SetParent (cellTransform);
-			newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.627f, 0);
+			newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.627f, -10);
 		}
 
 		if (walls.wallxy) {
 			GameObject newWallXY = Instantiate (grid.firstWallXY);
 			newWallXY.transform.SetParent (cellTransform);
-			newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.627f, -0.627f, 0);
+			newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.627f, -0.627f, -10);
 		}
 	}
 
@@ -99,17 +99,17 @@ public class GridGenerator : MonoBehaviour {
 			case 0: //trigger right 
 				GameObject newTriggerR = Instantiate (grid.rotateR);
 				newTriggerR.transform.SetParent (cellTransform);
-				newTriggerR.GetComponent<Transform> ().localPosition = Vector3.zero;
+				newTriggerR.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
 				break;
 			case 1: //trigger left
 				GameObject newTriggerL = Instantiate (grid.rotateL);
 				newTriggerL.transform.SetParent (cellTransform);
-				newTriggerL.GetComponent<Transform> ().localPosition = Vector3.zero;
+				newTriggerL.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
 				break;
 			case 2: //trigger upside down
 				GameObject newTriggerUD = Instantiate (grid.rotateUD);
 				newTriggerUD.transform.SetParent (cellTransform);
-				newTriggerUD.GetComponent<Transform> ().localPosition = Vector3.zero;
+				newTriggerUD.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
 				break;
 			default:
 				break;
