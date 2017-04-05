@@ -239,7 +239,6 @@ public class MechanismHandler : MonoBehaviour {
 
 		Quaternion startingRotation = mainCamera.GetComponent<Transform> ().rotation;
 		Quaternion targetRotation = Quaternion.Euler ( new Vector3 ( 0.0f, 0.0f, startingRotation.eulerAngles.z + rotate ) );
-		print (targetRotation.eulerAngles.z.ToString ());
 		while (elapsedTime < time) {
 			elapsedTime += Time.deltaTime; // <- move elapsedTime increment here 
 			// Rotations
