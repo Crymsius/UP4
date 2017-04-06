@@ -37,7 +37,7 @@ public class GridGenerator : MonoBehaviour {
 		newGrid.parent = transform;
 		Grid gridScript = newGrid.GetComponent<Grid> ();
 		gridScript.gridSize = currentGrid.gridSize;	
-	
+
 		// Spawning cells
 		for (int x = 0; x < currentGrid.gridSize.x; x++) {
 			for (int y = 0; y < currentGrid.gridSize.y; y++) {
@@ -53,6 +53,15 @@ public class GridGenerator : MonoBehaviour {
 				allCellCoords.Add (new Coord (x, y));
 			}
 		}
+
+		// Setup de l'origine : dépend de la parité de x et y
+		if (currentGrid.gridSize.x % 2 != 0 ) {
+			newGrid.Translate(Vector3.left * 0.5f);
+		}
+		if (currentGrid.gridSize.y % 2 != 0 ) {
+			newGrid.Translate(Vector3.down * 0.5f);
+		}
+		
 	}
 
 	public void UpdateCells () {
