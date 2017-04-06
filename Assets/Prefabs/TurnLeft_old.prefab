@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 222068192348056984}
   - component: {fileID: 212575715397843952}
   m_Layer: 0
-  m_Name: TurnLeft
+  m_Name: TurnLeft_old
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
