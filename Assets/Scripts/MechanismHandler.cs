@@ -14,8 +14,6 @@ public class MechanismHandler : MonoBehaviour {
 
 	public Atlas gridAtlas;
 
-	public GameObject neutralPawn; // Linked depuis le dossier Prefabs
-	//public Sprite currentSprite { get; set; }
 	public GameObject currentPawn { get; set; }
 
 	public int gravity { get; set; } // direction de chute des pions

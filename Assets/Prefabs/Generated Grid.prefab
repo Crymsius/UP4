@@ -54,10 +54,10 @@ MonoBehaviour:
   gridSize:
     x: 0
     y: 0
-  firstTile: {fileID: 0}
   firstWallX: {fileID: 1346586481551566, guid: 93e05c66a0db4b84c86ca6ed332a0170, type: 2}
   firstWallY: {fileID: 1280385771188098, guid: 64ad4e36273b031429d3a7f0b1780419, type: 2}
   firstWallXY: {fileID: 1203185562740402, guid: 314b88d38dd97ed4480792159f154726,
     type: 2}
-  rotateR: {fileID: 1960648795104178, guid: b57220551f9583e4eb14624ebe240b7e, type: 2}
-  rotateL: {fileID: 1053597508785658, guid: 6aabc9837a1112742b4060e5daf16e1c, type: 2}
+  rotateR: {fileID: 1200301251190946, guid: 02a5fe924fa52c547b9610aa41b1e681, type: 2}
+  rotateL: {fileID: 1925535464171184, guid: 19bda87e96813af42a941b81cf13993a, type: 2}
+  rotateUD: {fileID: 0}
