@@ -74,19 +74,19 @@ public class GridGenerator : MonoBehaviour {
 		if (walls.wallx) {
 			GameObject newWallX = Instantiate (grid.firstWallX);
 			newWallX.transform.SetParent (cellTransform);
-			newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.627f, 0, -10);
+			newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.5f, 0, -10);
 		}
 
 		if (walls.wally) {
 			GameObject newWallY = Instantiate (grid.firstWallY);
 			newWallY.transform.SetParent (cellTransform);
-			newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.627f, -10);
+			newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.5f, -10);
 		}
 
 		if (walls.wallxy) {
 			GameObject newWallXY = Instantiate (grid.firstWallXY);
 			newWallXY.transform.SetParent (cellTransform);
-			newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.627f, -0.627f, -10);
+			newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -10);
 		}
 	}
 
