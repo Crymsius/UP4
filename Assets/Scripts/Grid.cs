@@ -9,8 +9,6 @@ public class Grid : MonoBehaviour {
 //	[Range(0,1)]
 //	public float outlinePercent;
 
-	public GameObject firstTile; // Linkée depuis le dossier Prefabs
-
 	public GameObject firstWallX;
 	public GameObject firstWallY;
 	public GameObject firstWallXY;
