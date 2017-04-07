@@ -46,7 +46,7 @@ public class MechanismHandler : MonoBehaviour {
 		return gridAtlas;
 	}
 
-	public bool PawnFallCalculation (Cell startCell, int player, bool reset) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
+	public IEnumerator PawnFallCalculation (Cell startCell, int player, bool reset) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
 	{
 		// Calcule où le pion va s'arrêter de chuter depuis les coordonnées ou il a été lâché.
 		Coord interCoords = startCell.coordinates;
@@ -74,16 +74,14 @@ public class MechanismHandler : MonoBehaviour {
 		//script plaçant le pion et lançant le visuel
 		if (!reset) {
 			GameObject newPawn = Instantiate (currentPawn);
-			StartCoroutine (PawnFallDo (newPawn.GetComponent<Transform> (), currentCell, player, false, startCell));
+			yield return StartCoroutine (PawnFallDo (newPawn.GetComponent<Transform> (), currentCell, player, false, startCell));
 		} else {
 			Transform existingPawn = startCell.GetComponentInChildren<Pawn> ().transform;
-			StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
+			yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
 		}
 
 		//script de vérification de la puissance 4
 		CheckAlign4 (currentCell, player);
-
-		return true;
 	}
 
 	public Cell NextCell (Cell currentCell, int gravity) {
@@ -122,9 +120,6 @@ public class MechanismHandler : MonoBehaviour {
 
 		//rend la case finale non disponible pour les futurs pions
 		endCell.available = false;
-
-		//ajoute le pion du joueur en mémoire dans la case (servira pour le check p4)
-		endCell.content = player.ToString ();
 
 		//Stockage de tous les triggers traversés
 		Coord startCoords = endCell.coordinates;
@@ -169,15 +164,14 @@ public class MechanismHandler : MonoBehaviour {
 
 		pawn.SetParent (endCell.transform);
 
-		StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
-
-		yield return new WaitForEndOfFrame ();
+		yield return StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
 	}
 
 	IEnumerator AnimateFall (Transform pawn, Cell endCell, List<Cell.Trigger> triggers, bool reset) {
 
 		//continuous speed for now, will improve later
 		float speed = 10f;
+
 		switch (gravity) {
 		case 0:
 			while (pawn.position.y > endCell.GetComponent<Transform> ().position.y) {
@@ -206,6 +200,7 @@ public class MechanismHandler : MonoBehaviour {
 		default:
 			break;
 		}
+
 		pawn.localPosition = Vector3.zero;
 
 		if (triggers.Count != 0 && !reset) {
@@ -213,13 +208,12 @@ public class MechanismHandler : MonoBehaviour {
 				StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
 			}
 		}
-
 		if (reset) {
 			CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
 		}
 	}
 
-	IEnumerator ExecuteTrigger (int triggerType, float time) // rotatifs 90° uniquement pour l'instant
+	IEnumerator ExecuteTrigger (int triggerType, float time)
 	{
 		int rotate = 0;
 		float elapsedTime = 0.0f;
@@ -272,7 +266,7 @@ public class MechanismHandler : MonoBehaviour {
 					if (cellToReset.GetComponentInChildren<Pawn> ()) {
 						cellToReset.available = true;
 						player = cellToReset.GetComponentInChildren<Pawn> ().player;
-						PawnFallCalculation (cellToReset, player, true);
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
 					}
 				}
 			}
@@ -284,7 +278,7 @@ public class MechanismHandler : MonoBehaviour {
 					if (cellToReset.GetComponentInChildren<Pawn> ()) {
 						cellToReset.available = true;
 						player = cellToReset.GetComponentInChildren<Pawn> ().player;
-						PawnFallCalculation (cellToReset, player, true);
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
 					}
 				}
 			}
@@ -296,7 +290,7 @@ public class MechanismHandler : MonoBehaviour {
 					if (cellToReset.GetComponentInChildren<Pawn> ()) {
 						cellToReset.available = true;
 						player = cellToReset.GetComponentInChildren<Pawn> ().player;
-						PawnFallCalculation (cellToReset, player, true);
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
 					}
 				}
 			}
@@ -308,7 +302,7 @@ public class MechanismHandler : MonoBehaviour {
 					if (cellToReset.GetComponentInChildren<Pawn> ()) {
 						cellToReset.available = true;
 						player = cellToReset.GetComponentInChildren<Pawn> ().player;
-						PawnFallCalculation (cellToReset, player, true);
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
 					}
 				}
 			}
@@ -332,10 +326,10 @@ public class MechanismHandler : MonoBehaviour {
 			int count = 0;
 			while (gridAtlas.gridDictionary.ContainsKey (startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
 			{
-				if (gridAtlas.gridDictionary[startCoords].content == player.ToString ())
+				if (gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> () && gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> ().player == player)
 				{
 					if (count + 1 >= 4)
-						newFilled.myHandler.GameOver (player);
+						GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver (player);
 					else if (!IsBlocked (startCoords, i)) count++;
 					else count = 0;
 				}

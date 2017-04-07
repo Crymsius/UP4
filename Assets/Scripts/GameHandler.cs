@@ -12,6 +12,7 @@ public class GameHandler : MonoBehaviour {
 	public int activePlayer { get; set; }
 	public GameObject player1;
 	public GameObject player2;
+	public bool running = false;
 
 	public bool isOver; 
 
@@ -24,14 +25,15 @@ public class GameHandler : MonoBehaviour {
 		NextTurn();
 	}
 
-	public void PutAPawn (Cell callingCell) { // fonction déclenchée par un clic sur cellule de la grille
-		if (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false)) {
-			NextTurn ();
-		}
+	public IEnumerator PutAPawn (Cell callingCell) { // fonction déclenchée par un clic sur cellule de la grille
+		running = true;
+		yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false));
+		NextTurn ();
 	}
 
 	public void NextTurn ()
 	{
+		running = false;
 		activePlayer = 1 - activePlayer; // si jamais partie à plus de 2, ne marche plus
 		myMechanisms.currentPawn = (activePlayer == 1) ? player1 : player2;
 	}
