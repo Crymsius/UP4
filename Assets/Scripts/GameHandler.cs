@@ -13,6 +13,8 @@ public class GameHandler : MonoBehaviour {
 	public GameObject player1;
 	public GameObject player2;
 
+	public bool isOver; 
+
 	public MechanismHandler myMechanisms { get; set; }
 
 	// Use this for initialization
@@ -23,16 +25,19 @@ public class GameHandler : MonoBehaviour {
 	}
 
 	public void PutAPawn (Cell callingCell) { // fonction déclenchée par un clic sur cellule de la grille
-		if (!myMechanisms.PawnFallCalculation (callingCell, activePlayer)) //renvoie TRUE si le joueur remporte la partie
+		if (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false)) {
 			NextTurn ();
-		else
-			print ("It's over"); // Déclencher un script de fin de partie quand on pourra gérer correctement l'event.
+		}
 	}
 
 	public void NextTurn ()
 	{
 		activePlayer = 1 - activePlayer; // si jamais partie à plus de 2, ne marche plus
 		myMechanisms.currentPawn = (activePlayer == 1) ? player1 : player2;
+	}
+
+	public void GameOver (int winner) {
+		print ("Player " + winner + " is the winner"); 
 	}
 
 	// Update is called once per frame

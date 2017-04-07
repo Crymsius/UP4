@@ -66,7 +66,7 @@ public class GridGenerator : MonoBehaviour {
 
 	public void UpdateCells () {
 		Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
-		List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)"};
+		List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
 		foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
 			foreach (string content in contentNames) {
 				DeleteExistingCellChild (cellChild, content);
@@ -119,6 +119,11 @@ public class GridGenerator : MonoBehaviour {
 				GameObject newTriggerUD = Instantiate (grid.rotateUD);
 				newTriggerUD.transform.SetParent (cellTransform);
 				newTriggerUD.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+				break;
+			case 3: //trigger gravity reset
+				GameObject newTriggerGravity = Instantiate (grid.gravityReset);
+				newTriggerGravity.transform.SetParent (cellTransform);
+				newTriggerGravity.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
 				break;
 			default:
 				break;

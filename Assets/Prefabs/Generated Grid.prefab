@@ -61,3 +61,5 @@ MonoBehaviour:
   rotateR: {fileID: 1200301251190946, guid: 02a5fe924fa52c547b9610aa41b1e681, type: 2}
   rotateL: {fileID: 1925535464171184, guid: 19bda87e96813af42a941b81cf13993a, type: 2}
   rotateUD: {fileID: 0}
+  gravityReset: {fileID: 1780348446458892, guid: 0d96ef132da187541b44b7aaf38dec24,
+    type: 2}

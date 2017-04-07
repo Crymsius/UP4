@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4247665003493140}
   - component: {fileID: 114474366750543436}
+  - component: {fileID: 114870042085313808}
   m_Layer: 0
   m_Name: PawnPlayer2
   m_TagString: Untagged
@@ -59,3 +60,15 @@ MonoBehaviour:
   innerRadius: 0
   starrines: 0
   useMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+--- !u!114 &114870042085313808
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1523638261209826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba3efa78ea613a46ad1d660bf7f4b23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: 2

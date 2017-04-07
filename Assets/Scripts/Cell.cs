@@ -21,7 +21,7 @@ public class Cell : MonoBehaviour {
 
 	void OnMouseDown () // déclenché avec clic sur la grille
 	{
-		print (coordinates.Stringify ());
+		//print (coordinates.Stringify ());
 		if (available)
 			myHandler.PutAPawn (this);
 	}
@@ -42,7 +42,7 @@ public class Cell : MonoBehaviour {
 	public struct Trigger
 	{
 		public bool isTrigger;
-		[Range(0,2)]
-		public int triggerType; //0 : 90r | 1 : 90l | 2 : 180
+		[Range(0,3)]
+		public int triggerType; //0 : 90r | 1 : 90l | 2 : 180 | 3 : gravity
 	}
 }
