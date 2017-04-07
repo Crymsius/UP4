@@ -16,5 +16,5 @@ public class Grid : MonoBehaviour {
 	public GameObject rotateR;
 	public GameObject rotateL;
 	public GameObject rotateUD;
-
+	public GameObject gravityReset;
 }

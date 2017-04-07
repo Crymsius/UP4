@@ -12,7 +12,6 @@ public class Cell : MonoBehaviour {
 	public Trigger trigger;
 
 	public bool available;	// Peut-on placer un pion dessus ?
-	public string content { get; set; }		// A quel joueur appartient le pion ? 
 
 	void Start () {
 		available = true;
@@ -21,9 +20,8 @@ public class Cell : MonoBehaviour {
 
 	void OnMouseDown () // déclenché avec clic sur la grille
 	{
-		print (coordinates.Stringify ());
-		if (available)
-			myHandler.PutAPawn (this);
+		if (available && !myHandler.running)
+			StartCoroutine (myHandler.PutAPawn (this));
 	}
 
 	// Update is called once per frame
@@ -42,7 +40,7 @@ public class Cell : MonoBehaviour {
 	public struct Trigger
 	{
 		public bool isTrigger;
-		[Range(0,2)]
-		public int triggerType; //0 : 90r | 1 : 90l | 2 : 180
+		[Range(0,3)]
+		public int triggerType; //0 : 90r | 1 : 90l | 2 : 180 | 3 : gravity
 	}
 }

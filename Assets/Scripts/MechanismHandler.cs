@@ -11,11 +11,7 @@ public class MechanismHandler : MonoBehaviour {
     */
 
 	public Grid myGrid { get; set; }
-
 	public Atlas gridAtlas;
-
-	public GameObject neutralPawn; // Linked depuis le dossier Prefabs
-	//public Sprite currentSprite { get; set; }
 	public GameObject currentPawn { get; set; }
 
 	public int gravity { get; set; } // direction de chute des pions
@@ -50,7 +46,7 @@ public class MechanismHandler : MonoBehaviour {
 		return gridAtlas;
 	}
 
-	public bool PawnFallCalculation (Cell startCell, int player) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
+	public IEnumerator PawnFallCalculation (Cell startCell, int player, bool reset) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
 	{
 		// Calcule où le pion va s'arrêter de chuter depuis les coordonnées ou il a été lâché.
 		Coord interCoords = startCell.coordinates;
@@ -76,13 +72,16 @@ public class MechanismHandler : MonoBehaviour {
 		}
 
 		//script plaçant le pion et lançant le visuel
-		GameObject newPawn = Instantiate (currentPawn);
+		if (!reset) {
+			GameObject newPawn = Instantiate (currentPawn);
+			yield return StartCoroutine (PawnFallDo (newPawn.GetComponent<Transform> (), currentCell, player, false, startCell));
+		} else {
+			Transform existingPawn = startCell.GetComponentInChildren<Pawn> ().transform;
+			yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
+		}
 
-		PawnFallDo (newPawn, currentCell, player);
-		//TODO : méthode lançant le visuel
-
-		//script de vérification de la puissance 4 et lançant le visuel
-		return CheckAlign4 (currentCell, player);
+		//script de vérification de la puissance 4
+		CheckAlign4 (currentCell, player);
 	}
 
 	public Cell NextCell (Cell currentCell, int gravity) {
@@ -115,110 +114,113 @@ public class MechanismHandler : MonoBehaviour {
 		return gridAtlas.gridDictionary[currentCoordinates];
 	}
 
-	IEnumerator AnimateFall (GameObject pawn, Cell endCell) {
-		Transform pawnTransform = pawn.GetComponent<Transform> ();
-
-		//continuous speed for now, will improve later
-		float speed = 10f;
-		switch (gravity) {
-		case 0:
-			while (pawnTransform.position.y > endCell.GetComponent<Transform> ().position.y) {
-				pawnTransform.Translate (Vector3.down * Time.deltaTime * speed);
-				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
-				yield return null;
-			}
-			break;
-		case 1:
-			while (pawnTransform.position.x > endCell.GetComponent<Transform> ().position.x) {
-				pawnTransform.Translate (Vector3.left * Time.deltaTime * speed);
-				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
-				yield return null;
-			}
-			break;
-		case 2:
-			while (pawnTransform.position.y < endCell.GetComponent<Transform> ().position.y) {
-				pawnTransform.Translate (Vector3.up * Time.deltaTime * speed);
-				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
-				yield return null;
-			}
-			break;
-		case 3:
-			while (pawnTransform.position.x < endCell.GetComponent<Transform> ().position.x) {
-				pawnTransform.Translate (Vector3.right * Time.deltaTime * speed);
-				//transform.Translate (Vector3.down * Time.deltaTime, Space.World);
-				yield return null;
-			}
-			break;
-		default:
-			break;
-		}
-		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
-	}
-
-	public void PawnFallDo (GameObject pawn, Cell endCell, int player) // Place le pion, détecte et exécute tous les triggers
+	public IEnumerator PawnFallDo (Transform pawn, Cell endCell, int player, bool reset, Cell startCell) // Place le pion, détecte et exécute tous les triggers
 	{
+		List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
+
 		//rend la case finale non disponible pour les futurs pions
 		endCell.available = false;
-
-		//ajoute le pion du joueur en mémoire dans la case (servira pour le check p4)
-		endCell.content = player.ToString ();
 
 		//Stockage de tous les triggers traversés
 		Coord startCoords = endCell.coordinates;
 		Cell topCell;
-		do {
-			startCoords -= fallIntegers[gravity];
-		} while (gridAtlas.gridDictionary.ContainsKey (startCoords)); // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+
+		if (reset) {
+			topCell = startCell;
+			startCoords = startCell.coordinates;
+		} else {
+			do {
+				startCoords -= fallIntegers[gravity];
+			} while (gridAtlas.gridDictionary.ContainsKey (startCoords)); // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+			switch (gravity) {
+			case 0:
+				topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
+				break;
+			case 1:
+				topCell = gridAtlas.gridDictionary [startCoords - new Coord (1, 0)];
+				break;
+			case 2:
+				topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, -1)];
+				break;
+			case 3:
+				topCell = gridAtlas.gridDictionary [startCoords - new Coord (-1, 0)];
+				break;
+			default:
+				topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
+				break;
+			}
+		}
+		//on ne check les triggers que pour les pions mis, pas lors du reset gravity
+		if (!reset) {	
+			do {
+				startCoords += fallIntegers[gravity];
+				if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
+					triggers.Add (gridAtlas.gridDictionary[startCoords].trigger);
+				}
+			} while (!startCoords.Equals (endCell.coordinates)) ; // On a collecté tous les triggers traversés
+		}
+		pawn.SetParent (topCell.GetComponent<Transform> ()); // on part du haut
+		pawn.localPosition = Vector3.zero;
+
+		pawn.SetParent (endCell.transform);
+
+		yield return StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
+	}
+
+	IEnumerator AnimateFall (Transform pawn, Cell endCell, List<Cell.Trigger> triggers, bool reset) {
+
+		//continuous speed for now, will improve later
+		float speed = 10f;
 
 		switch (gravity) {
 		case 0:
-			topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
+			while (pawn.position.y > endCell.GetComponent<Transform> ().position.y) {
+				pawn.Translate (Vector3.down * Time.deltaTime * speed);
+				yield return null;
+			}
 			break;
 		case 1:
-			topCell = gridAtlas.gridDictionary [startCoords - new Coord (1, 0)];
+			while (pawn.position.x > endCell.GetComponent<Transform> ().position.x) {
+				pawn.Translate (Vector3.left * Time.deltaTime * speed);
+				yield return null;
+			}
 			break;
 		case 2:
-			topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, -1)];
+			while (pawn.position.y < endCell.GetComponent<Transform> ().position.y) {
+				pawn.Translate (Vector3.up * Time.deltaTime * speed);
+				yield return null;
+			}
 			break;
 		case 3:
-			topCell = gridAtlas.gridDictionary [startCoords - new Coord (-1, 0)];
+			while (pawn.position.x < endCell.GetComponent<Transform> ().position.x) {
+				pawn.Translate (Vector3.right * Time.deltaTime * speed);
+				yield return null;
+			}
 			break;
 		default:
-			topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
 			break;
 		}
 
-		pawn.transform.SetParent (topCell.GetComponent<Transform> ()); // on part du haut
-		pawn.GetComponent<Transform> ().localPosition = Vector3.zero;
+		pawn.localPosition = Vector3.zero;
 
-		pawn.transform.SetParent (endCell.transform);
-		StartCoroutine (AnimateFall(pawn, endCell));
-
-		List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
-
-		do {
-			startCoords += fallIntegers[gravity];
-			if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
-				triggers.Add (gridAtlas.gridDictionary[startCoords].trigger);
-			}
-		} while (!startCoords.Equals (endCell.coordinates)) ; // On a collecté tous les triggers traversés
-
-		if (triggers.Count != 0) {
+		if (triggers.Count != 0 && !reset) {
 			foreach (Cell.Trigger trigger in triggers) {
 				StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
 			}
 		}
+		if (reset) {
+			CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
+		}
 	}
 
-	IEnumerator ExecuteTrigger (int triggerType, float time) // rotatifs 90° uniquement pour l'instant
+	IEnumerator ExecuteTrigger (int triggerType, float time)
 	{
-		int rotate;
-		float startRotate;
+		int rotate = 0;
 		float elapsedTime = 0.0f;
 		switch (triggerType)
 		{
 
-		//0: down | 1: left | 2: up | 3: right 
+		//gravity -> 0: down | 1: left | 2: up | 3: right 
 		case 0: //90r
 			rotate = 90;
 			gravity = (gravity + 3) % 4;
@@ -230,6 +232,9 @@ public class MechanismHandler : MonoBehaviour {
 		case 2: //180
 			rotate = 180;
 			gravity = (gravity + 2) % 4;
+			break;
+		case 3: //gravity reset
+			ResetGravity ();
 			break;
 		default:
 			rotate = 0;
@@ -248,11 +253,69 @@ public class MechanismHandler : MonoBehaviour {
 
 	}
 
-	public bool CheckAlign4 (Cell newFilled, int player) {
+	public void ResetGravity () {
+
+		int player;
+		Cell cellToReset;
+
+		switch (gravity) {
+		case 0:
+			for (int y = 1; y < myGrid.gridSize.y; y++) {
+				for (int x = 0; x < myGrid.gridSize.x; x++) {
+					cellToReset = gridAtlas.gridDictionary[new Coord (x, y)];
+					if (cellToReset.GetComponentInChildren<Pawn> ()) {
+						cellToReset.available = true;
+						player = cellToReset.GetComponentInChildren<Pawn> ().player;
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+					}
+				}
+			}
+			break;
+		case 1:
+			for (int x = 1; x < myGrid.gridSize.x; x++) {
+				for (int y = myGrid.gridSize.y - 1; y >= 0; y--) {
+					cellToReset = gridAtlas.gridDictionary[new Coord (x, y)];
+					if (cellToReset.GetComponentInChildren<Pawn> ()) {
+						cellToReset.available = true;
+						player = cellToReset.GetComponentInChildren<Pawn> ().player;
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+					}
+				}
+			}
+			break;
+		case 2:
+			for (int y = myGrid.gridSize.y - 2; y >= 0; y--) {
+				for (int x = myGrid.gridSize.x - 1; x >= 0; x--) {
+					cellToReset = gridAtlas.gridDictionary[new Coord (x, y)];
+					if (cellToReset.GetComponentInChildren<Pawn> ()) {
+						cellToReset.available = true;
+						player = cellToReset.GetComponentInChildren<Pawn> ().player;
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+					}
+				}
+			}
+			break;
+		case 3:
+			for (int x = myGrid.gridSize.x - 2; x >= 0; x--) {
+				for (int y = 0; y < myGrid.gridSize.y; y++) {
+					cellToReset = gridAtlas.gridDictionary[new Coord (x, y)];
+					if (cellToReset.GetComponentInChildren<Pawn> ()) {
+						cellToReset.available = true;
+						player = cellToReset.GetComponentInChildren<Pawn> ().player;
+						StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	public void CheckAlign4 (Cell newFilled, int player) {
 
 		Coord currentCoords = newFilled.coordinates;
 		Coord startCoords; 
-		bool isWinner = false;
 
 		foreach (string i in new List<string> () {"right", "UR", "up", "UL"}) //test selon les 4 directions
 		{
@@ -263,10 +326,10 @@ public class MechanismHandler : MonoBehaviour {
 			int count = 0;
 			while (gridAtlas.gridDictionary.ContainsKey (startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
 			{
-				if (gridAtlas.gridDictionary[startCoords].content == player.ToString ())
+				if (gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> () && gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> ().player == player)
 				{
 					if (count + 1 >= 4)
-						isWinner = true;
+						GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver (player);
 					else if (!IsBlocked (startCoords, i)) count++;
 					else count = 0;
 				}
@@ -274,8 +337,8 @@ public class MechanismHandler : MonoBehaviour {
 				startCoords += fallIntegers[directionConversionString(i)];
 			}
 		}
-			
-		return isWinner;
+
+		return;
 	}
 	//vérifie si un mur ne bloque pas l'établissement de la puissance 4
 	public bool IsBlocked (Coord coords, string direction) {
