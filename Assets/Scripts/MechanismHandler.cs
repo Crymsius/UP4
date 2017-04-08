@@ -40,8 +40,8 @@ public class MechanismHandler : MonoBehaviour {
 		Atlas gridAtlas = new Atlas ();
 		gridAtlas.gridDictionary = new Dictionary<Coord, Cell> ();
 		// On parcourt l'ensemble des cases et on crée un Dictionary avec comme key les coordonnées de chacune des Cells
-		foreach (Transform cellChild in myGrid.GetComponent<Transform>()) {
-			gridAtlas.gridDictionary.Add (cellChild.GetComponent<Cell>().coordinates, cellChild.GetComponent<Cell>());
+		foreach (Transform cellChild in myGrid.GetComponent<Transform> ()) {
+			gridAtlas.gridDictionary.Add (cellChild.GetComponent<Cell> ().coordinates, cellChild.GetComponent<Cell> ());
 		}
 		return gridAtlas;
 	}
@@ -314,6 +314,7 @@ public class MechanismHandler : MonoBehaviour {
 
 	public void CheckAlign4 (Cell newFilled, int player) {
 
+		print (player.ToString ());
 		Coord currentCoords = newFilled.coordinates;
 		Coord startCoords; 
 
