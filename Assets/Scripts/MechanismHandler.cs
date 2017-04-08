@@ -314,7 +314,6 @@ public class MechanismHandler : MonoBehaviour {
 
 	public void CheckAlign4 (Cell newFilled, int player) {
 
-		print (player.ToString ());
 		Coord currentCoords = newFilled.coordinates;
 		Coord startCoords; 
 
