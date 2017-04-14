@@ -80,6 +80,16 @@ public class GridGenerator : MonoBehaviour {
 			}
             SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
             SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
+
+            if (cellChild.GetComponent<Cell> ().hidden) {
+                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
+                GameObject newCellHidden = Instantiate (grid.cellHidden);
+                newCellHidden.transform.SetParent (cellChild);
+                newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);
+            }
+            if (cellChild.GetComponent<Cell> ().full) {
+                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
+            }
 		}
 	}
 
@@ -91,7 +101,9 @@ public class GridGenerator : MonoBehaviour {
                 new CellHolder {
                     walls = cellChild.GetComponent<Cell> ().walls, 
                     triggers = cellChild.GetComponent<Cell> ().trigger, 
-                    available = cellChild.GetComponent<Cell> ().available
+                    available = cellChild.GetComponent<Cell> ().available,
+                    hidden = cellChild.GetComponent<Cell> ().hidden,
+                    full = cellChild.GetComponent<Cell> ().full
                 }
             );
         }
@@ -107,6 +119,21 @@ public class GridGenerator : MonoBehaviour {
             }
             cellChild.GetComponent<Cell> ().walls = currentGrid.cells[i].walls;
             cellChild.GetComponent<Cell> ().trigger = currentGrid.cells[i].triggers;
+            cellChild.GetComponent<Cell> ().hidden = currentGrid.cells [i].hidden;
+            cellChild.GetComponent<Cell> ().full = currentGrid.cells [i].full;
+            cellChild.GetComponent<Cell> ().available = currentGrid.cells [i].available;
+
+            if (cellChild.GetComponent<Cell> ().hidden) {
+                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
+                GameObject newCellHidden = Instantiate (grid.cellHidden);
+                newCellHidden.transform.SetParent (cellChild);
+                newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);
+            }
+
+            if (cellChild.GetComponent<Cell> ().full) {
+                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
+            }
+
             SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
             SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
             i++;
@@ -185,6 +212,8 @@ public class GridGenerator : MonoBehaviour {
     public class CellHolder {
         public Cell.Walls walls;
         public Cell.Trigger triggers;
+        public bool hidden;
+        public bool full;
         public bool available;
     }
 }

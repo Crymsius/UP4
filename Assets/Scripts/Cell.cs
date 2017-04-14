@@ -11,10 +11,12 @@ public class Cell : MonoBehaviour {
 	public Walls walls;
 	public Trigger trigger;
 
-	public bool available;	// Peut-on placer un pion dessus ?
+    public bool hidden = false;     //cell cachée mais jouable
+    public bool full = false;       //cell cachée et non jouable -> mur
+
+    public bool available = true;	// Peut-on placer un pion dessus ?
 
 	void Start () {
-		available = true;
 		myHandler = GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ();
 	}
 
