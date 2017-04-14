@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 
 [CustomEditor (typeof (GridGenerator))]
 public class GridEditor : Editor {
@@ -9,18 +10,22 @@ public class GridEditor : Editor {
 	{
 		GridGenerator grid = target as GridGenerator;
 
-		if (DrawDefaultInspector ()) {
-			grid.GenerateGrid ();
+        if (DrawDefaultInspector () && SceneManager.GetActiveScene().name == "GridCreator") {
+            grid.GenerateEditor ();
 		}
 
 		if (GUILayout.Button ("Generate Grid")) {
 			grid.GenerateGrid ();
+            grid.DisplayFromSave ();
 		}
 
-		if (GUILayout.Button ("Update Cells")) {
-			grid.UpdateCells ();
+		if (GUILayout.Button ("Display Properties from Cells")) {
+			grid.DisplayFromCells ();
 		}
 
+        if (GUILayout.Button ("Save Cells Modifications")) {
+            grid.SaveCells ();
+        }
 	}
 
 }

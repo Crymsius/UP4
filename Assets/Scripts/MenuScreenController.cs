@@ -6,7 +6,7 @@ public class MenuScreenController : MonoBehaviour {
 
     public void StartQuickGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("GridScreen");
     }
 
     public void StartStory()

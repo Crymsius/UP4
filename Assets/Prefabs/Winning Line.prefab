@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 120704693499539958}
   - component: {fileID: 114773216739335302}
   m_Layer: 0
-  m_Name: LineWinningFour
+  m_Name: Winning Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
