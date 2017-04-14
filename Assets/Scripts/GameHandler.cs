@@ -16,11 +16,14 @@ public class GameHandler : MonoBehaviour {
 
 	public bool isOver; 
 
+    public GameObject EndPanel;
+
 	public MechanismHandler myMechanisms { get; set; }
 
 	// Use this for initialization
 	void Start () {
-		activePlayer = 0; 
+        EndPanel.SetActive (false);
+		activePlayer = 0;
 		myMechanisms = gameObject.GetComponent<MechanismHandler> ();
 		NextTurn();
 	}
@@ -39,6 +42,7 @@ public class GameHandler : MonoBehaviour {
 	}
 
 	public void GameOver (int winner) {
+        EndPanel.SetActive (true);
 		print ("Player " + winner + " is the winner"); 
 	}
 

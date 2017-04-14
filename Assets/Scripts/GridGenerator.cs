@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class GridGenerator : MonoBehaviour {
 
 	public GridHolder[] grids; //liste de tous les lvls
-
 	public int gridIndex; //index de la grid qu'on regarde
 
 	public Transform cellPrefab;
@@ -19,8 +18,16 @@ public class GridGenerator : MonoBehaviour {
 	GridHolder currentGrid;
 
 	void Start () {
+        gridIndex = LevelLoader.level;
 		GenerateGrid ();
+        DisplayFromSave ();
 	}
+
+
+    public void GenerateEditor () {
+        GenerateGrid ();
+        DisplayFromSave ();
+    }
 
 	public void GenerateGrid () {
 
@@ -64,22 +71,49 @@ public class GridGenerator : MonoBehaviour {
 		
 	}
 
-	public void UpdateCells () {
+	public void DisplayFromCells () {
 		Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
 		List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
 		foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
 			foreach (string content in contentNames) {
 				DeleteExistingCellChild (cellChild, content);
 			}
-			SpawnWalls (cellChild, grid);
-			SpawnTriggers (cellChild, grid);
+            SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
+            SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
 		}
 	}
 
-	void SpawnWalls (Transform cellTransform, Grid grid) {
-		Cell cell = cellTransform.GetComponent<Cell> ();
-		Cell.Walls walls = cell.walls;
+    public void SaveCells () {
+        grids [gridIndex].cells.Clear ();
+        Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
+        foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
+            grids[gridIndex].cells.Add (
+                new CellHolder {
+                    walls = cellChild.GetComponent<Cell> ().walls, 
+                    triggers = cellChild.GetComponent<Cell> ().trigger, 
+                    available = cellChild.GetComponent<Cell> ().available
+                }
+            );
+        }
+    }
 
+    public void DisplayFromSave () {
+        int i = 0;
+        Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
+        List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
+        foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
+            foreach (string content in contentNames) {
+                DeleteExistingCellChild (cellChild, content);
+            }
+            cellChild.GetComponent<Cell> ().walls = currentGrid.cells[i].walls;
+            cellChild.GetComponent<Cell> ().trigger = currentGrid.cells[i].triggers;
+            SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
+            SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
+            i++;
+        }
+    }
+
+    void SpawnWalls (Transform cellTransform, Cell.Walls walls, Grid grid) {
 		if (walls.wallx) {
 			GameObject newWallX = Instantiate (grid.firstWallX);
 			newWallX.transform.SetParent (cellTransform);
@@ -99,10 +133,7 @@ public class GridGenerator : MonoBehaviour {
 		}
 	}
 
-	void SpawnTriggers (Transform cellTransform, Grid grid) {
-		Cell cell = cellTransform.GetComponent<Cell> ();
-		Cell.Trigger trigger = cell.trigger;
-
+    void SpawnTriggers (Transform cellTransform, Cell.Trigger trigger, Grid grid) {
 		if (trigger.isTrigger) {
 			switch (trigger.triggerType) {
 			case 0: //trigger right 
@@ -147,5 +178,13 @@ public class GridGenerator : MonoBehaviour {
 	[System.Serializable]
 	public class GridHolder {
 		public Coord gridSize;
-	}
+        public List<CellHolder> cells;
+    }
+
+    [System.Serializable]
+    public class CellHolder {
+        public Cell.Walls walls;
+        public Cell.Trigger triggers;
+        public bool available;
+    }
 }

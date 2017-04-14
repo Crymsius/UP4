@@ -22,6 +22,11 @@ public struct Coord {
 		return new Coord (a.x - b.x, a.y - b.y);
 	}
 
+    // Operator * for an int with coordinates
+    public static Coord operator*(int a, Coord b){
+        return new Coord (a* b.x, a * b.y);
+    }
+
 	// Method Stringify returns the string (x;y) 
 	public string Stringify () {
 		return "(" + x.ToString () + ";" + y.ToString () + ")";

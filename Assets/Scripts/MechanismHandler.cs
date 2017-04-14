@@ -13,6 +13,7 @@ public class MechanismHandler : MonoBehaviour {
 	public Grid myGrid { get; set; }
 	public Atlas gridAtlas;
 	public GameObject currentPawn { get; set; }
+    public GameObject winningLine;
 
 	public int gravity { get; set; } // direction de chute des pions
 	//0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
@@ -328,8 +329,20 @@ public class MechanismHandler : MonoBehaviour {
 			{
 				if (gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> () && gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> ().player == player)
 				{
-					if (count + 1 >= 4)
-						GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver (player);
+                    if (count + 1 >= 4) {
+                        Coord originCoords = new Coord ();
+                        Coord destCoords = new Coord ();
+
+                        originCoords = startCoords;
+                        destCoords = originCoords - 3 * fallIntegers [directionConversionString (i)];
+
+                        GameObject newLine = Instantiate (winningLine);
+                        Vector3 originPosition = gridAtlas.gridDictionary[originCoords].GetComponent<Transform> ().position;
+                        Vector3 destinationPosition = gridAtlas.gridDictionary[destCoords].GetComponent<Transform> ().position;
+                        newLine.GetComponent<WinningLine> ().DisplayLine (originPosition, destinationPosition);
+
+                        GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver (player);
+                    }
 					else if (!IsBlocked (startCoords, i)) count++;
 					else count = 0;
 				}
