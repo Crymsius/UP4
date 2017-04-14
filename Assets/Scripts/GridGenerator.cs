@@ -18,6 +18,7 @@ public class GridGenerator : MonoBehaviour {
 	GridHolder currentGrid;
 
 	void Start () {
+        gridIndex = LevelLoader.level;
 		GenerateGrid ();
         DisplayFromSave ();
 	}
