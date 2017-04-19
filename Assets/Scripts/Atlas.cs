@@ -3,5 +3,5 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Atlas {
-	public Dictionary<Coord, Cell> gridDictionary;
+    public Dictionary<Coord, Cell> gridDictionary;
 }

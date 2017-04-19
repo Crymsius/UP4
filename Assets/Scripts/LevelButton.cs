@@ -8,9 +8,9 @@ public class LevelButton : MonoBehaviour {
     public Text levelText;
     public int levelIndex;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
+    // Use this for initialization
+    void Start () {
+        
+    }
+    
 }
