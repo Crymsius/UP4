@@ -6,15 +6,12 @@ public class GridGenerator : MonoBehaviour {
 
     public GridHolder[] grids; //liste de tous les lvls
     public int gridIndex; //index de la grid qu'on regarde
-
     public Transform cellPrefab;
     public Transform gridPrefab;
 
     [Range(0,1)]
     public float outlinePercent;
-
     List<Coord> allCellCoords;
-
     GridHolder currentGrid;
 
     void Start () {
@@ -23,17 +20,21 @@ public class GridGenerator : MonoBehaviour {
         DisplayFromSave ();
     }
 
-
+    /// <summary>
+    /// factorisation de generate grid et display from save
+    /// </summary>
     public void GenerateEditor () {
         GenerateGrid ();
         DisplayFromSave ();
     }
 
+    /// <summary>
+    /// Génère la grille depuis la grille et les cases (mais pas leur contenu !) depuis la grille virtuelle
+    /// </summary>
     public void GenerateGrid () {
-
-        currentGrid = grids[gridIndex]; //on setup l'index de la grid qu'on modifie.
+        //on setup l'index de la grid qu'on modifie
+        currentGrid = grids[gridIndex];
         allCellCoords = new List<Coord> ();
-
         // Vérifier que l'object n'existe pas déjà, en cas, le détruire
         string holderName = "Generated Grid(Clone)";
         if (transform.FindChild (holderName)) {
@@ -71,9 +72,13 @@ public class GridGenerator : MonoBehaviour {
         
     }
 
+    /// <summary>
+    /// Parcourt la grille physique et affiche le contenu
+    /// </summary>
     public void DisplayFromCells () {
         Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
+        //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
             foreach (string content in contentNames) {
                 DeleteExistingCellChild (cellChild, content);
@@ -81,23 +86,29 @@ public class GridGenerator : MonoBehaviour {
             SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
             SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
 
+            //cell invisible ?
             if (cellChild.GetComponent<Cell> ().hidden) {
                 cellChild.GetComponentInChildren<CellCover> ().HideCell ();
                 GameObject newCellHidden = Instantiate (grid.cellHidden);
                 newCellHidden.transform.SetParent (cellChild);
                 newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);
             }
+            //cell bloquée ?
             if (cellChild.GetComponent<Cell> ().full) {
                 cellChild.GetComponentInChildren<CellCover> ().HideCell ();
             }
         }
     }
 
+    /// <summary>
+    /// sauvegarde des modifications des cells de la grille physique dans la grille virtuelle
+    /// </summary>
     public void SaveCells () {
         grids [gridIndex].cells.Clear ();
         Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
             grids[gridIndex].cells.Add (
+                //on attribue les carac de la cell physiques à une nouvelle cell virtuelle
                 new CellHolder {
                     walls = cellChild.GetComponent<Cell> ().walls, 
                     triggers = cellChild.GetComponent<Cell> ().trigger, 
@@ -109,38 +120,51 @@ public class GridGenerator : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Parcourt la grille virtuelle et applique le contenu dans la grid physique
+    /// </summary>
     public void DisplayFromSave () {
         int i = 0;
         Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
+        //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
             foreach (string content in contentNames) {
+                //on supprime le contenu des cells pour ne pas avoir de doublon
                 DeleteExistingCellChild (cellChild, content);
             }
+            //on attribue les carac des cells virtuelles aux cells de la grille
             cellChild.GetComponent<Cell> ().walls = currentGrid.cells[i].walls;
             cellChild.GetComponent<Cell> ().trigger = currentGrid.cells[i].triggers;
             cellChild.GetComponent<Cell> ().hidden = currentGrid.cells [i].hidden;
             cellChild.GetComponent<Cell> ().full = currentGrid.cells [i].full;
             cellChild.GetComponent<Cell> ().available = currentGrid.cells [i].available;
-
+            //cell invisible ?
             if (cellChild.GetComponent<Cell> ().hidden) {
                 cellChild.GetComponentInChildren<CellCover> ().HideCell ();
                 GameObject newCellHidden = Instantiate (grid.cellHidden);
                 newCellHidden.transform.SetParent (cellChild);
                 newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);
             }
-
+            //cell bloquée ?
             if (cellChild.GetComponent<Cell> ().full) {
                 cellChild.GetComponentInChildren<CellCover> ().HideCell ();
             }
-
+            //spawn des murs et des triggers
             SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
             SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
             i++;
         }
     }
 
+    /// <summary>
+    /// spawn des gameobjects wall de la cell
+    /// </summary>
+    /// <param name="cellTransform"> cell to modify </param>
+    /// <param name="walls"> walls to add and display</param>
+    /// <param name="grid"> grid object </param>
     void SpawnWalls (Transform cellTransform, Cell.Walls walls, Grid grid) {
+        //check if wallx/wally/wallxy exists and instanciate them at the correct place
         if (walls.wallx) {
             GameObject newWallX = Instantiate (grid.firstWallX);
             newWallX.transform.SetParent (cellTransform);
@@ -160,8 +184,16 @@ public class GridGenerator : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// spawn des gameobjects triggers de la cell
+    /// </summary>
+    /// <param name="cellTransform"> Cell to modify </param>
+    /// <param name="trigger"> trigger to add and display </param>
+    /// <param name="grid"> grid object </param>
     void SpawnTriggers (Transform cellTransform, Cell.Trigger trigger, Grid grid) {
+        //is there a trigger ?
         if (trigger.isTrigger) {
+            //what trigger ?
             switch (trigger.triggerType) {
             case 0: //trigger right 
                 GameObject newTriggerR = Instantiate (grid.rotateR);
@@ -189,25 +221,39 @@ public class GridGenerator : MonoBehaviour {
         }
     }
 
-    //Delete existing wall or trigger 
+    /// <summary>
+    /// Delete existing wall or trigger
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <param name="holderName"></param>
     void DeleteExistingCellChild (Transform cell, string holderName) {
         if (cell.FindChild (holderName)) {
             DestroyImmediate (cell.FindChild (holderName).gameObject);
         }
     }
 
-    // Transforme les coordonnées en position
+    /// <summary>
+    /// Transforme les coordonnées en position
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
     Vector3 CoordToPosition (int x, int y) {
         return new Vector3 (-currentGrid.gridSize.x / 2 + 0.5f + x, -currentGrid.gridSize.y / 2 + 0.5f + y, 0);
     }
 
-    //gridHolder:  permet d'avoir une fausse grille pour host les coordonnées lors de la génération
+    /// <summary>
+    /// grille virtuelle contenant les cellules virtuelles. Sert de sauvegarde des différentes grilles puisque serializable
+    /// </summary>
     [System.Serializable]
     public class GridHolder {
         public Coord gridSize;
         public List<CellHolder> cells;
     }
 
+    /// <summary>
+    /// cell virtuelle contenant les infos d'une cellule. Sert de sauvegarde du contenu d'une grille
+    /// </summary>
     [System.Serializable]
     public class CellHolder {
         public Cell.Walls walls;

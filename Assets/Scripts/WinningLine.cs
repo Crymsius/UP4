@@ -14,6 +14,11 @@ public class WinningLine : MonoBehaviour {
         lineRenderer.SetPosition (1, destination);
     }
 
+    /// <summary>
+    /// Affiche le trait reliant les 4 pions gagnants (ou plus)
+    /// </summary>
+    /// <param name="originPosition">point d'origine</param>
+    /// <param name="destinationPosition">point de destination</param>
     public void DisplayLine (Vector3 originPosition, Vector3 destinationPosition) {
         origin = new Vector3 (0, 0, -20f) + originPosition;
         destination = new Vector3 (0, 0, -20f) + destinationPosition;

@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿/// <summary>
+/// index of level to load
+/// </summary>
 public class LevelLoader {
     public static int level = 0;
 }

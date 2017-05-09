@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// INPUTS : GameObject grille, les coordonnées de la case sur lequel le joueur a décidé de jouer
+/// TRAITEMENTS : Analyse la chute du pion, déclenche tous les triggers, détecte les puissance 4
+/// OUTPUTS : fin de tour auprès du GameHandler, avec info puissance 4
+/// </summary>
 public class MechanismHandler : MonoBehaviour {
-
-    /*
-     * INPUTS : GameObject grille, les coordonnées de la case sur lequel le joueur a décidé de jouer
-     * TRAITEMENTS : Analyse la chute du pion, déclenche tous les triggers, détecte les puissance 4
-     * OUTPUTS : fin de tour auprès du GestionnairePartie, avec info puissance 4
-    */
-
     public Grid myGrid { get; set; }
     public Atlas gridAtlas;
     public GameObject currentPawn { get; set; }
@@ -37,6 +35,10 @@ public class MechanismHandler : MonoBehaviour {
         gridAtlas = GenerateAtlas ();
     }
 
+    /// <summary>
+    /// Generate the atlas of the current grid displayed
+    /// </summary>
+    /// <returns></returns>
     public Atlas GenerateAtlas () {
         Atlas gridAtlas = new Atlas ();
         gridAtlas.gridDictionary = new Dictionary<Coord, Cell> ();
@@ -47,15 +49,22 @@ public class MechanismHandler : MonoBehaviour {
         return gridAtlas;
     }
 
-    public IEnumerator PawnFallCalculation (Cell startCell, int player, bool reset) // Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc...
-    {
+    /// <summary>
+    /// First step in making a pawn fall.
+    /// Will call next cell to calculate the falling
+    /// Will call PawnFallDo coroutine to animate and place the pawn at the correct place
+    /// </summary>
+    /// <param name="startCell"> Cell the player clicked</param>
+    /// <param name="player"> for now an int but -> Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc... </param>
+    /// <param name="reset">true if called from a resetGravity trigger, else false </param>
+    /// <returns></returns>
+    public IEnumerator PawnFallCalculation (Cell startCell, int player, bool reset) {
         // Calcule où le pion va s'arrêter de chuter depuis les coordonnées ou il a été lâché.
         Coord interCoords = startCell.coordinates;
         Cell currentCell = startCell;
         bool falling = true;
 
-        while (falling)
-        {
+        while (falling) {
             currentCell = gridAtlas.gridDictionary[interCoords] as Cell;
             Cell nextCell = NextCell (currentCell, gravity);
             if (nextCell.available &&
@@ -74,8 +83,8 @@ public class MechanismHandler : MonoBehaviour {
 
         //script plaçant le pion et lançant le visuel
         if (!reset) {
-            GameObject newPawn = Instantiate (currentPawn);
-            yield return StartCoroutine (PawnFallDo (newPawn.GetComponent<Transform> (), currentCell, player, false, startCell));
+            Transform newPawn = Instantiate (currentPawn).GetComponent<Transform> ();
+            yield return StartCoroutine (PawnFallDo (newPawn, currentCell, player, false, startCell));
         } else {
             Transform existingPawn = startCell.GetComponentInChildren<Pawn> ().transform;
             yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
@@ -85,6 +94,12 @@ public class MechanismHandler : MonoBehaviour {
         CheckAlign4 (currentCell, player);
     }
 
+    /// <summary>
+    /// Looks for the next cell for the falling pawn depending on gravity
+    /// </summary>
+    /// <param name="currentCell"></param>
+    /// <param name="gravity"></param>
+    /// <returns>the next cell if any, else returns calling cell</returns>
     public Cell NextCell (Cell currentCell, int gravity) {
         //0: down | 1: left | 2: up | 3: right 
         Coord currentCoordinates = currentCell.coordinates; 
@@ -115,8 +130,16 @@ public class MechanismHandler : MonoBehaviour {
         return gridAtlas.gridDictionary[currentCoordinates];
     }
 
-    public IEnumerator PawnFallDo (Transform pawn, Cell endCell, int player, bool reset, Cell startCell) // Place le pion, détecte et exécute tous les triggers
-    {
+    /// <summary>
+    /// Place le pion, détecte et exécute tous les triggers
+    /// </summary>
+    /// <param name="pawn"></param>
+    /// <param name="endCell"></param>
+    /// <param name="player"> for now an int but -> Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc.. </param>
+    /// <param name="reset"> true if called from a resetGravity trigger, else false </param>
+    /// <param name="startCell"></param>
+    /// <returns></returns>
+    public IEnumerator PawnFallDo (Transform pawn, Cell endCell, int player, bool reset, Cell startCell) {
         List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
 
         //rend la case finale non disponible pour les futurs pions
@@ -152,7 +175,7 @@ public class MechanismHandler : MonoBehaviour {
             }
         }
         //on ne check les triggers que pour les pions mis, pas lors du reset gravity
-        if (!reset) {	
+        if (!reset) {
             do {
                 startCoords += fallIntegers[gravity];
                 if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
@@ -168,8 +191,15 @@ public class MechanismHandler : MonoBehaviour {
         yield return StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
     }
 
+    /// <summary>
+    /// Réalise l'animation de la chute du pion
+    /// </summary>
+    /// <param name="pawn"> Pion à animer </param>
+    /// <param name="endCell"> cell finale à atteindre </param>
+    /// <param name="triggers"> liste de triggers à animer ensuite </param>
+    /// <param name="reset"> true if called from a resetGravity trigger, else false </param>
+    /// <returns></returns>
     IEnumerator AnimateFall (Transform pawn, Cell endCell, List<Cell.Trigger> triggers, bool reset) {
-
         //continuous speed for now, will improve later
         float speed = 10f;
 
@@ -214,13 +244,16 @@ public class MechanismHandler : MonoBehaviour {
         }
     }
 
-    IEnumerator ExecuteTrigger (int triggerType, float time)
-    {
+    /// <summary>
+    /// calcule et anime les actions des triggers
+    /// </summary>
+    /// <param name="triggerType">int, type du trigger à exécuter </param>
+    /// <param name="time"> durée totale de l'animation </param>
+    /// <returns></returns>
+    IEnumerator ExecuteTrigger (int triggerType, float time) {
         int rotate = 0;
         float elapsedTime = 0.0f;
-        switch (triggerType)
-        {
-
+        switch (triggerType) {
         //gravity -> 0: down | 1: left | 2: up | 3: right 
         case 0: //90r
             rotate = 90;
@@ -241,8 +274,8 @@ public class MechanismHandler : MonoBehaviour {
             rotate = 0;
             break;
         }
-        GameObject mainCamera = GameObject.Find ("Main Camera");
 
+        GameObject mainCamera = GameObject.Find ("Main Camera");
         Quaternion startingRotation = mainCamera.GetComponent<Transform> ().rotation;
         Quaternion targetRotation = Quaternion.Euler ( new Vector3 ( 0.0f, 0.0f, startingRotation.eulerAngles.z + rotate ) );
         while (elapsedTime < time) {
@@ -251,11 +284,12 @@ public class MechanismHandler : MonoBehaviour {
             mainCamera.GetComponent<Transform> ().rotation = Quaternion.Slerp(startingRotation, targetRotation,  (elapsedTime / time)  );
             yield return new WaitForEndOfFrame ();
         }
-
     }
 
+    /// <summary>
+    /// Parcours la grille de bas en haut (selon la gravité actuelle) et simule un nouveau lâché de pion pour tous ceux déjà en place
+    /// </summary>
     public void ResetGravity () {
-
         int player;
         Cell cellToReset;
 
@@ -313,22 +347,26 @@ public class MechanismHandler : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Check un puissance 4 comprennant le pion venant d'être placé
+    /// </summary>
+    /// <param name="newFilled"> cell that just got filled </param>
+    /// <param name="player"></param>
     public void CheckAlign4 (Cell newFilled, int player) {
-
         Coord currentCoords = newFilled.coordinates;
         Coord startCoords; 
-
-        foreach (string i in new List<string> () {"right", "UR", "up", "UL"}) //test selon les 4 directions
-        {
+        
+        //test selon les 4 directions
+        foreach (string i in new List<string> () {"right", "UR", "up", "UL"}) {
             startCoords = currentCoords;
-
-            while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[directionConversionString(i)]))
-                startCoords -= fallIntegers[directionConversionString(i)]; // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+            while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[directionConversionString(i)])){
+                // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
+                startCoords -= fallIntegers[directionConversionString(i)];
+            }
             int count = 0;
-            while (gridAtlas.gridDictionary.ContainsKey (startCoords)) // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
-            {
-                if (gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> () && gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> ().player == player)
-                {
+            // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
+            while (gridAtlas.gridDictionary.ContainsKey (startCoords)) {
+                if (gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> () && gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> ().player == player) {
                     if (count + 1 >= 4) {
                         Coord originCoords = new Coord ();
                         Coord destCoords = new Coord ();
@@ -350,7 +388,6 @@ public class MechanismHandler : MonoBehaviour {
                 startCoords += fallIntegers[directionConversionString(i)];
             }
         }
-
         return;
     }
     //vérifie si un mur ne bloque pas l'établissement de la puissance 4
@@ -382,6 +419,11 @@ public class MechanismHandler : MonoBehaviour {
             return false;
     }
 
+    /// <summary>
+    /// simple conversion method for old usage of strings for directions
+    /// </summary>
+    /// <param name="direction">direction as a string</param>
+    /// <returns>direction as an int</returns>
     public int directionConversionString (string direction) {
         //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
         try {
@@ -418,14 +460,9 @@ public class MechanismHandler : MonoBehaviour {
 
             default:
                 return -1;
-            }	
+            }
         } catch (System.Exception ex) {
             throw (ex);
         }
-    }
-
-    // Update is called once per frame
-    void Update () {
-
     }
 }
