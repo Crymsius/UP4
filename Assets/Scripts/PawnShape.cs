@@ -11,7 +11,6 @@ public class PawnShape : MonoBehaviour {
         gravity = 0;
     }
     public void TurnPawnShape (int gravity) {
-        print("coucou" + gravity.ToString ());
         switch (gravity) {
         case 0 :
             transform.eulerAngles = new Vector3(0,0,0);

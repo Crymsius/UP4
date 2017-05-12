@@ -130,6 +130,42 @@ public class MechanismHandler : MonoBehaviour {
     }
 
     /// <summary>
+    /// Looks for the previous cell for the falling pawn depending on gravity
+    /// </summary>
+    /// <param name="currentCell"></param>
+    /// <param name="gravity"></param>
+    /// <returns>the next cell if any, else returns calling cell</returns>
+    public Cell PreviousCell (Cell currentCell, int gravity) {
+        //0: down | 1: left | 2: up | 3: right 
+        Coord currentCoordinates = currentCell.coordinates; 
+        switch (gravity) {
+        case 0:
+            currentCoordinates.y = currentCoordinates.y+1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        case 1:
+            currentCoordinates.x = currentCoordinates.x+1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        case 2:
+            currentCoordinates.y = currentCoordinates.y-1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        case 3:
+            currentCoordinates.x = currentCoordinates.x-1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        default:
+            return currentCell;
+        }
+        return gridAtlas.gridDictionary[currentCoordinates];
+    }
+
+    /// <summary>
     /// Place le pion, détecte et exécute tous les triggers
     /// </summary>
     /// <param name="pawn"></param>
@@ -188,7 +224,10 @@ public class MechanismHandler : MonoBehaviour {
         pawn.SetParent (endCell.transform);
 
         yield return StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
-        pawn.GetComponentInChildren<Animation> ().Play("PawnBounceAnimation");
+        
+        if (topCell.coordinates != endCell.coordinates && PreviousCell(endCell,gravity).available) {
+            pawn.GetComponentInChildren<Animation> ().Play("PawnBounceAnimation");
+        }
     }
 
     /// <summary>
