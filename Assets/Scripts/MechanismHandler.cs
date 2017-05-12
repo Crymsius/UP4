@@ -73,23 +73,22 @@ public class MechanismHandler : MonoBehaviour {
                     || gravity == 1 && !nextCell.walls.wallx
                     || gravity == 2 && !nextCell.walls.wally
                     || gravity == 3 && !currentCell.walls.wallx
-                ))
-            {
-            interCoords = nextCell.coordinates;
-            }
-            else
+                )) {
+                interCoords = nextCell.coordinates;
+            } else {
                 falling = false;
+            }
         }
 
         //script plaçant le pion et lançant le visuel
         if (!reset) {
             Transform newPawn = Instantiate (currentPawn).GetComponent<Transform> ();
+            newPawn.GetComponentInChildren <PawnShape> ().TurnPawnShape (gravity);
             yield return StartCoroutine (PawnFallDo (newPawn, currentCell, player, false, startCell));
         } else {
             Transform existingPawn = startCell.GetComponentInChildren<Pawn> ().transform;
             yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
         }
-
         //script de vérification de la puissance 4
         CheckAlign4 (currentCell, player);
     }
@@ -189,6 +188,7 @@ public class MechanismHandler : MonoBehaviour {
         pawn.SetParent (endCell.transform);
 
         yield return StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
+        pawn.GetComponentInChildren<Animation> ().Play("PawnBounceAnimation");
     }
 
     /// <summary>
@@ -274,7 +274,6 @@ public class MechanismHandler : MonoBehaviour {
             rotate = 0;
             break;
         }
-
         GameObject mainCamera = GameObject.Find ("Main Camera");
         Quaternion startingRotation = mainCamera.GetComponent<Transform> ().rotation;
         Quaternion targetRotation = Quaternion.Euler ( new Vector3 ( 0.0f, 0.0f, startingRotation.eulerAngles.z + rotate ) );
@@ -284,6 +283,9 @@ public class MechanismHandler : MonoBehaviour {
             mainCamera.GetComponent<Transform> ().rotation = Quaternion.Slerp(startingRotation, targetRotation,  (elapsedTime / time)  );
             yield return new WaitForEndOfFrame ();
         }
+        foreach( GameObject pawnObject in GameObject.FindGameObjectsWithTag ("Pawn")) {
+            pawnObject.GetComponent <PawnShape> ().TurnPawnShape (gravity);
+        };
     }
 
     /// <summary>
