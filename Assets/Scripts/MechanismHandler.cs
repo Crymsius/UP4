@@ -223,10 +223,20 @@ public class MechanismHandler : MonoBehaviour {
 
         pawn.SetParent (endCell.transform);
 
-        yield return StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
+        yield return StartCoroutine (AnimateFall(pawn, endCell, reset));
         
         if (topCell.coordinates != endCell.coordinates && PreviousCell(endCell,gravity).available) {
             pawn.GetComponentInChildren<Animation> ().Play("PawnBounceAnimation");
+            yield return new WaitForSeconds (pawn.GetComponentInChildren<Animation> ()["PawnBounceAnimation"].length);
+        }
+
+        if (triggers.Count != 0 && !reset) {
+            foreach (Cell.Trigger trigger in triggers) {
+                StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
+            }
+        }
+        if (reset) {
+            CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
         }
     }
 
@@ -235,10 +245,9 @@ public class MechanismHandler : MonoBehaviour {
     /// </summary>
     /// <param name="pawn"> Pion à animer </param>
     /// <param name="endCell"> cell finale à atteindre </param>
-    /// <param name="triggers"> liste de triggers à animer ensuite </param>
     /// <param name="reset"> true if called from a resetGravity trigger, else false </param>
     /// <returns></returns>
-    IEnumerator AnimateFall (Transform pawn, Cell endCell, List<Cell.Trigger> triggers, bool reset) {
+    IEnumerator AnimateFall (Transform pawn, Cell endCell, bool reset) {
         //continuous speed for now, will improve later
         float speed = 10f;
 
@@ -270,17 +279,7 @@ public class MechanismHandler : MonoBehaviour {
         default:
             break;
         }
-
         pawn.localPosition = Vector3.zero;
-
-        if (triggers.Count != 0 && !reset) {
-            foreach (Cell.Trigger trigger in triggers) {
-                StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
-            }
-        }
-        if (reset) {
-            CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
-        }
     }
 
     /// <summary>
