@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33510805487867186}
   - component: {fileID: 23721295745727172}
   - component: {fileID: 114822117973570768}
+  - component: {fileID: 111963684128910932}
   m_Layer: 0
   m_Name: TurnLeft
   m_TagString: Untagged
@@ -72,6 +73,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
 --- !u!33 &33510805487867186
 MeshFilter:
@@ -80,13 +82,28 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1925535464171184}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!111 &111963684128910932
+Animation:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1925535464171184}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: f19f928f4ef14e64cb99f21698bc90cb, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: f19f928f4ef14e64cb99f21698bc90cb, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!114 &114822117973570768
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1925535464171184}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 876c9d64f6bef104ca7011fdbd2bdc74, type: 3}
   m_Name: 

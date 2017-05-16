@@ -73,23 +73,22 @@ public class MechanismHandler : MonoBehaviour {
                     || gravity == 1 && !nextCell.walls.wallx
                     || gravity == 2 && !nextCell.walls.wally
                     || gravity == 3 && !currentCell.walls.wallx
-                ))
-            {
-            interCoords = nextCell.coordinates;
-            }
-            else
+                )) {
+                interCoords = nextCell.coordinates;
+            } else {
                 falling = false;
+            }
         }
 
         //script plaçant le pion et lançant le visuel
         if (!reset) {
             Transform newPawn = Instantiate (currentPawn).GetComponent<Transform> ();
+            newPawn.GetComponentInChildren <PawnShape> ().TurnPawnShape (gravity);
             yield return StartCoroutine (PawnFallDo (newPawn, currentCell, player, false, startCell));
         } else {
             Transform existingPawn = startCell.GetComponentInChildren<Pawn> ().transform;
             yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
         }
-
         //script de vérification de la puissance 4
         CheckAlign4 (currentCell, player);
     }
@@ -121,6 +120,42 @@ public class MechanismHandler : MonoBehaviour {
             } else return currentCell;
         case 3:
             currentCoordinates.x = currentCoordinates.x+1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        default:
+            return currentCell;
+        }
+        return gridAtlas.gridDictionary[currentCoordinates];
+    }
+
+    /// <summary>
+    /// Looks for the previous cell for the falling pawn depending on gravity
+    /// </summary>
+    /// <param name="currentCell"></param>
+    /// <param name="gravity"></param>
+    /// <returns>the next cell if any, else returns calling cell</returns>
+    public Cell PreviousCell (Cell currentCell, int gravity) {
+        //0: down | 1: left | 2: up | 3: right 
+        Coord currentCoordinates = currentCell.coordinates; 
+        switch (gravity) {
+        case 0:
+            currentCoordinates.y = currentCoordinates.y+1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        case 1:
+            currentCoordinates.x = currentCoordinates.x+1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        case 2:
+            currentCoordinates.y = currentCoordinates.y-1;
+            if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
+                break;
+            } else return currentCell;
+        case 3:
+            currentCoordinates.x = currentCoordinates.x-1;
             if (gridAtlas.gridDictionary.ContainsKey (currentCoordinates)) {
                 break;
             } else return currentCell;
@@ -188,7 +223,21 @@ public class MechanismHandler : MonoBehaviour {
 
         pawn.SetParent (endCell.transform);
 
-        yield return StartCoroutine (AnimateFall(pawn, endCell, triggers, reset));
+        yield return StartCoroutine (AnimateFall(pawn, endCell, reset));
+        
+        if (topCell.coordinates != endCell.coordinates && PreviousCell(endCell,gravity).available) {
+            pawn.GetComponentInChildren<Animation> ().Play("PawnBounceAnimation");
+            yield return new WaitForSeconds (pawn.GetComponentInChildren<Animation> ()["PawnBounceAnimation"].length);
+        }
+
+        if (triggers.Count != 0 && !reset) {
+            foreach (Cell.Trigger trigger in triggers) {
+                StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
+            }
+        }
+        if (reset) {
+            CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
+        }
     }
 
     /// <summary>
@@ -196,10 +245,9 @@ public class MechanismHandler : MonoBehaviour {
     /// </summary>
     /// <param name="pawn"> Pion à animer </param>
     /// <param name="endCell"> cell finale à atteindre </param>
-    /// <param name="triggers"> liste de triggers à animer ensuite </param>
     /// <param name="reset"> true if called from a resetGravity trigger, else false </param>
     /// <returns></returns>
-    IEnumerator AnimateFall (Transform pawn, Cell endCell, List<Cell.Trigger> triggers, bool reset) {
+    IEnumerator AnimateFall (Transform pawn, Cell endCell, bool reset) {
         //continuous speed for now, will improve later
         float speed = 10f;
 
@@ -231,17 +279,7 @@ public class MechanismHandler : MonoBehaviour {
         default:
             break;
         }
-
         pawn.localPosition = Vector3.zero;
-
-        if (triggers.Count != 0 && !reset) {
-            foreach (Cell.Trigger trigger in triggers) {
-                StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
-            }
-        }
-        if (reset) {
-            CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
-        }
     }
 
     /// <summary>
@@ -274,7 +312,6 @@ public class MechanismHandler : MonoBehaviour {
             rotate = 0;
             break;
         }
-
         GameObject mainCamera = GameObject.Find ("Main Camera");
         Quaternion startingRotation = mainCamera.GetComponent<Transform> ().rotation;
         Quaternion targetRotation = Quaternion.Euler ( new Vector3 ( 0.0f, 0.0f, startingRotation.eulerAngles.z + rotate ) );
@@ -284,6 +321,9 @@ public class MechanismHandler : MonoBehaviour {
             mainCamera.GetComponent<Transform> ().rotation = Quaternion.Slerp(startingRotation, targetRotation,  (elapsedTime / time)  );
             yield return new WaitForEndOfFrame ();
         }
+        foreach( GameObject pawnObject in GameObject.FindGameObjectsWithTag ("Pawn")) {
+            pawnObject.GetComponent <PawnShape> ().TurnPawnShape (gravity);
+        };
     }
 
     /// <summary>
