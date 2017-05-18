@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PawnShape : MonoBehaviour {
-     MechanismHandler myMechanismHandler;
     Transform pawnShape;
     int gravity;
     void Start () {
-        myMechanismHandler = GameObject.Find("GeneralHandler").GetComponent<MechanismHandler> ();
         gravity = 0;
     }
     public void TurnPawnShape (int gravity) {

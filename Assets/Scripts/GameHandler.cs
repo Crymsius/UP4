@@ -14,13 +14,16 @@ public class GameHandler : MonoBehaviour {
     public bool running = false;
     public bool isOver; 
     public GameObject EndPanel;
-    public MechanismHandler myMechanisms { get; set; }
+    // public MechanismHandler myMechanisms { get; set; }
+    public MechanismHandlerVariant myMechanisms;
+    
 
     // Use this for initialization
     void Start () {
         EndPanel.SetActive (false);
         activePlayer = 0;
-        myMechanisms = gameObject.GetComponent<MechanismHandler> ();
+        // myMechanisms = gameObject.GetComponent<MechanismHandler> ();
+        myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
         NextTurn();
     }
 
@@ -34,7 +37,7 @@ public class GameHandler : MonoBehaviour {
     /// <returns></returns>
     public IEnumerator PutAPawn (Cell callingCell) {
         running = true;
-        yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false));
+        yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false, true));
         NextTurn ();
     }
 
