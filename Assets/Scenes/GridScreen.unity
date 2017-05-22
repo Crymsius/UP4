@@ -6048,14 +6048,13 @@ MonoBehaviour:
   running: 0
   isOver: 0
   EndPanel: {fileID: 1215373454}
-  myMechanisms: {fileID: 0}
 --- !u!114 &1231646953
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1231646951}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 290edd9cf17eeec49a92427d84fa87d5, type: 3}
   m_Name: 
@@ -6081,7 +6080,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1231646951}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43f0d1f378764dd4f89c735b0f8b28e8, type: 3}
   m_Name: 
