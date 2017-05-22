@@ -7,6 +7,8 @@ using UnityEngine;
 /// TRAITEMENTS : Gestion d'un Puissance 4
 /// OUTPUT : envoie à la grille le combo Joueur actif + cellule sélectionnée
 /// </summary>
+
+/// IMPORTANT : POUR SWITCH ENTRE LES VARIANTES, comment - un comment [switchVar]
 public class GameHandler : MonoBehaviour {
     public int activePlayer { get; set; }
     public GameObject player1;
@@ -14,13 +16,20 @@ public class GameHandler : MonoBehaviour {
     public bool running = false;
     public bool isOver; 
     public GameObject EndPanel;
-    public MechanismHandler myMechanisms { get; set; }
+    
+    /// [switchVar]
+     public MechanismHandler myMechanisms { get; set; }
+    //public MechanismHandlerVariant myMechanisms;
+    /// [switchVar]
 
     // Use this for initialization
     void Start () {
         EndPanel.SetActive (false);
         activePlayer = 0;
+        /// [switchVar]
         myMechanisms = gameObject.GetComponent<MechanismHandler> ();
+        //myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
+        /// [switchVar]
         NextTurn();
     }
 
@@ -34,7 +43,7 @@ public class GameHandler : MonoBehaviour {
     /// <returns></returns>
     public IEnumerator PutAPawn (Cell callingCell) {
         running = true;
-        yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false));
+        yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false, true));
         NextTurn ();
     }
 

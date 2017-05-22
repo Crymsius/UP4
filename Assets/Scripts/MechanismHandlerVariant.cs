@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 
 /// IMPORTANT : TO SWITCH FROM A VARIANT TO ANOTHER CHECK GAMEHANDLER
-public class MechanismHandler : MonoBehaviour {
+public class MechanismHandlerVariant : MonoBehaviour {
     public Grid myGrid { get; set; }
     public Atlas gridAtlas;
     public GameObject currentPawn { get; set; }
@@ -77,6 +77,9 @@ public class MechanismHandler : MonoBehaviour {
                     || gravity == 3 && !currentCell.walls.wallx
                 )) {
                 interCoords = nextCell.coordinates;
+                if (currentCell.trigger.isTrigger && !reset && (currentCell.coordinates != startCell.coordinates || click)) {
+                    falling = false;
+                }
             } else {
                 falling = false;
             }
@@ -84,12 +87,11 @@ public class MechanismHandler : MonoBehaviour {
 
         //script plaçant le pion et lançant le visuel
         if (!reset) {
-            Transform newPawn = Instantiate (currentPawn).GetComponent<Transform> ();
-            newPawn.GetComponentInChildren <PawnShape> ().TurnPawnShape (gravity);
-            yield return StartCoroutine (PawnFallDo (newPawn, currentCell, player, false, startCell));
+           
+            yield return StartCoroutine (PawnFallDo (currentCell, player, false, startCell, click));
         } else {
-            Transform existingPawn = startCell.GetComponentInChildren<Pawn> ().transform;
-            yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
+            
+            yield return StartCoroutine (PawnFallDo (currentCell, player, true, startCell, click));
         }
         //script de vérification de la puissance 4
         CheckAlign4 (currentCell, player);
@@ -176,65 +178,48 @@ public class MechanismHandler : MonoBehaviour {
     /// <param name="reset"> true if called from a resetGravity trigger, else false </param>
     /// <param name="startCell"></param>
     /// <returns></returns>
-    public IEnumerator PawnFallDo (Transform pawn, Cell endCell, int player, bool reset, Cell startCell) {
-        List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
-
+    public IEnumerator PawnFallDo (Cell endCell, int player, bool reset, Cell startCell, bool click) {
         //rend la case finale non disponible pour les futurs pions
+        startCell.available = true;
         endCell.available = false;
-
-        //Stockage de tous les triggers traversés
         Coord startCoords = endCell.coordinates;
-        Cell topCell;
-
-        if (reset) {
-            topCell = startCell;
-            startCoords = startCell.coordinates;
+        Transform pawn;
+        
+        if (startCell.GetComponentInChildren<Pawn> () != null) {
+            pawn = startCell.GetComponentInChildren<Pawn> ().transform;
         } else {
-            do {
-                startCoords -= fallIntegers[gravity];
-            } while (gridAtlas.gridDictionary.ContainsKey (startCoords)); // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
-            switch (gravity) {
-            case 0:
-                topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
-                break;
-            case 1:
-                topCell = gridAtlas.gridDictionary [startCoords - new Coord (1, 0)];
-                break;
-            case 2:
-                topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, -1)];
-                break;
-            case 3:
-                topCell = gridAtlas.gridDictionary [startCoords - new Coord (-1, 0)];
-                break;
-            default:
-                topCell = gridAtlas.gridDictionary [startCoords - new Coord (0, 1)];
-                break;
-            }
+            pawn = Instantiate (currentPawn).GetComponent<Transform> ();
+            pawn.GetComponentInChildren <PawnShape> ().TurnPawnShape (gravity);
         }
+
         //on ne check les triggers que pour les pions mis, pas lors du reset gravity
-        if (!reset) {
+    /*    if (!reset) {
             do {
                 startCoords += fallIntegers[gravity];
                 if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
                     triggers.Add (gridAtlas.gridDictionary[startCoords].trigger);
                 }
             } while (!startCoords.Equals (endCell.coordinates)) ; // On a collecté tous les triggers traversés
-        }
-        pawn.SetParent (topCell.GetComponent<Transform> ()); // on part du haut
+        }*/
+        pawn.SetParent (startCell.GetComponent<Transform> ()); // on part du haut
         pawn.localPosition = Vector3.zero;
 
         pawn.SetParent (endCell.transform);
 
         yield return StartCoroutine (AnimateFall(pawn, endCell, reset));
         
-        if (topCell.coordinates != endCell.coordinates && PreviousCell(endCell,gravity).available) {
+        if (startCell.coordinates != endCell.coordinates && 
+            PreviousCell(endCell,gravity).available &&
+           !endCell.trigger.isTrigger
+            ) {
             pawn.GetComponentInChildren<Animation> ().Play("PawnBounceAnimation");
             yield return new WaitForSeconds (pawn.GetComponentInChildren<Animation> ()["PawnBounceAnimation"].length);
         }
 
-        if (triggers.Count != 0 && !reset) {
-            foreach (Cell.Trigger trigger in triggers) {
-                StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
+        if (endCell.trigger.isTrigger && !reset && (startCell.coordinates != endCell.coordinates || click)) {
+            yield return StartCoroutine (ExecuteTrigger (endCell.trigger.triggerType, 1.0f));
+            if (endCell.trigger.triggerType != 3) {
+                yield return StartCoroutine (PawnFallCalculation (endCell, player, false, false));
             }
         }
         if (reset) {
