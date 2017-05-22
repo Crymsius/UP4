@@ -7,6 +7,8 @@ using UnityEngine;
 /// TRAITEMENTS : Analyse la chute du pion, déclenche tous les triggers, détecte les puissance 4
 /// OUTPUTS : fin de tour auprès du GameHandler, avec info puissance 4
 /// </summary>
+
+/// IMPORTANT : TO SWITCH FROM A VARIANT TO ANOTHER CHECK GAMEHANDLER
 public class MechanismHandler : MonoBehaviour {
     public Grid myGrid { get; set; }
     public Atlas gridAtlas;
@@ -58,7 +60,7 @@ public class MechanismHandler : MonoBehaviour {
     /// <param name="player"> for now an int but -> Player peut etre une structure qui contient les visuels des pions, les noms, les taunts, etc... </param>
     /// <param name="reset">true if called from a resetGravity trigger, else false </param>
     /// <returns></returns>
-    public IEnumerator PawnFallCalculation (Cell startCell, int player, bool reset) {
+    public IEnumerator PawnFallCalculation (Cell startCell, int player, bool reset, bool click) {
         // Calcule où le pion va s'arrêter de chuter depuis les coordonnées ou il a été lâché.
         Coord interCoords = startCell.coordinates;
         Cell currentCell = startCell;
@@ -341,7 +343,7 @@ public class MechanismHandler : MonoBehaviour {
                     if (cellToReset.GetComponentInChildren<Pawn> ()) {
                         cellToReset.available = true;
                         player = cellToReset.GetComponentInChildren<Pawn> ().player;
-                        StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+                        StartCoroutine (PawnFallCalculation (cellToReset, player, true, false));
                     }
                 }
             }
@@ -353,7 +355,7 @@ public class MechanismHandler : MonoBehaviour {
                     if (cellToReset.GetComponentInChildren<Pawn> ()) {
                         cellToReset.available = true;
                         player = cellToReset.GetComponentInChildren<Pawn> ().player;
-                        StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+                        StartCoroutine (PawnFallCalculation (cellToReset, player, true, false));
                     }
                 }
             }
@@ -365,7 +367,7 @@ public class MechanismHandler : MonoBehaviour {
                     if (cellToReset.GetComponentInChildren<Pawn> ()) {
                         cellToReset.available = true;
                         player = cellToReset.GetComponentInChildren<Pawn> ().player;
-                        StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+                        StartCoroutine (PawnFallCalculation (cellToReset, player, true, false));
                     }
                 }
             }
@@ -377,7 +379,7 @@ public class MechanismHandler : MonoBehaviour {
                     if (cellToReset.GetComponentInChildren<Pawn> ()) {
                         cellToReset.available = true;
                         player = cellToReset.GetComponentInChildren<Pawn> ().player;
-                        StartCoroutine (PawnFallCalculation (cellToReset, player, true));
+                        StartCoroutine (PawnFallCalculation (cellToReset, player, true, false));
                     }
                 }
             }

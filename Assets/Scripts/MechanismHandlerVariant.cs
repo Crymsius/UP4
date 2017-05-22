@@ -7,6 +7,8 @@ using UnityEngine;
 /// TRAITEMENTS : Analyse la chute du pion, déclenche tous les triggers, détecte les puissance 4
 /// OUTPUTS : fin de tour auprès du GameHandler, avec info puissance 4
 /// </summary>
+
+/// IMPORTANT : TO SWITCH FROM A VARIANT TO ANOTHER CHECK GAMEHANDLER
 public class MechanismHandlerVariant : MonoBehaviour {
     public Grid myGrid { get; set; }
     public Atlas gridAtlas;
