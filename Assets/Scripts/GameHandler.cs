@@ -15,7 +15,8 @@ public class GameHandler : MonoBehaviour {
     public GameObject player2;
     public bool running = false;
     public bool isOver; 
-    public GameObject EndPanel;
+    public GameObject OverlayPanel;
+    public GameObject GameOverPanel;
     
     /// [switchVar]
      public MechanismHandler myMechanisms { get; set; }
@@ -24,7 +25,6 @@ public class GameHandler : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        EndPanel.SetActive (false);
         activePlayer = 0;
         /// [switchVar]
         myMechanisms = gameObject.GetComponent<MechanismHandler> ();
@@ -61,7 +61,8 @@ public class GameHandler : MonoBehaviour {
     /// </summary>
     /// <param name="winner"></param>
     public void GameOver (int winner) {
-        EndPanel.SetActive (true);
+        OverlayPanel.SetActive (true);
+        GameOverPanel.SetActive (true);
         print ("Player " + winner + " is the winner");
     }
 }

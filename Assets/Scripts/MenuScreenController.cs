@@ -4,15 +4,19 @@ using UnityEngine.SceneManagement;
 
 public class MenuScreenController : MonoBehaviour {
 
-    public void StartQuickGame() {
-        SceneManager.LoadScene("GridScreen");
+    public void StartQuickGame () {
+        SceneManager.LoadScene ("GridScreen");
     }
 
-    public void StartStory() {
-        SceneManager.LoadScene("WorldView");
+    public void StartStory () {
+        SceneManager.LoadScene ("WorldView");
     }
 
-    public void StartOnline() {
-        SceneManager.LoadScene("Online");
+    public void StartOnline () {
+        SceneManager.LoadScene ("Online");
+    }
+
+    public void MainMenu () {
+        SceneManager.LoadScene ("MenuScreen");
     }
 }
