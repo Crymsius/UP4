@@ -6,7 +6,6 @@ using UnityEngine;
 public class Cell : MonoBehaviour {
     
     public Coord coordinates;
-    public GameHandler myHandler { get; set; }
 
     public Walls walls;
     public Trigger trigger;
@@ -15,20 +14,6 @@ public class Cell : MonoBehaviour {
     public bool full = false;       //cell cachée et non jouable -> mur
 
     public bool available = true;	// Peut-on placer un pion dessus ?
-
-    void Start () {
-        myHandler = GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ();
-    }
-
-    void OnMouseDown () // déclenché avec clic sur la grille
-    {
-        if (available && !myHandler.running)
-            StartCoroutine (myHandler.PutAPawn (this));
-    }
-
-    // Update is called once per frame
-    void Update () {
-    }
 
     [System.Serializable]
     public struct Walls
