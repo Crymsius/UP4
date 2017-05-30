@@ -77,7 +77,7 @@ public class GridGenerator : MonoBehaviour {
     /// </summary>
     public void DisplayFromCells () {
         Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
-        List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
+        List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)", "CellHidden(Clone)"};
         //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
             foreach (string content in contentNames) {
@@ -168,19 +168,19 @@ public class GridGenerator : MonoBehaviour {
         if (walls.wallx) {
             GameObject newWallX = Instantiate (grid.firstWallX);
             newWallX.transform.SetParent (cellTransform);
-            newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.5f, 0, -10);
+            newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -20f);
         }
 
         if (walls.wally) {
             GameObject newWallY = Instantiate (grid.firstWallY);
             newWallY.transform.SetParent (cellTransform);
-            newWallY.GetComponent<Transform> ().localPosition = new Vector3(0, -0.5f, -10);
+            newWallY.GetComponent<Transform> ().localPosition = new Vector3(-0.5f, -0.5f, -20f);
         }
 
         if (walls.wallxy) {
             GameObject newWallXY = Instantiate (grid.firstWallXY);
             newWallXY.transform.SetParent (cellTransform);
-            newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -10);
+            newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -22f);
         }
     }
 
