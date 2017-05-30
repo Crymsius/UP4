@@ -6539,6 +6539,7 @@ GameObject:
   - component: {fileID: 1119635713}
   - component: {fileID: 1119635715}
   - component: {fileID: 1119635714}
+  - component: {fileID: 1119635716}
   m_Layer: 5
   m_Name: OverlayPanel
   m_TagString: Untagged
@@ -6578,7 +6579,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7607844, g: 0.7607844, b: 0.7607844, a: 0.547}
+  m_Color: {r: 0.97647065, g: 1, b: 0.8588236, a: 0.572}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -6599,6 +6600,19 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1119635712}
+--- !u!114 &1119635716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1119635712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 996a7b529da0543dd873e0b92b283550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myHandler: {fileID: 1231646952}
+  gameOverPanel: {fileID: 1688575454}
 --- !u!1 &1189162414
 GameObject:
   m_ObjectHideFlags: 0
@@ -6975,7 +6989,8 @@ MonoBehaviour:
   player2: {fileID: 1719082650311746, guid: ae08de94ce51fc1438d589afa3e4d403, type: 2}
   running: 0
   isOver: 0
-  EndPanel: {fileID: 0}
+  overlayPanel: {fileID: 1119635712}
+  gameOverPanel: {fileID: 1688575454}
 --- !u!114 &1231646953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11301,7 +11316,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 982149360}
-        m_MethodName: MainMenu
+        m_MethodName: StartQuickGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
