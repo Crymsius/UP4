@@ -35,6 +35,7 @@ public class MechanismHandler : MonoBehaviour {
 
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();
+        GameObject.Find("IAHandler").GetComponent<IAMain>().myAtlas = gridAtlas;
     }
 
     /// <summary>
@@ -181,6 +182,10 @@ public class MechanismHandler : MonoBehaviour {
 
         //rend la case finale non disponible pour les futurs pions
         endCell.available = false;
+
+        //appelle l'IA pour mettre à jour sa grille.
+        if (gameObject.GetComponent<GameHandler>().typePlayer.Contains("IA"))
+            GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates);
 
         //Stockage de tous les triggers traversés
         Coord startCoords = endCell.coordinates;

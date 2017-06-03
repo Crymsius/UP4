@@ -13,6 +13,7 @@ public class GameHandler : MonoBehaviour {
     public int activePlayer { get; set; }
     public GameObject player1;
     public GameObject player2;
+    public List<string> typePlayer { get; set; } // human or IA
     public bool running = false;
     public bool isOver; 
     public GameObject overlayPanel;
@@ -27,11 +28,19 @@ public class GameHandler : MonoBehaviour {
     void Start () {
         isOver = false;
         activePlayer = 0;
+
+        typePlayer = new List<string>() { "IA", "human" }; // Test, à remplacer par un appel au lancement d'une partie
+
         /// [switchVar]
         myMechanisms = gameObject.GetComponent<MechanismHandler> ();
         //myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
         /// [switchVar]
-        NextTurn();
+
+        // Création de la grille virtuelle pour l'IA, /!\ Ne prends en compte aucun mur, trigger, etc... Pour le moment. Voir interactions avec Atlas ?
+        if (typePlayer.Contains("IA"))
+            GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
+
+        Invoke("NextTurn",2.5f);
     }
 
     /// <summary>
@@ -49,12 +58,17 @@ public class GameHandler : MonoBehaviour {
     }
 
     /// <summary>
-    /// Rétabli la possibilité de jouer et change le joueur actif ainsi que le pion correspondant
+    /// Rétabli la possibilité de jouer et change le joueur actif ainsi que le pion correspondant.
+    /// Si le joueur est une IA, on maintient l'impossibilité de cliquer.
     /// </summary>
     public void NextTurn () {
-        running = false;
+        //running = false;
         activePlayer = 1 - activePlayer; // si jamais partie à plus de 2, ne marche plus
+        running = typePlayer[activePlayer] == "human" ? false : true;
         myMechanisms.currentPawn = (activePlayer == 1) ? player1 : player2;
+
+        if (typePlayer[activePlayer] == "IA")
+            GameObject.Find("IAHandler").GetComponent<IAMain>().IA_Play();
     }
 
     /// <summary>

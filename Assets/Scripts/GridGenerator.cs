@@ -37,14 +37,14 @@ public class GridGenerator : MonoBehaviour {
         allCellCoords = new List<Coord> ();
         // Vérifier que l'object n'existe pas déjà, en cas, le détruire
         string holderName = "Generated Grid(Clone)";
-        if (transform.FindChild (holderName)) {
-            DestroyImmediate(transform.FindChild(holderName).gameObject);
+        if (transform.Find (holderName)) {
+            DestroyImmediate(transform.Find(holderName).gameObject);
         }
         // instantiation du gridPrefab qui va host le script Grid et les Cells filles.
         Transform newGrid = Instantiate (gridPrefab, Vector3.zero, Quaternion.identity) as Transform; 
         newGrid.parent = transform;
         Grid gridScript = newGrid.GetComponent<Grid> ();
-        gridScript.gridSize = currentGrid.gridSize;	
+        gridScript.gridSize = currentGrid.gridSize;
 
         // Spawning cells
         for (int x = 0; x < currentGrid.gridSize.x; x++) {
@@ -76,7 +76,7 @@ public class GridGenerator : MonoBehaviour {
     /// Parcourt la grille physique et affiche le contenu
     /// </summary>
     public void DisplayFromCells () {
-        Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
+        Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)", "CellHidden(Clone)"};
         //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
@@ -105,7 +105,7 @@ public class GridGenerator : MonoBehaviour {
     /// </summary>
     public void SaveCells () {
         grids [gridIndex].cells.Clear ();
-        Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
+        Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
             grids[gridIndex].cells.Add (
                 //on attribue les carac de la cell physiques à une nouvelle cell virtuelle
@@ -125,7 +125,7 @@ public class GridGenerator : MonoBehaviour {
     /// </summary>
     public void DisplayFromSave () {
         int i = 0;
-        Grid grid = transform.FindChild ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
+        Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
         //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
@@ -227,8 +227,8 @@ public class GridGenerator : MonoBehaviour {
     /// <param name="cell"></param>
     /// <param name="holderName"></param>
     void DeleteExistingCellChild (Transform cell, string holderName) {
-        if (cell.FindChild (holderName)) {
-            DestroyImmediate (cell.FindChild (holderName).gameObject);
+        if (cell.Find (holderName)) {
+            DestroyImmediate (cell.Find (holderName).gameObject);
         }
     }
 
