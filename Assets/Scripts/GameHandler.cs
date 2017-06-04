@@ -35,11 +35,7 @@ public class GameHandler : MonoBehaviour {
         myMechanisms = gameObject.GetComponent<MechanismHandler> ();
         //myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
         /// [switchVar]
-
-        // Création de la grille virtuelle pour l'IA, /!\ Ne prends en compte aucun mur, trigger, etc... Pour le moment. Voir interactions avec Atlas ?
-        //if (typePlayer.Contains("IA"))
-        //    GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
-
+        
         Invoke("NextTurn",2.5f);
     }
 

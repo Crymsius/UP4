@@ -7,7 +7,6 @@ public class IAMain : MonoBehaviour {
     public Atlas myAtlas;
 
     public DecisionTreeNode mainNode;
-    //public Matrix currentPosition;
     public int myNumber;
 
     // Use this for initialization
@@ -23,13 +22,15 @@ public class IAMain : MonoBehaviour {
         foreach (Cell cell in myAtlas.gridDictionary.Values)
             if (cell.trigger.isTrigger)
                 trigPositions.values[cell.coordinates] = cell.trigger.triggerType;
-
+        
         mainNode = new DecisionTreeNode(myNumber, 0, 4, board, trigPositions, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>());
         mainNode.DeploymentTree();
+
+        //PrintAllPlays();
     }
 
     public void GetCurrentPlay(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
-        print(play.Stringify());
+        //print(play.Stringify());
         if (mainNode.children.ContainsKey(play))
             mainNode = mainNode.children[play]; // Le reste est envoyé au GarbageCollector, normalement...
         else
@@ -37,7 +38,7 @@ public class IAMain : MonoBehaviour {
         mainNode.Maj_Depth(0);
         mainNode.DeploymentTree();
 
-        PrintAllPlays();
+        //PrintAllPlays();
     }
 
     public void IA_Play() { // compare les scores de chaque coup et joue le meilleur
@@ -60,6 +61,8 @@ public class IAMain : MonoBehaviour {
         foreach (Coord key in mainNode.children.Keys)
             s += key.Stringify() + " : " + mainNode.children[key].score + " // ";
         print(s);
+
+        //mainNode.position.Stringify();
     }
 	
 	// Update is called once per frame

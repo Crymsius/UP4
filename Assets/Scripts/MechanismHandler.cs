@@ -16,6 +16,8 @@ public class MechanismHandler : MonoBehaviour {
     public GameObject winningLine;
 
     public int gravity { get; set; } // direction de chute des pions
+    public bool currentlyRedefiningGravity = false; // utilitaire pour informer l'IA
+
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
     public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
         { 0, new Coord (0,-1) },
@@ -36,8 +38,7 @@ public class MechanismHandler : MonoBehaviour {
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();
         GameObject.Find("IAHandler").GetComponent<IAMain>().myAtlas = gridAtlas;
-        if (gameObject.GetComponent<GameHandler>().typePlayer.Contains("IA"))
-            GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
+        GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
     }
 
     /// <summary>
@@ -186,7 +187,7 @@ public class MechanismHandler : MonoBehaviour {
         endCell.available = false;
 
         //appelle l'IA pour mettre à jour sa grille.
-        if (gameObject.GetComponent<GameHandler>().typePlayer.Contains("IA"))
+        if(!currentlyRedefiningGravity)
             GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates);
 
         //Stockage de tous les triggers traversés
@@ -342,6 +343,8 @@ public class MechanismHandler : MonoBehaviour {
         int player;
         Cell cellToReset;
 
+        currentlyRedefiningGravity = true;
+
         switch (gravity) {
         case 0:
             for (int y = 1; y < myGrid.gridSize.y; y++) {
@@ -394,6 +397,7 @@ public class MechanismHandler : MonoBehaviour {
         default:
             break;
         }
+        currentlyRedefiningGravity = false;
     }
 
     /// <summary>

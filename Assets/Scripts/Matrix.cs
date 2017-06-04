@@ -86,13 +86,43 @@ public class Matrix
         while (values.ContainsKey(startCell - gravity))
             startCell = startCell - gravity;
 
-        while (values.ContainsKey(startCell))
+        while (startCell!=play+gravity)
         {
             if (values[startCell] != -1)
                 results.Add(values[startCell]);
             startCell = startCell + gravity;
         }
         return results;
+    }
+
+    public void ResetGravity(Coord gravity)
+    {
+        Coord startcell, goalCell, actualCell;
+        if (gravity == new Coord(0, -1))
+            startcell = new Coord(0, 0);
+        else if (gravity == new Coord(1, 0))
+            startcell = new Coord(hDim - 1, 0);
+        else if (gravity == new Coord(0, 1))
+            startcell = new Coord(hDim - 1, vDim - 1);
+        else
+            startcell = new Coord(0, vDim - 1);
+
+        while (values.ContainsKey(startcell)) {
+            goalCell = new Coord(startcell.x, startcell.y); actualCell = new Coord(startcell.x - gravity.x, startcell.y - gravity.y);
+            while (values.ContainsKey(actualCell))
+            {
+                if (values[goalCell] != -1)
+                    goalCell = goalCell - gravity;
+                else if (values[actualCell] != -1) {
+                    values[goalCell] = values[actualCell];
+                    values[actualCell] = -1;
+                    goalCell = goalCell - gravity;
+                }
+
+                actualCell = actualCell - gravity;
+            }
+            startcell = startcell + new Coord(-gravity.y, gravity.x);
+        }
     }
         
     public void Stringify()

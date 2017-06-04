@@ -64,11 +64,15 @@ public class DecisionTreeNode {
                         case 2:
                             children[play].gravity = new Coord(-gravity.x, -gravity.y);
                             break;
+                        case 3:
+                            children[play].position.ResetGravity(gravity);
+                            break;
                         default:
                             break;
                     }
 
-                children[play].position.MeasureScore(children[play].player);
+                //Puis on attribue un score au plateau. Si une puissance 4 est repérée, on la signale.
+                children[play].score = children[play].position.MeasureScore(children[play].player);
                 if (children[play].position.isVictory)
                     existsVictory = true;
             }
