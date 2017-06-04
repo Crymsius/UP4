@@ -22,7 +22,7 @@ public class Matrix
         isVictory = false;
     }
 
-    public Matrix(Matrix copy) { // COpie d'une autre matrice
+    public Matrix(Matrix copy) { // Copie d'une autre matrice
         hDim = copy.hDim;
         vDim = copy.vDim;
         values = new Dictionary<Coord, int>();
@@ -79,6 +79,22 @@ public class Matrix
         return result;
     }
 
+    public List<int> CheckTriggers(Coord play, Coord gravity) {
+        List<int> results = new List<int>();
+
+        Coord startCell = play;
+        while (values.ContainsKey(startCell - gravity))
+            startCell = startCell - gravity;
+
+        while (values.ContainsKey(startCell))
+        {
+            if (values[startCell] != -1)
+                results.Add(values[startCell]);
+            startCell = startCell + gravity;
+        }
+        return results;
+    }
+        
     public void Stringify()
     {
         string s = "";

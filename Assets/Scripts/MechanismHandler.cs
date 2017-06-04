@@ -36,6 +36,8 @@ public class MechanismHandler : MonoBehaviour {
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();
         GameObject.Find("IAHandler").GetComponent<IAMain>().myAtlas = gridAtlas;
+        if (gameObject.GetComponent<GameHandler>().typePlayer.Contains("IA"))
+            GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
     }
 
     /// <summary>

@@ -7,19 +7,24 @@ public class DecisionTreeNode {
     public int player { get; set; }
     public int depth { get; set; }
     public int depthMax { get; set; }
+
     public Matrix position { get; set; }
+    public Matrix triggerPosition { get; set; }
+    public Coord gravity { get; set; }
 
     public float score { get; set; }
     public bool considered { get; set; }
 
     public Dictionary<Coord, DecisionTreeNode> children;
 
-    public DecisionTreeNode(int _player, int _depth, int _depthMax, Matrix _position, float _score, Dictionary<Coord, DecisionTreeNode> _children)
+    public DecisionTreeNode(int _player, int _depth, int _depthMax, Matrix _position, Matrix _triggerPosition, Coord _gravity, float _score, Dictionary<Coord, DecisionTreeNode> _children)
     {
         player = _player;
         depth = _depth;
         depthMax = _depthMax;
         position = _position;
+        triggerPosition = _triggerPosition;
+        gravity = _gravity;
         score = _score;
         children = _children;
 
@@ -36,21 +41,36 @@ public class DecisionTreeNode {
             List<Coord> playables = new List<Coord>();
             for (int i = 0; i < position.hDim; i++)
                 for (int j = 0; j < position.vDim; j++)
-                    if (position.values[new Coord(i, j)] == -1 && (!position.values.ContainsKey(new Coord(i, j - 1)) || position.values[new Coord(i, j - 1)] != -1))
+                    if (position.values[new Coord(i, j)] == -1 && (!position.values.ContainsKey(new Coord(i, j) + gravity) || position.values[new Coord(i, j) + gravity] != -1))
                         playables.Add(new Coord(i, j));
 
             bool existsVictory = false;
 
             foreach (Coord play in playables)
             { // Création des nouveaux noeuds fils
-                children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position), 0, new Dictionary<Coord, DecisionTreeNode>()));
+                // On commence par effectuer le play et vérifier si des triggers sont traversés.
+                children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position), triggerPosition, gravity, 0, new Dictionary<Coord, DecisionTreeNode>()));
                 children[play].position.values[play] = 1 - player;
+
+                List<int> crossed = children[play].triggerPosition.CheckTriggers(play, gravity);
+                foreach (int trigger in crossed)
+                    switch (trigger) {
+                        case 0:
+                            children[play].gravity = new Coord(-gravity.y, gravity.x);
+                            break;
+                        case 1:
+                            children[play].gravity = new Coord(gravity.y, -gravity.x);
+                            break;
+                        case 2:
+                            children[play].gravity = new Coord(-gravity.x, -gravity.y);
+                            break;
+                        default:
+                            break;
+                    }
 
                 children[play].position.MeasureScore(children[play].player);
                 if (children[play].position.isVictory)
                     existsVictory = true;
-
-                //children[play].DeploymentTree();
             }
 
             foreach (Coord play in playables) {
