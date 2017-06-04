@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public struct Matrix
+public class Matrix
 {
-    public int hDim;
-    public int vDim;
+    public int hDim { get; set; }
+    public int vDim { get; set; }
     public Dictionary<Coord, int> values;
 
-    public Matrix(Coord _c)
+    public bool isVictory { get; set; }
+
+    public Matrix(Coord _c) // Création d'une grille vierge
     {
         hDim = _c.x;
         vDim = _c.y;
@@ -17,18 +18,22 @@ public struct Matrix
         for (int i = 0; i < hDim; i++)
             for (int j = 0; j < vDim; j++)
                 values.Add(new Coord(i, j), -1);
+
+        isVictory = false;
     }
 
-    public Matrix(Matrix copy) {
+    public Matrix(Matrix copy) { // COpie d'une autre matrice
         hDim = copy.hDim;
         vDim = copy.vDim;
         values = new Dictionary<Coord, int>();
 
         foreach (Coord c in copy.values.Keys)
             values.Add(c, copy.values[c]);
+
+        isVictory = false;
     }
 
-    public int MeasureScore(int player) {
+    public int MeasureScore(int player) { // Calcule le score instantané d'un joueur sur la grille
         int hscore =0, vscore=0, d1score=0, d2score=0;
 
         for (int i = 0; i < hDim; i++)
@@ -46,7 +51,7 @@ public struct Matrix
         return hscore + vscore + d1score + d2score;
     }
 
-    public int intermediateCalculus(Coord init, Coord direction, int player) {
+    public int intermediateCalculus(Coord init, Coord direction, int player) { // Calcule le score d'un joueur sur une ligne directionnelle
         int result =0,vinter = 0;
         Coord actuel = init;
 
@@ -57,7 +62,8 @@ public struct Matrix
                 vinter++;
                 if (vinter >= 4)
                 {
-                    result += 100000;
+                    isVictory = true;
+                    result += 10000; // Marche bien avec 100 000
                     vinter = 0;
                 }
             }
