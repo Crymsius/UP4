@@ -30,6 +30,7 @@ public class GameHandler : MonoBehaviour {
         activePlayer = 0;
 
         typePlayer = new List<string>() { "IA", "human" }; // Test, à remplacer par un appel au lancement d'une partie
+        GameObject.Find("IAHandler").GetComponent<IAMain>().typePlayers = typePlayer;
 
         /// [switchVar]
         myMechanisms = gameObject.GetComponent<MechanismHandler> ();

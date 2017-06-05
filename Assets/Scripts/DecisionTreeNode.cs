@@ -10,23 +10,28 @@ public class DecisionTreeNode {
 
     public Matrix position { get; set; }
     public Matrix triggerPosition { get; set; }
+    public Atlas myAtlas { get; set; }
     public Coord gravity { get; set; }
+    public List<string> typePlayers;
 
     public float score { get; set; }
     public bool considered { get; set; }
-
+    
     public Dictionary<Coord, DecisionTreeNode> children;
 
-    public DecisionTreeNode(int _player, int _depth, int _depthMax, Matrix _position, Matrix _triggerPosition, Coord _gravity, float _score, Dictionary<Coord, DecisionTreeNode> _children)
+    public DecisionTreeNode(int _player, int _depth, int _depthMax, Matrix _position, Matrix _triggerPosition, Atlas _myAtlas, 
+        Coord _gravity, float _score, Dictionary<Coord, DecisionTreeNode> _children, List<string> _typePlayers)
     {
         player = _player;
         depth = _depth;
         depthMax = _depthMax;
         position = _position;
         triggerPosition = _triggerPosition;
+        myAtlas = _myAtlas;
         gravity = _gravity;
         score = _score;
         children = _children;
+        typePlayers = _typePlayers;
 
         considered = true;
     }
@@ -36,12 +41,12 @@ public class DecisionTreeNode {
             /*do nothing*/
             ;
 
-        else if (children.Count == 0)
+        else if (children.Count == 0 && !position.isVictory) // On ne considère la suite que si la position actuelle n'est pas une position de victoire
         {
             List<Coord> playables = new List<Coord>();
             for (int i = 0; i < position.hDim; i++)
                 for (int j = 0; j < position.vDim; j++)
-                    if (position.values[new Coord(i, j)] == -1 && (!position.values.ContainsKey(new Coord(i, j) + gravity) || position.values[new Coord(i, j) + gravity] != -1))
+                    if (isPlayable(new Coord(i, j), gravity))
                         playables.Add(new Coord(i, j));
 
             bool existsVictory = false;
@@ -49,7 +54,8 @@ public class DecisionTreeNode {
             foreach (Coord play in playables)
             { // Création des nouveaux noeuds fils
                 // On commence par effectuer le play et vérifier si des triggers sont traversés.
-                children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position), triggerPosition, gravity, 0, new Dictionary<Coord, DecisionTreeNode>()));
+                children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position, myAtlas), triggerPosition, myAtlas, 
+                    gravity, 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers));
                 children[play].position.values[play] = 1 - player;
 
                 List<int> crossed = children[play].triggerPosition.CheckTriggers(play, gravity);
@@ -78,20 +84,33 @@ public class DecisionTreeNode {
             }
 
             foreach (Coord play in playables) {
-                if ((existsVictory && children[play].position.isVictory) || (!existsVictory))
+                if (!existsVictory || (existsVictory && children[play].position.isVictory))
                     children[play].DeploymentTree();
                 else
-                     children[play].considered = false;
+                    children[play].considered = false;
             }
         }
 
         else foreach (Coord key in children.Keys) if (children[key].considered)
                     children[key].DeploymentTree();
-}
+    }
+    public bool isPlayable(Coord cell, Coord gravity) {
+        bool result = false;
+        if (gravity == new Coord(0, -1))
+            result = result || myAtlas.gridDictionary[cell].walls.wally;
+        else if (gravity == new Coord(1, 0))
+            result = result || myAtlas.gridDictionary[cell].walls.wallx;
+        else if (gravity == new Coord(0, 1))
+            result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && myAtlas.gridDictionary[cell + gravity].walls.wally);
+        else
+            result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && myAtlas.gridDictionary[cell + gravity].walls.wallx);
+
+        return position.values[cell] == -1 && (result || !position.values.ContainsKey(cell + gravity) || position.values[cell + gravity] != -1);
+    }
 
     public void MAJ_Scores() // Fonction récursive mettant à jour les scores de chaque coup
     {
-        if (depth == depthMax)
+        if (depth == depthMax || children.Count==0 || position.isVictory) // le score est instantané si l'on est sur une feuille
             score = (float)position.MeasureScore(player);
 
         else

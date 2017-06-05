@@ -7,7 +7,7 @@ public class IAMain : MonoBehaviour {
     public Atlas myAtlas;
 
     public DecisionTreeNode mainNode;
-    public int myNumber;
+    public List<string> typePlayers;
 
     // Use this for initialization
     void Start () {
@@ -16,14 +16,14 @@ public class IAMain : MonoBehaviour {
 
     public void settingGrid(Coord c)
     {
-        Matrix board = new Matrix(c);
-        Matrix trigPositions = new Matrix(c);
+        Matrix board = new Matrix(c, myAtlas);
+        Matrix trigPositions = new Matrix(c, myAtlas);
 
         foreach (Cell cell in myAtlas.gridDictionary.Values)
             if (cell.trigger.isTrigger)
                 trigPositions.values[cell.coordinates] = cell.trigger.triggerType;
         
-        mainNode = new DecisionTreeNode(myNumber, 0, 4, board, trigPositions, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>());
+        mainNode = new DecisionTreeNode(1, 0, 4, board, trigPositions, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
         mainNode.DeploymentTree();
 
         //PrintAllPlays();
@@ -44,15 +44,14 @@ public class IAMain : MonoBehaviour {
     public void IA_Play() { // compare les scores de chaque coup et joue le meilleur
         mainNode.MAJ_Scores();
 
-        Coord bestplay = new Coord(); float bestScore = -1000;
+        Coord bestplay = new Coord(-1, -1); float bestScore = -10000;
         foreach (Coord play in mainNode.children.Keys)
             if (mainNode.children[play].score >= bestScore)
             {
                 bestplay = play;
                 bestScore = mainNode.children[play].score;
             }
-        //print(mainNode.HowManyNodes() + "");
-
+        
         StartCoroutine(GameObject.Find("GeneralHandler").GetComponent<GameHandler>().PutAPawn(myAtlas.gridDictionary[bestplay]));
     }
 

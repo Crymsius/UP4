@@ -16,8 +16,7 @@ public class MechanismHandler : MonoBehaviour {
     public GameObject winningLine;
 
     public int gravity { get; set; } // direction de chute des pions
-    public bool currentlyRedefiningGravity = false; // utilitaire pour informer l'IA
-
+    
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
     public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
         { 0, new Coord (0,-1) },
@@ -186,10 +185,6 @@ public class MechanismHandler : MonoBehaviour {
         //rend la case finale non disponible pour les futurs pions
         endCell.available = false;
 
-        //appelle l'IA pour mettre à jour sa grille.
-        if(!currentlyRedefiningGravity)
-            GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates);
-
         //Stockage de tous les triggers traversés
         Coord startCoords = endCell.coordinates;
         Cell topCell;
@@ -240,11 +235,18 @@ public class MechanismHandler : MonoBehaviour {
             yield return new WaitForSeconds (pawn.GetComponentInChildren<Animation> ()["PawnBounceAnimation"].length);
         }
 
-        if (triggers.Count != 0 && !reset) {
-            foreach (Cell.Trigger trigger in triggers) {
-                StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
+        if (triggers.Count != 0 && !reset)
+        {
+            foreach (Cell.Trigger trigger in triggers)
+            {
+                yield return StartCoroutine(ExecuteTrigger(trigger.triggerType, 1.0f));
             }
         }
+
+        //appelle l'IA pour mettre à jour son arbre.
+        if (!reset)
+            GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates);
+        
         if (reset) {
             CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
         }
@@ -342,9 +344,7 @@ public class MechanismHandler : MonoBehaviour {
     public void ResetGravity () {
         int player;
         Cell cellToReset;
-
-        currentlyRedefiningGravity = true;
-
+        
         switch (gravity) {
         case 0:
             for (int y = 1; y < myGrid.gridSize.y; y++) {
@@ -397,7 +397,6 @@ public class MechanismHandler : MonoBehaviour {
         default:
             break;
         }
-        currentlyRedefiningGravity = false;
     }
 
     /// <summary>

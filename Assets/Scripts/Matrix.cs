@@ -6,11 +6,13 @@ public class Matrix
 {
     public int hDim { get; set; }
     public int vDim { get; set; }
+
     public Dictionary<Coord, int> values;
+    public Atlas myAtlas { get; set; }
 
     public bool isVictory { get; set; }
 
-    public Matrix(Coord _c) // Création d'une grille vierge
+    public Matrix(Coord _c, Atlas _myatlas) // Création d'une grille vierge
     {
         hDim = _c.x;
         vDim = _c.y;
@@ -18,17 +20,19 @@ public class Matrix
         for (int i = 0; i < hDim; i++)
             for (int j = 0; j < vDim; j++)
                 values.Add(new Coord(i, j), -1);
+        myAtlas = _myatlas;
 
         isVictory = false;
     }
 
-    public Matrix(Matrix copy) { // Copie d'une autre matrice
+    public Matrix(Matrix copy, Atlas _myatlas) { // Copie d'une autre matrice
         hDim = copy.hDim;
         vDim = copy.vDim;
         values = new Dictionary<Coord, int>();
 
         foreach (Coord c in copy.values.Keys)
             values.Add(c, copy.values[c]);
+        myAtlas = _myatlas;
 
         isVictory = false;
     }
@@ -50,7 +54,6 @@ public class Matrix
 
         return hscore + vscore + d1score + d2score;
     }
-
     public int intermediateCalculus(Coord init, Coord direction, int player) { // Calcule le score d'un joueur sur une ligne directionnelle
         int result =0,vinter = 0;
         Coord actuel = init;
@@ -72,9 +75,24 @@ public class Matrix
                 result += (int)Mathf.Pow(vinter, 3);
                 vinter = 0;
             }
+            if (isBlocked(actuel, direction))
+                vinter = 0;
             actuel = actuel + direction;
         }
         result += (int)Mathf.Pow(vinter, 2);
+
+        return result;
+    }
+    public bool isBlocked(Coord actuel, Coord direction) {
+        bool result = false;
+        if (direction == new Coord(0, 1))
+            result = result || (myAtlas.gridDictionary.ContainsKey(actuel + direction) && myAtlas.gridDictionary[actuel + direction].walls.wally);
+        else if (direction == new Coord(1, 0))
+            result = result || myAtlas.gridDictionary[actuel].walls.wallx;
+        else if (direction == new Coord(1, 1))
+            result = result || (myAtlas.gridDictionary.ContainsKey(actuel + new Coord(0,1)) && myAtlas.gridDictionary[actuel + new Coord(0, 1)].walls.wallxy);
+        else if (direction == new Coord(-1, 1))
+            result = result || (myAtlas.gridDictionary.ContainsKey(actuel + direction) && myAtlas.gridDictionary[actuel + direction].walls.wallxy);
 
         return result;
     }
