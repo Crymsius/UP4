@@ -20,8 +20,12 @@ public class IAMain : MonoBehaviour {
         Matrix trigPositions = new Matrix(c, myAtlas);
 
         foreach (Cell cell in myAtlas.gridDictionary.Values)
+        {
             if (cell.trigger.isTrigger)
                 trigPositions.values[cell.coordinates] = cell.trigger.triggerType;
+            if (cell.full)
+                board.values[cell.coordinates] = -2;
+        }
         
         mainNode = new DecisionTreeNode(1, 0, 4, board, trigPositions, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
         mainNode.DeploymentTree();

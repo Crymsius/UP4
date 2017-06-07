@@ -51,7 +51,15 @@ public class GameHandler : MonoBehaviour {
     public IEnumerator PutAPawn (Cell callingCell) {
         running = true;
         yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false, true));
-        NextTurn ();
+
+        bool available = false;
+        foreach (Cell cell in myMechanisms.gridAtlas.gridDictionary.Values)
+            available = available || cell.available;
+
+        if (available)
+            NextTurn();
+        else
+            GameOver(-1);
     }
 
     /// <summary>
@@ -77,7 +85,10 @@ public class GameHandler : MonoBehaviour {
         overlayPanel.SetActive (true);
         overlayPanel.GetComponent<CanvasRenderer> ().SetAlpha(0);
 
-       // gameOverPanel.SetActive (true);
-        print ("Player " + winner + " is the winner");
+        // gameOverPanel.SetActive (true);
+        if (winner != -1)
+            print("Player " + winner + " is the winner");
+        else
+            print("Match nul");
     }
 }
