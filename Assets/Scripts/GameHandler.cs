@@ -37,7 +37,7 @@ public class GameHandler : MonoBehaviour {
         //myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
         /// [switchVar]
         
-        Invoke("NextTurn",2.5f);
+        NextTurn ();
     }
 
     /// <summary>

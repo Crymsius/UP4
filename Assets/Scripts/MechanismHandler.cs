@@ -12,9 +12,10 @@ using UnityEngine;
 public class MechanismHandler : MonoBehaviour {
     public Grid myGrid { get; set; }
     public Atlas gridAtlas;
-    public GameObject currentPawn { get; set; }
+    public GameObject currentPawn;
     public GameObject winningLine;
-
+    public GameObject loadingPanel;
+    public GameObject overlayPanel;
     public int gravity { get; set; } // direction de chute des pions
     
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
@@ -32,12 +33,23 @@ public class MechanismHandler : MonoBehaviour {
         gravity = 0; //0: down | 1: left | 2: up | 3: right 
 
         //attente que la grille d'editor soit détruite puis que la grille de jeu soit chargée.
-        yield return new WaitForSeconds(2f); // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
 
+        overlayPanel.SetActive (true);
+        loadingPanel.SetActive (true);
+        // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
+        
+        yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().GenerateGrid ());
+        yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().DisplayFromSave ());
+        //LoadingPanel.SetActive (false);
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();
         GameObject.Find("IAHandler").GetComponent<IAMain>().myAtlas = gridAtlas;
         GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
+        
+        currentPawn = Resources.Load ("Prefabs/PawnPlayer1") as GameObject;
+        yield return null;
+        overlayPanel.SetActive (false);
+        loadingPanel.SetActive (false);
     }
 
     /// <summary>
