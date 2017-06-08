@@ -59,7 +59,7 @@ public class GameHandler : MonoBehaviour {
         if (available)
             NextTurn();
         else
-            GameOver(-1);
+            GameOver();
     }
 
     /// <summary>
@@ -80,14 +80,18 @@ public class GameHandler : MonoBehaviour {
     /// Gère la fin de partie
     /// </summary>
     /// <param name="winner"></param>
-    public void GameOver (int winner) {
+    public void GameOver () {
         isOver = true;
         overlayPanel.SetActive (true);
         overlayPanel.GetComponent<CanvasRenderer> ().SetAlpha(0);
 
+        int p0 = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.inVictory[0].Count;
+        int p1 = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.inVictory[1].Count;
+        int winner = p1 != p0 ? (p1 > p0 ? 1 : 0) : -1;
+
         // gameOverPanel.SetActive (true);
         if (winner != -1)
-            print("Player " + winner + " is the winner");
+            print("Player " + winner + " is the winner " + Mathf.Max(p1, p0) + "-" + Mathf.Min(p1, p0));
         else
             print("Match nul");
     }

@@ -11,6 +11,8 @@ public class Matrix
     public Atlas myAtlas { get; set; }
 
     public bool isVictory { get; set; }
+    public Dictionary<int,List<Coord>> inVictory = new Dictionary<int, List<Coord>>();
+    public List<Vector3> coordWinningLines = new List<Vector3>();
 
     public Matrix(Coord _c, Atlas _myatlas) // Création d'une grille vierge
     {
@@ -23,6 +25,8 @@ public class Matrix
         myAtlas = _myatlas;
 
         isVictory = false;
+        inVictory.Add(0, new List<Coord>());
+        inVictory.Add(1, new List<Coord>());
     }
 
     public Matrix(Matrix copy, Atlas _myatlas) { // Copie d'une autre matrice
@@ -35,6 +39,8 @@ public class Matrix
         myAtlas = _myatlas;
 
         isVictory = false;
+        inVictory.Add(0, new List<Coord>());
+        inVictory.Add(1, new List<Coord>());
     }
 
     public int MeasureScore(int player) { // Calcule le score instantané d'un joueur sur la grille
@@ -63,12 +69,25 @@ public class Matrix
             if (values[actuel] == player)
             {
                 vinter++;
-                if (vinter >= 4)
+                if (vinter == 4) // On se rend compte qu'il existe une P4
                 {
                     isVictory = true;
                     result += 10000; // Marche bien avec 100 000
-                    vinter = 0;
+                    //vinter = 0;
+                    coordWinningLines.Add(myAtlas.gridDictionary[actuel - 3 * direction].GetComponent<Transform>().position);
+                    coordWinningLines.Add(myAtlas.gridDictionary[actuel].GetComponent<Transform>().position);
+                    for (int i = 0; i <= 3; i++) if (!inVictory[player].Contains(actuel - i * direction)) // On enregistre les cellules concernées pour le score au points
+                            inVictory[player].Add(actuel - i * direction);
+
                 }
+                else if (vinter > 4) if (!inVictory[player].Contains(actuel)) // On a plus qu'une P4
+                    {
+                        inVictory[player].Add(actuel);
+                        result += 2500;
+
+                        coordWinningLines.RemoveAt(coordWinningLines.Count - 1);
+                        coordWinningLines.Add(myAtlas.gridDictionary[actuel].GetComponent<Transform>().position);
+                    }
             }
             else
             {

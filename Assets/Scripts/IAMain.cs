@@ -34,29 +34,51 @@ public class IAMain : MonoBehaviour {
     }
 
     public void GetCurrentPlay(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
-        //print(play.Stringify());
         if (mainNode.children.ContainsKey(play))
             mainNode = mainNode.children[play]; // Le reste est envoyé au GarbageCollector, normalement...
         else
             print("JE CRASHE !"); // Pour une raison obscure, un coup joué n'a pas été prévu par la grille... Enquêter sur le pourquoi...
         mainNode.Maj_Depth(0);
         mainNode.DeploymentTree();
-
-        //PrintAllPlays();
     }
 
     public void IA_Play() { // compare les scores de chaque coup et joue le meilleur
         mainNode.MAJ_Scores();
 
-        Coord bestplay = new Coord(-1, -1); float bestScore = -10000;
+        Dictionary<float,Coord> scores = new Dictionary<float, Coord>();
         foreach (Coord play in mainNode.children.Keys)
-            if (mainNode.children[play].score >= bestScore)
-            {
-                bestplay = play;
-                bestScore = mainNode.children[play].score;
-            }
+            scores.Add(mainNode.children[play].score + Random.Range(-0.01f,0.01f), play);
         
-        StartCoroutine(GameObject.Find("GeneralHandler").GetComponent<GameHandler>().PutAPawn(myAtlas.gridDictionary[bestplay]));
+        if (!mainNode.position.isVictory)
+            StartCoroutine(GameObject.Find("GeneralHandler").GetComponent<GameHandler>().PutAPawn(myAtlas.gridDictionary[RandomizeDecision(scores)]));
+    }
+    public Coord RandomizeDecision(Dictionary<float,Coord> scores) {
+        List<float> scoresInit = new List<float>(scores.Keys);
+
+        scoresInit.Sort();
+        float min = scoresInit[0];
+        float max = scoresInit[scoresInit.Count-1];
+
+        List<float> scoresConsidered = new List<float>();
+        foreach (float i in scoresInit)
+            if (i > min+0.9*(max-min))
+                scoresConsidered.Add(i);
+
+        //print(scoresConsidered.Count + " scores considérés.");
+
+        scoresConsidered.Sort(); //scoresConsidered.Reverse();
+        int choice = scoresConsidered.Count-1; bool select = true;
+        while (select && choice - 1 >= 0) {
+            if (Random.Range(0f, 1f) < 0.3f) // influer sur cette proba pour donner à l'IA un choix plus ou moins random
+                choice--;
+            else
+                select = false;
+        }
+
+        //print("Score choisi : "+ (scoresConsidered.Count-choice));
+
+        return scores[scoresConsidered[choice]];
+            
     }
 
     public void PrintAllPlays() { // fonction d'observation

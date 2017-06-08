@@ -406,7 +406,7 @@ public class MechanismHandlerVariant : MonoBehaviour {
                         Vector3 destinationPosition = gridAtlas.gridDictionary[destCoords].GetComponent<Transform> ().position;
                         newLine.GetComponent<WinningLine> ().DisplayLine (originPosition, destinationPosition);
 
-                        GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver (player);
+                        GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver ();
                     }
                     else if (!IsBlocked (startCoords, i)) count++;
                     else count = 0;

@@ -107,7 +107,7 @@ public class MechanismHandler : MonoBehaviour {
             yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
         }
         //script de vérification de la puissance 4
-        CheckAlign4 (currentCell, player);
+        // CheckAlign4 (currentCell, player);
     }
 
     /// <summary>
@@ -257,11 +257,14 @@ public class MechanismHandler : MonoBehaviour {
 
         //appelle l'IA pour mettre à jour son arbre.
         if (!reset)
+        {
             GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates);
-        
-        if (reset) {
-            CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
+            CheckAlign4();
         }
+
+        //if (reset) 
+        //    CheckAlign4 ();
+        
     }
 
     /// <summary>
@@ -411,7 +414,20 @@ public class MechanismHandler : MonoBehaviour {
         }
     }
 
-    /// <summary>
+    public void CheckAlign4 () {
+        if (GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.isVictory)
+        {
+            List<Vector3> linesToDraw = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.coordWinningLines;
+            for(int i=0; i<linesToDraw.Count; i+=2)
+            {
+                GameObject newLine = Instantiate(winningLine);
+                newLine.GetComponent<WinningLine>().DisplayLine(linesToDraw[i], linesToDraw[i+1]);
+            }
+            GameObject.Find("GeneralHandler").GetComponent<GameHandler>().GameOver();
+        }
+    }
+
+    /*/// <summary>
     /// Check un puissance 4 comprennant le pion venant d'être placé
     /// </summary>
     /// <param name="newFilled"> cell that just got filled </param>
@@ -443,7 +459,7 @@ public class MechanismHandler : MonoBehaviour {
                         Vector3 destinationPosition = gridAtlas.gridDictionary[destCoords].GetComponent<Transform> ().position;
                         newLine.GetComponent<WinningLine> ().DisplayLine (originPosition, destinationPosition);
 
-                        GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver (player);
+                        GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver ();
                     }
                     else if (!IsBlocked (startCoords, i)) count++;
                     else count = 0;
@@ -481,7 +497,7 @@ public class MechanismHandler : MonoBehaviour {
             break;
         }
             return false;
-    }
+    }*/
 
     /// <summary>
     /// simple conversion method for old usage of strings for directions
