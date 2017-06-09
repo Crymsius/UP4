@@ -15,8 +15,7 @@ public class GridEditor : Editor {
         }
 
         if (GUILayout.Button ("Generate Grid")) {
-            grid.GenerateGrid ();
-            grid.DisplayFromSave ();
+            grid.GenerateGridButton ();
         }
 
         if (GUILayout.Button ("Display Properties from Cells")) {

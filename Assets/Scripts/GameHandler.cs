@@ -29,7 +29,7 @@ public class GameHandler : MonoBehaviour {
         isOver = false;
         activePlayer = 0;
 
-        typePlayer = new List<string>() { "IA", "human" }; // Test, à remplacer par un appel au lancement d'une partie
+        typePlayer = new List<string>() { "human", "IA" }; // Test, à remplacer par un appel au lancement d'une partie
         GameObject.Find("IAHandler").GetComponent<IAMain>().typePlayers = typePlayer;
 
         /// [switchVar]
@@ -37,7 +37,7 @@ public class GameHandler : MonoBehaviour {
         //myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
         /// [switchVar]
         
-        NextTurn ();
+        //NextTurn ();
     }
 
     /// <summary>

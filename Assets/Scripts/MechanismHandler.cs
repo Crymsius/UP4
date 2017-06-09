@@ -50,6 +50,7 @@ public class MechanismHandler : MonoBehaviour {
         yield return null;
         overlayPanel.SetActive (false);
         loadingPanel.SetActive (false);
+        GameObject.Find ("GeneralHandler").GetComponent <GameHandler> ().NextTurn ();
     }
 
     /// <summary>

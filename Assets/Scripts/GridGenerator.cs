@@ -26,6 +26,11 @@ public class GridGenerator : MonoBehaviour {
         StartCoroutine (DisplayFromSave ());
     }
 
+    public void GenerateGridButton () {
+        StartCoroutine (GenerateGrid ());
+        StartCoroutine (DisplayFromSave ());
+    }
+
     /// <summary>
     /// Génère la grille depuis la grille et les cases (mais pas leur contenu !) depuis la grille virtuelle
     /// </summary>
