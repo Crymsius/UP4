@@ -53,32 +53,37 @@ public class IAMain : MonoBehaviour {
             StartCoroutine(GameObject.Find("GeneralHandler").GetComponent<GameHandler>().PutAPawn(myAtlas.gridDictionary[RandomizeDecision(scores)]));
     }
     public Coord RandomizeDecision(Dictionary<float,Coord> scores) {
-        List<float> scoresInit = new List<float>(scores.Keys);
+        if (scores.Count != 1)
+        {
+            List<float> scoresInit = new List<float>(scores.Keys);
 
-        scoresInit.Sort();
-        float min = scoresInit[0];
-        float max = scoresInit[scoresInit.Count-1];
+            scoresInit.Sort();
+            float min = scoresInit[0];
+            float max = scoresInit[scoresInit.Count - 1];
 
-        List<float> scoresConsidered = new List<float>();
-        foreach (float i in scoresInit)
-            if (i > min+0.9*(max-min))
-                scoresConsidered.Add(i);
+            List<float> scoresConsidered = new List<float>();
+            foreach (float i in scoresInit)
+                if (i > min + 0.9 * (max - min))
+                    scoresConsidered.Add(i);
 
-        //print(scoresConsidered.Count + " scores considérés.");
+            //print(scoresConsidered.Count + " scores considérés.");
 
-        scoresConsidered.Sort(); //scoresConsidered.Reverse();
-        int choice = scoresConsidered.Count-1; bool select = true;
-        while (select && choice - 1 >= 0) {
-            if (Random.Range(0f, 1f) < 0.3f) // influer sur cette proba pour donner à l'IA un choix plus ou moins random
-                choice--;
-            else
-                select = false;
+            scoresConsidered.Sort(); //scoresConsidered.Reverse();
+            int choice = scoresConsidered.Count - 1; bool select = true;
+            while (select && choice - 1 >= 0)
+            {
+                if (Random.Range(0f, 1f) < 0.3f) // influer sur cette proba pour donner à l'IA un choix plus ou moins random
+                    choice--;
+                else
+                    select = false;
+            }
+
+            //print("Score choisi : "+ (scoresConsidered.Count-choice));
+
+            return scores[scoresConsidered[choice]];
         }
-
-        //print("Score choisi : "+ (scoresConsidered.Count-choice));
-
-        return scores[scoresConsidered[choice]];
-            
+        else
+            return scores[new List<float>(scores.Keys)[0]];
     }
 
     public void PrintAllPlays() { // fonction d'observation

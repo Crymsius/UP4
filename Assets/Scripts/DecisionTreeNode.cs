@@ -110,7 +110,7 @@ public class DecisionTreeNode {
 
     public void MAJ_Scores() // Fonction récursive mettant à jour les scores de chaque coup
     {
-        if (depth == depthMax || children.Count==0 || position.isVictory) // le score est instantané si l'on est sur une feuille
+        if (depth == depthMax || children.Count == 0 || position.isVictory) // le score est instantané si l'on est sur une feuille
             score = (float)position.MeasureScore(player);
 
         else

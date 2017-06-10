@@ -58,48 +58,52 @@ public class Matrix
         for (int i = 3; i <= hDim + vDim - 5; i++)
             d2score += intermediateCalculus(new Coord(Mathf.Max(0, i + 1 - vDim), Mathf.Max(0, vDim - i - 1)), new Coord(1, 1), player);
 
-        return hscore + vscore + d1score + d2score;
+        return hscore + vscore + d1score + d2score - 2500 * inVictory[1 - player].Count; // Le dernier terme prend en co^mpte le fait que l'adversaire peut obtenir une P4 en même temps
     }
     public int intermediateCalculus(Coord init, Coord direction, int player) { // Calcule le score d'un joueur sur une ligne directionnelle
-        int result =0,vinter = 0;
+        int result=0, pinter = 0, vinter = 0;
         Coord actuel = init;
 
         while (values.ContainsKey(actuel))
         {
-            if (values[actuel] == player)
+            if (values[actuel] == pinter)
             {
                 vinter++;
                 if (vinter == 4) // On se rend compte qu'il existe une P4
                 {
                     isVictory = true;
-                    result += 10000; // Marche bien avec 100 000
+                    result += (player == pinter) ? 10000 : 0; // Marche bien avec 100 000
                     //vinter = 0;
                     coordWinningLines.Add(myAtlas.gridDictionary[actuel - 3 * direction].GetComponent<Transform>().position);
                     coordWinningLines.Add(myAtlas.gridDictionary[actuel].GetComponent<Transform>().position);
-                    for (int i = 0; i <= 3; i++) if (!inVictory[player].Contains(actuel - i * direction)) // On enregistre les cellules concernées pour le score au points
-                            inVictory[player].Add(actuel - i * direction);
-
+                    for (int i = 0; i <= 3; i++) if (!inVictory[pinter].Contains(actuel - i * direction)) // On enregistre les cellules concernées pour le score au points
+                            inVictory[pinter].Add(actuel - i * direction);
                 }
-                else if (vinter > 4) if (!inVictory[player].Contains(actuel)) // On a plus qu'une P4
+                else if (vinter > 4) if (!inVictory[pinter].Contains(actuel)) // On a plus qu'une P4
                     {
-                        inVictory[player].Add(actuel);
-                        result += 2500;
+                        inVictory[pinter].Add(actuel);
+                        result += (player == pinter) ? 2500 : 0;
 
                         coordWinningLines.RemoveAt(coordWinningLines.Count - 1);
                         coordWinningLines.Add(myAtlas.gridDictionary[actuel].GetComponent<Transform>().position);
                     }
             }
-            else
+            else if (values[actuel] == 1 - pinter)
             {
-                result += (int)Mathf.Pow(vinter, 3);
+                result += (player == pinter) ? (int)Mathf.Pow(vinter, 3) : 0;
+                pinter = 1 - pinter;
+                vinter = 1;
+            }
+            else {
+                result += (player == pinter) ? (int)Mathf.Pow(vinter, 3) : 0;
                 vinter = 0;
             }
             if (isBlocked(actuel, direction))
                 vinter = 0;
             actuel = actuel + direction;
         }
-        result += (int)Mathf.Pow(vinter, 2);
-
+        result += (player == pinter) ? (int)Mathf.Pow(vinter, 3) : 0;
+       
         return result;
     }
     public bool isBlocked(Coord actuel, Coord direction) {
