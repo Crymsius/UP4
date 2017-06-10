@@ -20,14 +20,10 @@ public class IAMain : MonoBehaviour {
         Matrix trigPositions = new Matrix(c, myAtlas);
 
         foreach (Cell cell in myAtlas.gridDictionary.Values)
-        {
-            if (cell.trigger.isTrigger)
-                trigPositions.values[cell.coordinates] = cell.trigger.triggerType;
             if (cell.full)
                 board.values[cell.coordinates] = -2;
-        }
         
-        mainNode = new DecisionTreeNode(1, 0, 4, board, trigPositions, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
+        mainNode = new DecisionTreeNode(1, 0, 4, board, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
         mainNode.DeploymentTree();
 
         //PrintAllPlays();
@@ -38,6 +34,9 @@ public class IAMain : MonoBehaviour {
             mainNode = mainNode.children[play]; // Le reste est envoyé au GarbageCollector, normalement...
         else
             print("JE CRASHE !"); // Pour une raison obscure, un coup joué n'a pas été prévu par la grille... Enquêter sur le pourquoi...
+
+        //PrintAllPlays();
+
         mainNode.Maj_Depth(0);
         mainNode.DeploymentTree();
     }

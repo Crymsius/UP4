@@ -119,18 +119,18 @@ public class Matrix
 
         return result;
     }
-
-    public List<int> CheckTriggers(Coord play, Coord gravity) {
+    public List<int> CheckTriggers(Coord play, Coord gravity)
+    {
         List<int> results = new List<int>();
 
         Coord startCell = play;
-        while (values.ContainsKey(startCell - gravity))
+        while (myAtlas.gridDictionary.ContainsKey(startCell - gravity))
             startCell = startCell - gravity;
 
-        while (startCell!=play+gravity)
+        while (startCell != play + gravity)
         {
-            if (values[startCell] != -1)
-                results.Add(values[startCell]);
+            if (myAtlas.gridDictionary[startCell].trigger.isTrigger)
+                results.Add(myAtlas.gridDictionary[startCell].trigger.triggerType);
             startCell = startCell + gravity;
         }
         return results;
