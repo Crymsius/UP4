@@ -23,12 +23,11 @@ public class GridGenerator : MonoBehaviour {
     /// </summary>
     public void GenerateEditor () {
         StartCoroutine (GenerateGrid ());
-        StartCoroutine (DisplayFromSave ());
+        SaveCells();
     }
 
     public void GenerateGridButton () {
         StartCoroutine (GenerateGrid ());
-        StartCoroutine (DisplayFromSave ());
     }
 
     /// <summary>
@@ -72,8 +71,7 @@ public class GridGenerator : MonoBehaviour {
         if (currentGrid.gridSize.y % 2 != 0 ) {
             newGrid.Translate(Vector3.down * 0.5f);
         }
-        //DisplayFromSave ();
-        yield return null;
+        yield return StartCoroutine (DisplayFromSave ());
     }
 
     /// <summary>

@@ -39,7 +39,7 @@ public class MechanismHandler : MonoBehaviour {
         // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
         
         yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().GenerateGrid ());
-        yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().DisplayFromSave ());
+       // yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().DisplayFromSave ());
         //LoadingPanel.SetActive (false);
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();
