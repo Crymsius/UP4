@@ -1,40 +1,100 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 public class GridGenerator : MonoBehaviour {
 
-    public GridHolder[] grids; //liste de tous les lvls
-    public int gridIndex; //index de la grid qu'on regarde
+    private LevelHolder levels;
+    public List<GridHolder> grids;
+    //index de la grid qu'on regarde
+    public int gridIndex;
     public Transform cellPrefab;
     public Transform gridPrefab;
-
-    [Range(0,1)]
-    public float outlinePercent;
+    private string levelDataFileName = "levelData.json";
+    public string json;
     List<Coord> allCellCoords;
     GridHolder currentGrid;
 
-    void Start () {
-        gridIndex = LevelLoader.level;
+    /// <summary>
+    /// Appelé lors d'une modification d'un paramètre d'une cell dans l'editor
+    /// </summary>
+    public void GenerateFromValidate () {
+        SaveCells ();
+        DisplayFromSave ();
     }
 
     /// <summary>
-    /// factorisation de generate grid et display from save
+    /// Appelé par l'éditeur de façon automatique
+    /// 1) Génère la grille depuis les infos du gridHolder
+    /// 2) Update le nombre de cellules lors d'un changement de gridSize
+    /// 3) Popule les cellules avec leur contenu
     /// </summary>
     public void GenerateEditor () {
-        StartCoroutine (GenerateGrid ());
-        StartCoroutine (DisplayFromSave ());
+        GenerateGrid ();
+        UpdateCountCells ();
+        DisplayFromSave ();
     }
 
+    /// <summary>
+    /// Version manuelle de la génération de grille (cf GenerateEditor)
+    /// </summary>
     public void GenerateGridButton () {
-        StartCoroutine (GenerateGrid ());
-        StartCoroutine (DisplayFromSave ());
+        GenerateGrid ();
+        UpdateCountCells ();
+        DisplayFromSave ();
+    }
+    
+
+    /// <summary>
+    /// Génère un string json des grilles contenues dans l'editor
+    /// </summary>
+    public void GenerateJson () {
+        levels.grids = grids;
+        json = JsonUtility.ToJson(levels, false);
+        print ("Json généré");
+    }
+
+    /// <summary>
+    /// 1) Load le json des niveaux
+    /// 2) Génère la grille correspondante
+    /// 3) Popule la grille avec le contenu des cells (indiqué dans le json)
+    /// </summary>
+    public void LoadLevelData () {
+        // Path.Combine combines strings into a file path
+        // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
+        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileName);
+
+        if (File.Exists (filePath)) {
+            // Read the json from the file into a string
+            json = File.ReadAllText (filePath);
+            // Pass the json to JsonUtility, and tell it to create a GameData object from it
+            levels = JsonUtility.FromJson<LevelHolder> (json);
+            print ("Json chargé");
+            grids = levels.grids;
+            GenerateGrid ();
+            print ("Grille générée");   
+            DisplayFromSave ();
+            print ("Grille populée");
+        }
+        else {
+            Debug.LogError ("Cannot load game data!");
+        }
+    }
+
+    /// <summary>
+    /// Si la gridSize est différent du nombre de cellules dans le gridHodler de la grille, les cellules sont regénérées.
+    /// </summary>
+    public void UpdateCountCells () {
+        if (grids[gridIndex].gridSize.x * grids[gridIndex].gridSize.y != grids[gridIndex].cells.Count) {
+            SaveCells ();
+        }
     }
 
     /// <summary>
     /// Génère la grille depuis la grille et les cases (mais pas leur contenu !) depuis la grille virtuelle
     /// </summary>
-    public IEnumerator GenerateGrid () {
+    public void GenerateGrid () {
         //on setup l'index de la grid qu'on modifie
         currentGrid = grids[gridIndex];
         allCellCoords = new List<Coord> ();
@@ -55,12 +115,11 @@ public class GridGenerator : MonoBehaviour {
 
                 Vector3 cellPosition = CoordToPosition (x, y);
                 Transform newCell = Instantiate (cellPrefab, cellPosition, Quaternion.identity) as Transform;
-                newCell.localScale = Vector3.one * (1 - outlinePercent);
                 newCell.parent = newGrid;
                 Cell cellScript = newCell.GetComponent<Cell> ();
 
                 //ajoute les coordonnées de chacune des Cells
-                cellScript.coordinates = new Coord (x, y); 
+                cellScript.coordinates = new Coord (x, y);
                 allCellCoords.Add (new Coord (x, y));
             }
         }
@@ -71,36 +130,6 @@ public class GridGenerator : MonoBehaviour {
         }
         if (currentGrid.gridSize.y % 2 != 0 ) {
             newGrid.Translate(Vector3.down * 0.5f);
-        }
-        //DisplayFromSave ();
-        yield return null;
-    }
-
-    /// <summary>
-    /// Parcourt la grille physique et affiche le contenu
-    /// </summary>
-    public void DisplayFromCells () {
-        Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
-        List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)", "CellHidden(Clone)"};
-        //parcourt de toute la grille physique
-        foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
-            foreach (string content in contentNames) {
-                DeleteExistingCellChild (cellChild, content);
-            }
-            StartCoroutine (SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid));
-            StartCoroutine (SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid));
-
-            //cell invisible ?
-            if (cellChild.GetComponent<Cell> ().hidden) {
-                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
-                GameObject newCellHidden = Instantiate (grid.cellHidden);
-                newCellHidden.transform.SetParent (cellChild);
-                newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);
-            }
-            //cell bloquée ?
-            if (cellChild.GetComponent<Cell> ().full) {
-                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
-            }
         }
     }
 
@@ -114,8 +143,9 @@ public class GridGenerator : MonoBehaviour {
             grids[gridIndex].cells.Add (
                 //on attribue les carac de la cell physiques à une nouvelle cell virtuelle
                 new CellHolder {
-                    walls = cellChild.GetComponent<Cell> ().walls, 
-                    triggers = cellChild.GetComponent<Cell> ().trigger, 
+                    coordinates = cellChild.GetComponent<Cell> ().coordinates,
+                    walls = cellChild.GetComponent<Cell> ().walls,
+                    triggers = cellChild.GetComponent<Cell> ().trigger,
                     available = cellChild.GetComponent<Cell> ().available,
                     hidden = cellChild.GetComponent<Cell> ().hidden,
                     full = cellChild.GetComponent<Cell> ().full
@@ -127,10 +157,10 @@ public class GridGenerator : MonoBehaviour {
     /// <summary>
     /// Parcourt la grille virtuelle et applique le contenu dans la grid physique
     /// </summary>
-    public IEnumerator DisplayFromSave () {
+    public void DisplayFromSave () {
         int i = 0;
         Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
-        List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)"};
+        List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)","CellHidden(Clone)", "CellCover(Clone)"};
         //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
             foreach (string content in contentNames) {
@@ -138,28 +168,33 @@ public class GridGenerator : MonoBehaviour {
                 DeleteExistingCellChild (cellChild, content);
             }
             //on attribue les carac des cells virtuelles aux cells de la grille
+            cellChild.GetComponent<Cell> ().coordinates = currentGrid.cells[i].coordinates;
             cellChild.GetComponent<Cell> ().walls = currentGrid.cells[i].walls;
             cellChild.GetComponent<Cell> ().trigger = currentGrid.cells[i].triggers;
             cellChild.GetComponent<Cell> ().hidden = currentGrid.cells [i].hidden;
             cellChild.GetComponent<Cell> ().full = currentGrid.cells [i].full;
             cellChild.GetComponent<Cell> ().available = currentGrid.cells [i].available;
+
             //cell invisible ?
             if (cellChild.GetComponent<Cell> ().hidden) {
-                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
+                GameObject newCellCover = Instantiate (grid.cellCover);
+                newCellCover.transform.SetParent (cellChild);
+                newCellCover.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -12);
                 GameObject newCellHidden = Instantiate (grid.cellHidden);
                 newCellHidden.transform.SetParent (cellChild);
                 newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);
             }
             //cell bloquée ?
             if (cellChild.GetComponent<Cell> ().full) {
-                cellChild.GetComponentInChildren<CellCover> ().HideCell ();
+                GameObject newCellCover = Instantiate (grid.cellCover);
+                newCellCover.transform.SetParent (cellChild);
+                newCellCover.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -12);
             }
             //spawn des murs et des triggers
-            yield return StartCoroutine (SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid));
-            yield return StartCoroutine (SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid));
+            SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
+            SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
             i++;
         }
-        yield return null;
     }
 
     /// <summary>
@@ -168,7 +203,7 @@ public class GridGenerator : MonoBehaviour {
     /// <param name="cellTransform"> cell to modify </param>
     /// <param name="walls"> walls to add and display</param>
     /// <param name="grid"> grid object </param>
-    IEnumerator SpawnWalls (Transform cellTransform, Cell.Walls walls, Grid grid) {
+    void SpawnWalls (Transform cellTransform, Cell.Walls walls, Grid grid) {
         //check if wallx/wally/wallxy exists and instanciate them at the correct place
         if (walls.wallx) {
             GameObject newWallX = Instantiate (grid.firstWallX);
@@ -187,7 +222,6 @@ public class GridGenerator : MonoBehaviour {
             newWallXY.transform.SetParent (cellTransform);
             newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -22f);
         }
-        yield return null;
     }
 
     /// <summary>
@@ -196,7 +230,7 @@ public class GridGenerator : MonoBehaviour {
     /// <param name="cellTransform"> Cell to modify </param>
     /// <param name="trigger"> trigger to add and display </param>
     /// <param name="grid"> grid object </param>
-    IEnumerator SpawnTriggers (Transform cellTransform, Cell.Trigger trigger, Grid grid) {
+    void SpawnTriggers (Transform cellTransform, Cell.Trigger trigger, Grid grid) {
         //is there a trigger ?
         if (trigger.isTrigger) {
             //what trigger ?
@@ -225,7 +259,6 @@ public class GridGenerator : MonoBehaviour {
                 break;
             }
         }
-        yield return null;
     }
 
     /// <summary>
@@ -235,7 +268,9 @@ public class GridGenerator : MonoBehaviour {
     /// <param name="holderName"></param>
     void DeleteExistingCellChild (Transform cell, string holderName) {
         if (cell.Find (holderName)) {
-            DestroyImmediate (cell.Find (holderName).gameObject);
+            UnityEditor.EditorApplication.delayCall+=()=> {
+                DestroyImmediate (cell.Find (holderName).gameObject);
+            };
         }
     }
 
@@ -247,6 +282,14 @@ public class GridGenerator : MonoBehaviour {
     /// <returns></returns>
     Vector3 CoordToPosition (int x, int y) {
         return new Vector3 (-currentGrid.gridSize.x / 2 + 0.5f + x, -currentGrid.gridSize.y / 2 + 0.5f + y, 0);
+    }
+
+    /// <summary>
+    /// Hold la liste des grilles
+    /// </summary>
+    [System.Serializable]
+    public class LevelHolder {
+        public List<GridHolder> grids;
     }
 
     /// <summary>
@@ -263,6 +306,7 @@ public class GridGenerator : MonoBehaviour {
     /// </summary>
     [System.Serializable]
     public class CellHolder {
+        public Coord coordinates;
         public Cell.Walls walls;
         public Cell.Trigger triggers;
         public bool hidden;

@@ -1,33 +1,42 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class Cell : MonoBehaviour {
     
     public Coord coordinates;
-
     public Walls walls;
     public Trigger trigger;
-
-    public bool hidden = false;     //cell cachée mais jouable
-    public bool full = false;       //cell cachée et non jouable -> mur
-
-    public bool available = true;	// Peut-on placer un pion dessus ?
+    //cell cachée mais jouable
+    public bool hidden = false;
+    //cell cachée et non jouable -> mur
+    public bool full = false;
+    // Peut-on placer un pion dessus ?
+    public bool available = true;
 
     [System.Serializable]
-    public struct Walls
-    {
+    public struct Walls {
         public bool wallx;
         public bool wally;
         public bool wallxy;
     }
 
     [System.Serializable]
-    public struct Trigger
-    {
+    public struct Trigger {
         public bool isTrigger;
         [Range(0,3)]
         public int triggerType; //0 : 90r | 1 : 90l | 2 : 180 | 3 : gravity
+    }
+
+    /// <summary>
+    /// Utilisé uniquement lors de la création de grille dans GridCreator.
+    /// Sert à actualiser la vue de la grille et à enregistrer les modifs
+    /// </summary>
+    void OnValidate () {
+        if (SceneManager.GetActiveScene().name == "GridCreator") {
+            GameObject.Find ("GridHolder").GetComponent<GridGenerator> ().GenerateFromValidate ();
+        }
     }
 }

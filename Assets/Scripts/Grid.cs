@@ -19,4 +19,5 @@ public class Grid : MonoBehaviour {
     public GameObject gravityReset;
 
     public GameObject cellHidden;
+    public GameObject cellCover;
 }
