@@ -5,7 +5,7 @@ using System.IO;
 
 public class GridGenerator : MonoBehaviour {
 
-    private LevelHolder levels;
+    public LevelHolder levels;
     public List<GridHolder> grids;
     //index de la grid qu'on regarde
     public int gridIndex;
@@ -50,9 +50,22 @@ public class GridGenerator : MonoBehaviour {
     /// Génère un string json des grilles contenues dans l'editor
     /// </summary>
     public void GenerateJson () {
+        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileName);
+
         levels.grids = grids;
         json = JsonUtility.ToJson(levels, false);
         print ("Json généré");
+        
+        if (File.Exists (filePath)) {
+            // Write the json to the file at the path
+            File.WriteAllText (filePath, json);
+            print ("Fichier sauvegardé");
+        }
+        else {
+            File.Create (Application.streamingAssetsPath);
+            GenerateJson();
+        }
+        
     }
 
     /// <summary>
