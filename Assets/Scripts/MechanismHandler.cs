@@ -38,7 +38,7 @@ public class MechanismHandler : MonoBehaviour {
 
         overlayPanel.SetActive (true);
         loadingPanel.SetActive (true);
-        
+
         GameObject.Find ("GridHolder").GetComponent <GridLoader> ().LoadLevelData ();
         while (loading) {
             yield return new WaitUntil(() => !loading);
