@@ -17,6 +17,7 @@ public class MechanismHandler : MonoBehaviour {
     public GameObject loadingPanel;
     public GameObject overlayPanel;
     public int gravity { get; set; } // direction de chute des pions
+    public bool loading;
     
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
     public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
@@ -31,15 +32,17 @@ public class MechanismHandler : MonoBehaviour {
     // Use this for initialization
     IEnumerator Start () {
         gravity = 0; //0: down | 1: left | 2: up | 3: right 
+        loading = true;
 
         //attente que la grille d'editor soit détruite puis que la grille de jeu soit chargée.
 
         overlayPanel.SetActive (true);
         loadingPanel.SetActive (true);
-        // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
         
-        yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().GenerateGrid ());
-       // yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().DisplayFromSave ());
+        GameObject.Find ("GridHolder").GetComponent <GridLoader> ().LoadLevelData ();
+        while (loading) {
+            yield return new WaitUntil(() => !loading);
+        }
         //LoadingPanel.SetActive (false);
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();

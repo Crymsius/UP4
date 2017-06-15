@@ -2,5 +2,5 @@
 /// index of level to load
 /// </summary>
 public class LevelLoader {
-    public static int level = 0;
+    public static int level = 1;
 }

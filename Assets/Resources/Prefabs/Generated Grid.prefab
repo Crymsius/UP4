@@ -64,3 +64,4 @@ MonoBehaviour:
   gravityReset: {fileID: 1780348446458892, guid: 0d96ef132da187541b44b7aaf38dec24,
     type: 2}
   cellHidden: {fileID: 1459083670220234, guid: 7c67f8d0d3ac04a00be9f23f887bea84, type: 2}
+  cellCover: {fileID: 1162294615715538, guid: 855fc0eaf9a88ab44965725c7b056798, type: 2}
