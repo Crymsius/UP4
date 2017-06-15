@@ -12,10 +12,12 @@ using UnityEngine;
 public class MechanismHandler : MonoBehaviour {
     public Grid myGrid { get; set; }
     public Atlas gridAtlas;
-    public GameObject currentPawn { get; set; }
+    public GameObject currentPawn;
     public GameObject winningLine;
-
+    public GameObject loadingPanel;
+    public GameObject overlayPanel;
     public int gravity { get; set; } // direction de chute des pions
+    
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
     public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
         { 0, new Coord (0,-1) },
@@ -31,10 +33,24 @@ public class MechanismHandler : MonoBehaviour {
         gravity = 0; //0: down | 1: left | 2: up | 3: right 
 
         //attente que la grille d'editor soit détruite puis que la grille de jeu soit chargée.
-        yield return new WaitForSeconds(2f); // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
 
+        overlayPanel.SetActive (true);
+        loadingPanel.SetActive (true);
+        // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
+        
+        yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().GenerateGrid ());
+       // yield return StartCoroutine (GameObject.Find ("GridHolder").GetComponent <GridGenerator> ().DisplayFromSave ());
+        //LoadingPanel.SetActive (false);
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();
+        GameObject.Find("IAHandler").GetComponent<IAMain>().myAtlas = gridAtlas;
+        GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
+        
+        currentPawn = Resources.Load ("Prefabs/PawnPlayer1") as GameObject;
+        yield return null;
+        overlayPanel.SetActive (false);
+        loadingPanel.SetActive (false);
+        GameObject.Find ("GeneralHandler").GetComponent <GameHandler> ().NextTurn ();
     }
 
     /// <summary>
@@ -92,7 +108,7 @@ public class MechanismHandler : MonoBehaviour {
             yield return StartCoroutine (PawnFallDo (existingPawn, currentCell, player, true, startCell));
         }
         //script de vérification de la puissance 4
-        CheckAlign4 (currentCell, player);
+        // CheckAlign4 (currentCell, player);
     }
 
     /// <summary>
@@ -232,14 +248,24 @@ public class MechanismHandler : MonoBehaviour {
             yield return new WaitForSeconds (pawn.GetComponentInChildren<Animation> ()["PawnBounceAnimation"].length);
         }
 
-        if (triggers.Count != 0 && !reset) {
-            foreach (Cell.Trigger trigger in triggers) {
-                StartCoroutine(ExecuteTrigger (trigger.triggerType, 1.0f));
+        if (triggers.Count != 0 && !reset)
+        {
+            foreach (Cell.Trigger trigger in triggers)
+            {
+                yield return StartCoroutine(ExecuteTrigger(trigger.triggerType, 1.0f));
             }
         }
-        if (reset) {
-            CheckAlign4 (endCell, pawn.GetComponent<Pawn> ().player);
+
+        //appelle l'IA pour mettre à jour son arbre.
+        if (!reset)
+        {
+            GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates);
+            CheckAlign4();
         }
+
+        //if (reset) 
+        //    CheckAlign4 ();
+        
     }
 
     /// <summary>
@@ -334,7 +360,7 @@ public class MechanismHandler : MonoBehaviour {
     public void ResetGravity () {
         int player;
         Cell cellToReset;
-
+        
         switch (gravity) {
         case 0:
             for (int y = 1; y < myGrid.gridSize.y; y++) {
@@ -392,73 +418,17 @@ public class MechanismHandler : MonoBehaviour {
     /// <summary>
     /// Check un puissance 4 comprennant le pion venant d'être placé
     /// </summary>
-    /// <param name="newFilled"> cell that just got filled </param>
-    /// <param name="player"></param>
-    public void CheckAlign4 (Cell newFilled, int player) {
-        Coord currentCoords = newFilled.coordinates;
-        Coord startCoords; 
-        
-        //test selon les 4 directions
-        foreach (string i in new List<string> () {"right", "UR", "up", "UL"}) {
-            startCoords = currentCoords;
-            while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[directionConversionString(i)])){
-                // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
-                startCoords -= fallIntegers[directionConversionString(i)];
+    public void CheckAlign4 () {
+        if (GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.isVictory)
+        {
+            List<Vector3> linesToDraw = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.coordWinningLines;
+            for(int i=0; i<linesToDraw.Count; i+=2)
+            {
+                GameObject newLine = Instantiate(winningLine);
+                newLine.GetComponent<WinningLine>().DisplayLine(linesToDraw[i], linesToDraw[i+1]);
             }
-            int count = 0;
-            // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
-            while (gridAtlas.gridDictionary.ContainsKey (startCoords)) {
-                if (gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> () && gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> ().player == player) {
-                    if (count + 1 >= 4) {
-                        Coord originCoords = new Coord ();
-                        Coord destCoords = new Coord ();
-
-                        originCoords = startCoords;
-                        destCoords = originCoords - 3 * fallIntegers [directionConversionString (i)];
-
-                        GameObject newLine = Instantiate (winningLine);
-                        Vector3 originPosition = gridAtlas.gridDictionary[originCoords].GetComponent<Transform> ().position;
-                        Vector3 destinationPosition = gridAtlas.gridDictionary[destCoords].GetComponent<Transform> ().position;
-                        newLine.GetComponent<WinningLine> ().DisplayLine (originPosition, destinationPosition);
-
-                        GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver (player);
-                    }
-                    else if (!IsBlocked (startCoords, i)) count++;
-                    else count = 0;
-                }
-                else count = 0;
-                startCoords += fallIntegers[directionConversionString(i)];
-            }
+            GameObject.Find("GeneralHandler").GetComponent<GameHandler>().GameOver();
         }
-        return;
-    }
-    //vérifie si un mur ne bloque pas l'établissement de la puissance 4
-    public bool IsBlocked (Coord coords, string direction) {
-        switch (direction) {
-        case "right":
-            if (gridAtlas.gridDictionary [coords].walls.wallx) {
-                return true;
-            } else
-                break;
-        case "up":
-            if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(0,1)) && gridAtlas.gridDictionary[coords + new Coord(0,1)].walls.wally) {
-                return true;
-            } else
-                break;
-        case "UR":
-            if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(1,1)) && gridAtlas.gridDictionary[coords + new Coord(1,1)].walls.wallxy) {
-                return true;
-            } else
-                break;
-        case "UL":
-            if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(-1,1)) &&gridAtlas.gridDictionary[coords + new Coord(-1,1)].walls.wallxy) {
-                return true;
-            } else
-                break;
-        default:
-            break;
-        }
-            return false;
     }
 
     /// <summary>
