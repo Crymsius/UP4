@@ -19,8 +19,6 @@ public class GridLoader : MonoBehaviour {
 
     void Start () {
         gridIndex = LevelLoader.level;
-        // LoadLevelData ();
-        GameObject.Find ("GeneralHandler").GetComponent<MechanismHandler> ().loading = false;
     }
 
     /// <summary>
@@ -44,6 +42,7 @@ public class GridLoader : MonoBehaviour {
             print ("Grille générée");   
             DisplayFromSave ();
             print ("Grille populée");
+            GameObject.Find ("GeneralHandler").GetComponent<MechanismHandler> ().loading = false;
         }
         else {
             Debug.LogError ("Cannot load game data!");

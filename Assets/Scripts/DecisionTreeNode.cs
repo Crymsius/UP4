@@ -9,7 +9,6 @@ public class DecisionTreeNode {
     public int depthMax { get; set; }
 
     public Matrix position { get; set; }
-    public Matrix triggerPosition { get; set; }
     public Atlas myAtlas { get; set; }
     public Coord gravity { get; set; }
     public List<string> typePlayers;
@@ -19,14 +18,13 @@ public class DecisionTreeNode {
     
     public Dictionary<Coord, DecisionTreeNode> children;
 
-    public DecisionTreeNode(int _player, int _depth, int _depthMax, Matrix _position, Matrix _triggerPosition, Atlas _myAtlas, 
+    public DecisionTreeNode(int _player, int _depth, int _depthMax, Matrix _position, Atlas _myAtlas, 
         Coord _gravity, float _score, Dictionary<Coord, DecisionTreeNode> _children, List<string> _typePlayers)
     {
         player = _player;
         depth = _depth;
         depthMax = _depthMax;
         position = _position;
-        triggerPosition = _triggerPosition;
         myAtlas = _myAtlas;
         gravity = _gravity;
         score = _score;
@@ -54,24 +52,25 @@ public class DecisionTreeNode {
             foreach (Coord play in playables)
             { // Création des nouveaux noeuds fils
                 // On commence par effectuer le play et vérifier si des triggers sont traversés.
-                children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position, myAtlas), triggerPosition, myAtlas, 
+                children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position, myAtlas), myAtlas, 
                     gravity, 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers));
                 children[play].position.values[play] = 1 - player;
 
-                List<int> crossed = children[play].triggerPosition.CheckTriggers(play, gravity);
+                List<int> crossed = children[play].position.CheckTriggers(play, gravity);
                 foreach (int trigger in crossed)
-                    switch (trigger) {
+                    switch (trigger)
+                    {
                         case 0:
-                            children[play].gravity = new Coord(-gravity.y, gravity.x);
+                            children[play].gravity = new Coord(-children[play].gravity.y, children[play].gravity.x);
                             break;
                         case 1:
-                            children[play].gravity = new Coord(gravity.y, -gravity.x);
+                            children[play].gravity = new Coord(children[play].gravity.y, -children[play].gravity.x);
                             break;
                         case 2:
-                            children[play].gravity = new Coord(-gravity.x, -gravity.y);
+                            children[play].gravity = new Coord(-children[play].gravity.x, -children[play].gravity.y);
                             break;
                         case 3:
-                            children[play].position.ResetGravity(gravity);
+                            children[play].position.ResetGravity(children[play].gravity);
                             break;
                         default:
                             break;
@@ -110,7 +109,7 @@ public class DecisionTreeNode {
 
     public void MAJ_Scores() // Fonction récursive mettant à jour les scores de chaque coup
     {
-        if (depth == depthMax || children.Count==0 || position.isVictory) // le score est instantané si l'on est sur une feuille
+        if (depth == depthMax || children.Count == 0 || position.isVictory) // le score est instantané si l'on est sur une feuille
             score = (float)position.MeasureScore(player);
 
         else

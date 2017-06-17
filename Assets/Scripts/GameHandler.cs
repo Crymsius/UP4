@@ -29,7 +29,7 @@ public class GameHandler : MonoBehaviour {
         isOver = false;
         activePlayer = 0;
 
-        typePlayer = new List<string>() { "human", "IA" }; // Test, à remplacer par un appel au lancement d'une partie
+        typePlayer = new List<string>() { "human", "human" }; // Test, à remplacer par un appel au lancement d'une partie
         GameObject.Find("IAHandler").GetComponent<IAMain>().typePlayers = typePlayer;
 
         /// [switchVar]
@@ -68,7 +68,7 @@ public class GameHandler : MonoBehaviour {
     /// </summary>
     public void NextTurn () {
         //running = false;
-        activePlayer = 1 - activePlayer; // si jamais partie à plus de 2, ne marche plus
+        activePlayer = 1 - activePlayer;
         running = typePlayer[activePlayer] == "human" ? false : true;
         myMechanisms.currentPawn = (activePlayer == 1) ? player1 : player2;
 
