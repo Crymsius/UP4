@@ -294,34 +294,4 @@ public class GridGenerator : MonoBehaviour {
     Vector3 CoordToPosition (int x, int y) {
         return new Vector3 (-currentGrid.gridSize.x / 2 + 0.5f + x, -currentGrid.gridSize.y / 2 + 0.5f + y, 0);
     }
-
-    /// <summary>
-    /// Hold la liste des grilles
-    /// </summary>
-    [System.Serializable]
-    public class LevelHolder {
-        public List<GridHolder> grids;
-    }
-
-    /// <summary>
-    /// grille virtuelle contenant les cellules virtuelles. Sert de sauvegarde des différentes grilles puisque serializable
-    /// </summary>
-    [System.Serializable]
-    public class GridHolder {
-        public Coord gridSize;
-        public List<CellHolder> cells;
-    }
-
-    /// <summary>
-    /// cell virtuelle contenant les infos d'une cellule. Sert de sauvegarde du contenu d'une grille
-    /// </summary>
-    [System.Serializable]
-    public class CellHolder {
-        public Coord coordinates;
-        public Cell.Walls walls;
-        public Cell.Trigger triggers;
-        public bool hidden;
-        public bool full;
-        public bool available;
-    }
 }

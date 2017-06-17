@@ -4,8 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class LevelSelectionScreenController : MonoBehaviour {
 
-    public void StartQuickGame(int levelIndex) {
-        LevelLoader.level = levelIndex;
+    public void StartQuickGame (int levelIndex) {
+        LevelSelector.level = levelIndex;
         SceneManager.LoadScene("GridScreen");
     }
 }
