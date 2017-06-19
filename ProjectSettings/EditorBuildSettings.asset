@@ -17,3 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GridScreen.unity
     guid: 6ef580de0711acf4c81ad1290d31290d
+  - enabled: 1
+    path: Assets/Scenes/LevelSelectionScreen.unity
+    guid: a4ba3ade3f8b3481b94085399efe7c08

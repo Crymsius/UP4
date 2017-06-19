@@ -8,6 +8,10 @@ public class MenuScreenController : MonoBehaviour {
         SceneManager.LoadScene ("GridScreen");
     }
 
+    public void SelectLevelMenu () {
+        SceneManager.LoadScene ("LevelSelectionScreen");
+    }
+
     public void StartStory () {
         SceneManager.LoadScene ("WorldView");
     }

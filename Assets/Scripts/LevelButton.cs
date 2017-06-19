@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class LevelButton : MonoBehaviour {
-    public Text levelText;
+    public TMP_Text levelText;
     public int levelIndex;
 
     // Use this for initialization
