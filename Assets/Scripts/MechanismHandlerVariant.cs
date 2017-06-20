@@ -12,10 +12,14 @@ using UnityEngine;
 public class MechanismHandlerVariant : MonoBehaviour {
     public Grid myGrid { get; set; }
     public Atlas gridAtlas;
-    public GameObject currentPawn { get; set; }
+    public GameObject currentPawn;
     public GameObject winningLine;
+    public GameObject loadingPanel;
+    public GameObject overlayPanel;
 
     public int gravity { get; set; } // direction de chute des pions
+    public bool loading;
+
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
     public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
         { 0, new Coord (0,-1) },
@@ -28,13 +32,28 @@ public class MechanismHandlerVariant : MonoBehaviour {
 
     // Use this for initialization
     IEnumerator Start () {
-        gravity = 0; //0: down | 1: left | 2: up | 3: right 
+        gravity = 0; //0: down | 1: left | 2: up | 3: right
+        loading = true;
 
         //attente que la grille d'editor soit détruite puis que la grille de jeu soit chargée.
-        yield return new WaitForSeconds(2f); // à changer pour attendre que la grille soit chargée plutôt que juste "2s"
+        overlayPanel.SetActive (true);
+        loadingPanel.SetActive (true);
+
+        GameObject.Find ("GridHolder").GetComponent <GridLoader> ().LoadLevelData ();
+        while (loading) {
+            yield return new WaitUntil(() => !loading);
+        }
 
         myGrid = GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ();
         gridAtlas = GenerateAtlas ();
+        GameObject.Find("IAHandler").GetComponent<IAMain>().myAtlas = gridAtlas;
+        GameObject.Find("IAHandler").GetComponent<IAMain>().settingGrid(GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
+        
+        currentPawn = Resources.Load ("Prefabs/PawnPlayer1") as GameObject;
+        yield return null;
+        overlayPanel.SetActive (false);
+        loadingPanel.SetActive (false);
+        GameObject.Find ("GeneralHandler").GetComponent <GameHandler> ().NextTurn ();
     }
 
     /// <summary>
@@ -87,10 +106,8 @@ public class MechanismHandlerVariant : MonoBehaviour {
 
         //script plaçant le pion et lançant le visuel
         if (!reset) {
-           
             yield return StartCoroutine (PawnFallDo (currentCell, player, false, startCell, click));
         } else {
-            
             yield return StartCoroutine (PawnFallDo (currentCell, player, true, startCell, click));
         }
         //script de vérification de la puissance 4

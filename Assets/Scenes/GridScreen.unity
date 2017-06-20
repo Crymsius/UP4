@@ -648,11 +648,11 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
@@ -1381,7 +1381,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &161690815
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8691,6 +8691,7 @@ GameObject:
   - component: {fileID: 1231646952}
   - component: {fileID: 1231646953}
   - component: {fileID: 1231646955}
+  - component: {fileID: 1231646956}
   m_Layer: 0
   m_Name: GeneralHandler
   m_TagString: Untagged
@@ -8715,13 +8716,15 @@ MonoBehaviour:
   isOver: 0
   overlayPanel: {fileID: 1119635712}
   gameOverPanel: {fileID: 1688575454}
+  variant: 0
+  myMechanisms: {fileID: 0}
 --- !u!114 &1231646953
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1231646951}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 290edd9cf17eeec49a92427d84fa87d5, type: 3}
   m_Name: 
@@ -8757,8 +8760,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43f0d1f378764dd4f89c735b0f8b28e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPawn: {fileID: 1719082650311746, guid: ae08de94ce51fc1438d589afa3e4d403,
+    type: 2}
   winningLine: {fileID: 1454381605766798, guid: 8f091a63d9e974a32b6b0f1a4dec2857,
     type: 2}
+  loadingPanel: {fileID: 376053827}
+  overlayPanel: {fileID: 1119635712}
+  loading: 0
+--- !u!114 &1231646956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1231646951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282331739d44c6545ad547c8778362b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentPawn: {fileID: 1719082650311746, guid: ae08de94ce51fc1438d589afa3e4d403,
+    type: 2}
+  winningLine: {fileID: 1454381605766798, guid: 8f091a63d9e974a32b6b0f1a4dec2857,
+    type: 2}
+  loadingPanel: {fileID: 376053827}
+  overlayPanel: {fileID: 1119635712}
+  loading: 0
 --- !u!1 &1240805049
 GameObject:
   m_ObjectHideFlags: 0
@@ -9288,11 +9314,11 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
@@ -10442,11 +10468,11 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
@@ -11783,11 +11809,11 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
@@ -12326,11 +12352,11 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:

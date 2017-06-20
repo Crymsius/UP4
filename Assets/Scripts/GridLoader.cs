@@ -39,10 +39,14 @@ public class GridLoader : MonoBehaviour {
             print ("Json chargé");
             grids = levels.grids;
             GenerateGrid ();
-            print ("Grille générée");   
+            print ("Grille générée");
             DisplayFromSave ();
             print ("Grille populée");
-            GameObject.Find ("GeneralHandler").GetComponent<MechanismHandler> ().loading = false;
+            /// [switchVar]
+            // GameObject.Find ("GeneralHandler").GetComponent<MechanismHandler> ().loading = false;
+            // GameObject.Find ("GeneralHandler").GetComponent<MechanismHandlerVariant> ().loading = false;
+            GameObject.Find ("GeneralHandler").GetComponent<MechanismHandlerBoth> ().loading = false;
+            /// [switchVar]
         }
         else {
             Debug.LogError ("Cannot load game data!");

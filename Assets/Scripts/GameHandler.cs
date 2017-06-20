@@ -18,10 +18,13 @@ public class GameHandler : MonoBehaviour {
     public bool isOver; 
     public GameObject overlayPanel;
     public GameObject gameOverPanel;
+    [Range(0, 1)]
+    public int variant;
     
     /// [switchVar]
-     public MechanismHandler myMechanisms { get; set; }
-    //public MechanismHandlerVariant myMechanisms;
+    //  public MechanismHandler myMechanisms { get; set; }
+    // public MechanismHandlerVariant myMechanisms;
+    public MechanismHandlerBoth myMechanisms;
     /// [switchVar]
 
     // Use this for initialization
@@ -33,8 +36,9 @@ public class GameHandler : MonoBehaviour {
         GameObject.Find("IAHandler").GetComponent<IAMain>().typePlayers = typePlayer;
 
         /// [switchVar]
-        myMechanisms = gameObject.GetComponent<MechanismHandler> ();
-        //myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
+        // myMechanisms = gameObject.GetComponent<MechanismHandler> ();
+        // myMechanisms = gameObject.GetComponent<MechanismHandlerVariant> ();
+        myMechanisms = gameObject.GetComponent<MechanismHandlerBoth> ();
         /// [switchVar]
         
         //NextTurn ();
@@ -50,7 +54,7 @@ public class GameHandler : MonoBehaviour {
     /// <returns></returns>
     public IEnumerator PutAPawn (Cell callingCell) {
         running = true;
-        yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false, true));
+        yield return StartCoroutine (myMechanisms.PawnFallCalculation (callingCell, activePlayer, false, true, variant));
 
         bool available = false;
         foreach (Cell cell in myMechanisms.gridAtlas.gridDictionary.Values)
