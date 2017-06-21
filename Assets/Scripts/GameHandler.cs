@@ -33,7 +33,7 @@ public class GameHandler : MonoBehaviour {
         activePlayer = 0;
         variant = VariantSelector.variant;
 
-        typePlayer = new List<string>() { "human", "human" }; // Test, à remplacer par un appel au lancement d'une partie
+        typePlayer = OpponentSelector.opponents;
         GameObject.Find("IAHandler").GetComponent<IAMain>().typePlayers = typePlayer;
 
         /// [switchVar]
