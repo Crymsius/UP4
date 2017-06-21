@@ -13,4 +13,10 @@ public class LocalizedText : MonoBehaviour {
             text.text = LocalizationManager.instance.GetLocalizedValue (key);
         }
     }
+    void Update () {
+        if (LocalizationManager.instance) {
+            TMP_Text text = GetComponent<TMP_Text> ();
+            text.text = LocalizationManager.instance.GetLocalizedValue (key);
+        }
+    }
 }

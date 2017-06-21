@@ -7,8 +7,4 @@ using TMPro;
 public class LevelButton : MonoBehaviour {
     public TMP_Text levelText;
     public int levelIndex;
-
-    // Use this for initialization
-    void Start () {
-    }
 }

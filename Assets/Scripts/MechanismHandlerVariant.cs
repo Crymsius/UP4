@@ -199,7 +199,6 @@ public class MechanismHandlerVariant : MonoBehaviour {
         //rend la case finale non disponible pour les futurs pions
         startCell.available = true;
         endCell.available = false;
-        Coord startCoords = endCell.coordinates;
         Transform pawn;
         
         if (startCell.GetComponentInChildren<Pawn> () != null) {

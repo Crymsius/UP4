@@ -8,18 +8,22 @@ public class LocalizationManager : MonoBehaviour {
     private Dictionary<string, string> localizedText;
     private bool isReady = false;
     private string missingTextString = "Localized text not found";
+    private string fileName = "localizedText_en.json";
 
     // Use this for initialization
     void Awake () {
-        if (instance == null) { //il n'y a pas d'autre instance de localizationManager existante
+        //il n'y a pas d'autre instance de localizationManager existante
+        if (instance == null) {
             instance = this;
         } else if (instance != this) {
             Destroy (gameObject);
         }
-        DontDestroyOnLoad (gameObject); //reste actif même en changeant de scene !
+        //reste actif même en changeant de scene !
+        DontDestroyOnLoad (gameObject);
+        LoadLocalizedText (fileName);
     }
 
-    public void LoadLocalizedText(string fileName) {
+    public void LoadLocalizedText (string fileName) {
         localizedText = new Dictionary<string, string> ();
         string filePath = Path.Combine (Application.streamingAssetsPath, fileName);
         if (File.Exists (filePath)) {
