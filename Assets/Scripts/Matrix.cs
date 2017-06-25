@@ -135,6 +135,15 @@ public class Matrix
         }
         return results;
     }
+	public Coord CheckNextFloorOrTrigger(Coord play, Coord gravity){ // walls not included yet
+		Coord startCell = play;
+		bool next = true;
+		while (myAtlas.gridDictionary.ContainsKey (startCell + gravity) && myAtlas.gridDictionary[startCell + gravity].available && next) {
+			startCell = startCell + gravity;
+			next = next && !myAtlas.gridDictionary [startCell].trigger.isTrigger;
+		}
+		return startCell;
+	}
 
     public void ResetGravity(Coord gravity)
     {

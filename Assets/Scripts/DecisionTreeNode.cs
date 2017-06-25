@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class DecisionTreeNode {
 
-    public int player { get; set; }
+	public int variant { get; set;}
+
+	public int player { get; set; }
     public int depth { get; set; }
     public int depthMax { get; set; }
 
@@ -32,6 +34,7 @@ public class DecisionTreeNode {
         typePlayers = _typePlayers;
 
         considered = true;
+		variant = VariantSelector.variant;
     }
 
     public void DeploymentTree() { // Fonction récursive mettant à jour l'arbre de décision.
@@ -41,7 +44,7 @@ public class DecisionTreeNode {
 
         else if (children.Count == 0 && !position.isVictory) // On ne considère la suite que si la position actuelle n'est pas une position de victoire
         {
-            List<Coord> playables = new List<Coord>();
+            List<Coord> playables = new List<Coord>(); // enregistrement de tous les coups jouables
             for (int i = 0; i < position.hDim; i++)
                 for (int j = 0; j < position.vDim; j++)
                     if (isPlayable(new Coord(i, j), gravity))
@@ -52,29 +55,11 @@ public class DecisionTreeNode {
             foreach (Coord play in playables)
             { // Création des nouveaux noeuds fils
                 // On commence par effectuer le play et vérifier si des triggers sont traversés.
-                children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position, myAtlas), myAtlas, 
-                    gravity, 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers));
-                children[play].position.values[play] = 1 - player;
-
-                List<int> crossed = children[play].position.CheckTriggers(play, gravity);
-                foreach (int trigger in crossed)
-                    switch (trigger)
-                    {
-                        case 0:
-                            children[play].gravity = new Coord(-children[play].gravity.y, children[play].gravity.x);
-                            break;
-                        case 1:
-                            children[play].gravity = new Coord(children[play].gravity.y, -children[play].gravity.x);
-                            break;
-                        case 2:
-                            children[play].gravity = new Coord(-children[play].gravity.x, -children[play].gravity.y);
-                            break;
-                        case 3:
-                            children[play].position.ResetGravity(children[play].gravity);
-                            break;
-                        default:
-                            break;
-                    }
+				children.Add(play, new DecisionTreeNode(1 - player, depth + 1, depthMax, new Matrix(position, myAtlas), myAtlas, 
+					gravity, 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers));
+				if (variant == 0)
+					PlayThenTriggered_BastienVersion (play); 
+				else TriggeredUntilPlayed_RomainVersion (play);
 
                 //Puis on attribue un score au plateau. Si une puissance 4 est repérée, on la signale.
                 children[play].score = children[play].position.MeasureScore(children[play].player);
@@ -93,6 +78,46 @@ public class DecisionTreeNode {
         else foreach (Coord key in children.Keys) if (children[key].considered)
                     children[key].DeploymentTree();
     }
+	public void PlayThenTriggered_BastienVersion(Coord play){
+		children[play].position.values[play] = 1 - player;
+		List<int> crossed = children[play].position.CheckTriggers(play, gravity);
+		foreach (int trigger in crossed)
+			ExecuteTrigger66 (play, trigger);
+	}
+	public void TriggeredUntilPlayed_RomainVersion(Coord play){
+		Coord currentPlay = play, nextPlay;
+		bool next = true;
+		while (myAtlas.gridDictionary [currentPlay].trigger.isTrigger && myAtlas.gridDictionary [currentPlay].trigger.triggerType != 3 && next) {
+			ExecuteTrigger66 (play, myAtlas.gridDictionary [currentPlay].trigger.triggerType);
+			nextPlay = children [play].position.CheckNextFloorOrTrigger (currentPlay, children [play].gravity);
+			next = nextPlay == currentPlay;
+			currentPlay = nextPlay;
+		}
+		children[play].position.values[currentPlay] = 1 - player;
+		if(myAtlas.gridDictionary [currentPlay].trigger.isTrigger) // la seule possibilité est la présence d'un reset gravity
+			ExecuteTrigger66 (play, 3);
+	}
+
+	public void ExecuteTrigger66(Coord play, int _trigger){
+		switch (_trigger)
+		{
+		case 0:
+			children[play].gravity = new Coord(-children[play].gravity.y, children[play].gravity.x);
+			break;
+		case 1:
+			children[play].gravity = new Coord(children[play].gravity.y, -children[play].gravity.x);
+			break;
+		case 2:
+			children[play].gravity = new Coord(-children[play].gravity.x, -children[play].gravity.y);
+			break;
+		case 3:
+			children[play].position.ResetGravity(children[play].gravity);
+			break;
+		default:
+			break;
+		}
+	}
+
     public bool isPlayable(Coord cell, Coord gravity) {
         bool result = false;
         if (gravity == new Coord(0, -1))
@@ -103,6 +128,9 @@ public class DecisionTreeNode {
             result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && myAtlas.gridDictionary[cell + gravity].walls.wally);
         else
             result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && myAtlas.gridDictionary[cell + gravity].walls.wallx);
+		
+		if (variant == 1) // on ajoute le jeu au-dessus / en dessous des triggers dans la variante Romaing
+			result = result || (myAtlas.gridDictionary [cell].trigger.isTrigger);
 
         return position.values[cell] == -1 && (result || !position.values.ContainsKey(cell + gravity) || position.values[cell + gravity] != -1);
     }

@@ -498,7 +498,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
             yield return StartCoroutine (PawnFallDoVariantRomain (currentCell, player, true, startCell, click));
         }
         //script de vérification de la puissance 4
-        CheckAlign4VariantRomain (currentCell, player);
+        //CheckAlign4VariantRomain (currentCell, player);
+		CheckAlign4VariantBastien ();
     }
 
     /// <summary>
@@ -625,8 +626,13 @@ public class MechanismHandlerBoth : MonoBehaviour {
                 yield return StartCoroutine (PawnFallCalculationVariantRomain (endCell, player, false, false));
             }
         }
+		if (!reset) {
+			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+			CheckAlign4VariantBastien();
+		}
         if (reset) {
-            CheckAlign4VariantRomain (endCell, pawn.GetComponent<Pawn> ().player);
+            //CheckAlign4VariantRomain (endCell, pawn.GetComponent<Pawn> ().player);
+			CheckAlign4VariantBastien ();
         }
     }
 
@@ -782,7 +788,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
     /// </summary>
     /// <param name="newFilled"> cell that just got filled </param>
     /// <param name="player"></param>
-    public void CheckAlign4VariantRomain (Cell newFilled, int player) {
+    /*public void CheckAlign4VariantRomain (Cell newFilled, int player) {
         Coord currentCoords = newFilled.coordinates;
         Coord startCoords; 
         
@@ -847,7 +853,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         }
             return false;
-    }
+    }*/
 
     /// <summary>
     /// simple conversion method for old usage of strings for directions
