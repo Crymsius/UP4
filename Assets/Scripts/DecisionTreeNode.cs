@@ -90,11 +90,11 @@ public class DecisionTreeNode {
 		while (myAtlas.gridDictionary [currentPlay].trigger.isTrigger && myAtlas.gridDictionary [currentPlay].trigger.triggerType != 3 && next) {
 			ExecuteTrigger66 (play, myAtlas.gridDictionary [currentPlay].trigger.triggerType);
 			nextPlay = children [play].position.CheckNextFloorOrTrigger (currentPlay, children [play].gravity);
-			next = nextPlay == currentPlay;
+			next = nextPlay != currentPlay;
 			currentPlay = nextPlay;
 		}
 		children[play].position.values[currentPlay] = 1 - player;
-		if(myAtlas.gridDictionary [currentPlay].trigger.isTrigger) // la seule possibilité est la présence d'un reset gravity
+		if(myAtlas.gridDictionary [currentPlay].trigger.isTrigger && next) // la seule possibilité est la présence d'un reset gravity
 			ExecuteTrigger66 (play, 3);
 	}
 

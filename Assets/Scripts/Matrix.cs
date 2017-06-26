@@ -135,10 +135,10 @@ public class Matrix
         }
         return results;
     }
-	public Coord CheckNextFloorOrTrigger(Coord play, Coord gravity){ // walls not included yet
+	public Coord CheckNextFloorOrTrigger(Coord play, Coord gravity){
 		Coord startCell = play;
 		bool next = true;
-		while (myAtlas.gridDictionary.ContainsKey (startCell + gravity) && myAtlas.gridDictionary[startCell + gravity].available && next) {
+		while (!isBlocked(startCell,gravity) && values.ContainsKey (startCell + gravity) && values[startCell + gravity]==-1 && next) {
 			startCell = startCell + gravity;
 			next = next && !myAtlas.gridDictionary [startCell].trigger.isTrigger;
 		}

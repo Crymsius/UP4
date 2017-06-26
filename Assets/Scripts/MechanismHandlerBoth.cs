@@ -626,7 +626,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
                 yield return StartCoroutine (PawnFallCalculationVariantRomain (endCell, player, false, false));
             }
         }
-		if (!reset) {
+		if (click) {
 			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
 			CheckAlign4VariantBastien();
 		}

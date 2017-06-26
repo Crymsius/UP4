@@ -35,10 +35,10 @@ public class IAMain : MonoBehaviour {
     public void GetCurrentPlay(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
         if (mainNode.children.ContainsKey(play))
             mainNode = mainNode.children[play]; // Le reste est envoyé au GarbageCollector, normalement...
-        else
+		else
             print("JE CRASHE !"); // Pour une raison obscure, un coup joué n'a pas été prévu par la grille... Enquêter sur le pourquoi...
 
-        PrintAllPlays();
+        //PrintAllPlays();
 
         mainNode.Maj_Depth(0);
         mainNode.DeploymentTree();
