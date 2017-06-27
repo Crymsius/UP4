@@ -13,7 +13,7 @@ public class GridLoader : MonoBehaviour {
     public Transform cellPrefab;
     public Transform gridPrefab;
     private string levelDataFileName = "levelData.json";
-    public string json;
+    public string json { get; set; }
     List<Coord> allCellCoords;
     GridHolder currentGrid;
 

@@ -27,7 +27,7 @@ Shader "Custom/CellShader" {
 
             struct fragmentInput {
                 float4 pos : SV_POSITION;
-                float2 uv : TEXTCOORD0;
+                float2 uv : TEXCOORD0;
             };
 
             fragmentInput vert (appdata_base v)
