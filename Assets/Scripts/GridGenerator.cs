@@ -279,9 +279,11 @@ public class GridGenerator : MonoBehaviour {
     /// <param name="holderName"></param>
     void DeleteExistingCellChild (Transform cell, string holderName) {
         if (cell.Find (holderName)) {
+             #if UNITY_EDITOR
             UnityEditor.EditorApplication.delayCall+=()=> {
                 DestroyImmediate (cell.Find (holderName).gameObject);
             };
+            #endif
         }
     }
 

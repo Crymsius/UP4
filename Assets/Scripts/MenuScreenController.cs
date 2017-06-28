@@ -23,4 +23,8 @@ public class MenuScreenController : MonoBehaviour {
     public void MainMenu () {
         SceneManager.LoadScene ("MenuScreen");
     }
+
+    public void ExitGame () {
+        Application.Quit();
+    }
 }
