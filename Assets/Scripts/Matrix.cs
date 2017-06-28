@@ -138,10 +138,20 @@ public class Matrix
 	public Coord CheckNextFloorOrTrigger(Coord play, Coord gravity){
 		Coord startCell = play;
 		bool next = true;
-		while (!isBlocked(startCell,gravity) && values.ContainsKey (startCell + gravity) && values[startCell + gravity]==-1 && next) {
+		while (!isBlocked(startCell,gravity) && values.ContainsKey (startCell + gravity) && values[startCell + gravity]==-1 && !myAtlas.gridDictionary[startCell + gravity].full && next) {
 			startCell = startCell + gravity;
 			next = next && !myAtlas.gridDictionary [startCell].trigger.isTrigger;
 		}
+		return startCell;
+	}
+
+	public Coord GetHighestPlayPosition(Coord play, Coord gravity){
+		Coord startCell = play;
+
+		while (!isBlocked(startCell,new Coord(-gravity.x, -gravity.y)) && values.ContainsKey (startCell - gravity) && values[startCell - gravity]==-1 && !myAtlas.gridDictionary[startCell - gravity].full && 
+			!myAtlas.gridDictionary [startCell - gravity].trigger.isTrigger)
+			startCell = startCell - gravity;
+		
 		return startCell;
 	}
 
