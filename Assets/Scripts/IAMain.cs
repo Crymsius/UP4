@@ -51,8 +51,10 @@ public class IAMain : MonoBehaviour {
         foreach (Coord play in mainNode.children.Keys)
             scores.Add(mainNode.children[play].score + Random.Range(-0.01f,0.01f), play);
         
-        if (!mainNode.position.isVictory)
-            StartCoroutine(GameObject.Find("GeneralHandler").GetComponent<GameHandler>().PutAPawn(myAtlas.gridDictionary[RandomizeDecision(scores)]));
+		if (!mainNode.position.isVictory) {
+			Coord decision = VariantSelector.variant==0 ? RandomizeDecision (scores) : mainNode.position.GetHighestPlayPosition(RandomizeDecision (scores), mainNode.gravity) ;
+			StartCoroutine (GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().PutAPawn (myAtlas.gridDictionary [decision]));
+		}
     }
     public Coord RandomizeDecision(Dictionary<float,Coord> scores) {
         if (scores.Count != 1)
