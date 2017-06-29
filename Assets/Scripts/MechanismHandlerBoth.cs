@@ -14,8 +14,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
     public Atlas gridAtlas;
     public GameObject currentPawn;
     public GameObject winningLine;
-    public GameObject loadingPanel;
-    public GameObject overlayPanel;
+    GameObject loadingPanel;
+    GameObject overlayPanel;
 
     public int gravity { get; set; } // direction de chute des pions
     public bool loading;
@@ -34,10 +34,10 @@ public class MechanismHandlerBoth : MonoBehaviour {
     IEnumerator Start () {
         gravity = 0; //0: down | 1: left | 2: up | 3: right 
         loading = true;
+        overlayPanel = GameObject.Find ("OverlayPanel");
+        loadingPanel = GameObject.Find ("LoadingPanel");
 
         //attente que la grille d'editor soit détruite puis que la grille de jeu soit chargée.
-        overlayPanel.SetActive (true);
-        loadingPanel.SetActive (true);
 
         GameObject.Find ("GridHolder").GetComponent <GridLoader> ().LoadLevelData ();
         while (loading) {

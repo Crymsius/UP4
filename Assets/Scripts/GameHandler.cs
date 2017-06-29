@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 /// <summary>
 /// INPUT : les cases sélectionnées par le joueur actif
@@ -16,8 +17,11 @@ public class GameHandler : MonoBehaviour {
     public List<string> typePlayer { get; set; } // human or IA
     public bool running = false;
     public bool isOver; 
-    public GameObject overlayPanel;
-    public GameObject gameOverPanel;
+    GameObject overlayPanel;
+    GameObject pausePanel;
+    GameObject gameOverPanel;
+    GameObject player1Score;
+    GameObject player2Score;
     [Range(0, 1)]
     public int variant;
     
@@ -29,7 +33,14 @@ public class GameHandler : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        overlayPanel = GameObject.Find ("OverlayPanel");
+        pausePanel = GameObject.Find ("PausePanel");
+        gameOverPanel = GameObject.Find ("GameOverPanel");
+        player1Score = GameObject.Find ("Player1ResultsScoreText");
+        player2Score = GameObject.Find ("Player2ResultsScoreText");
+        pausePanel.SetActive (false);
         isOver = false;
+        gameOverPanel.SetActive (false);
         activePlayer = 0;
         variant = VariantSelector.variant;
 
@@ -90,14 +101,16 @@ public class GameHandler : MonoBehaviour {
         overlayPanel.SetActive (true);
         overlayPanel.GetComponent<CanvasRenderer> ().SetAlpha(0);
 
-        int p0 = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.inVictory[0].Count;
-        int p1 = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.inVictory[1].Count;
+        int p0 = GameObject.Find ("IAHandler").GetComponent<IAMain> ().mainNode.position.inVictory[0].Count;
+        int p1 = GameObject.Find ("IAHandler").GetComponent<IAMain> ().mainNode.position.inVictory[1].Count;
         int winner = p1 != p0 ? (p1 > p0 ? 1 : 0) : -1;
+        player1Score.GetComponent<TMP_Text> ().text = p0.ToString ();
+        player2Score.GetComponent<TMP_Text> ().text = p1.ToString ();
 
-        // gameOverPanel.SetActive (true);
-        if (winner != -1)
-            print("Player " + winner + " is the winner " + Mathf.Max(p1, p0) + "-" + Mathf.Min(p1, p0));
-        else
-            print("Match nul");
+        if (winner != -1) {
+            print ("Player " + winner + " is the winner " + Mathf.Max (p1, p0) + "-" + Mathf.Min (p1, p0));
+        } else {
+            print ("Match nul");
+        }
     }
 }

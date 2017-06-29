@@ -12,7 +12,7 @@ public class OverlayClick : MonoBehaviour, IPointerClickHandler {
     #region IPointerClickHandler implementation
     public void OnPointerClick (PointerEventData eventData) {
         if (myHandler.isOver) {
-            gameObject.GetComponent <CanvasRenderer> ().SetAlpha (0.5f);
+            gameObject.GetComponent <CanvasRenderer> ().SetAlpha (1f);
             gameOverPanel.SetActive (true);
         }
     }
