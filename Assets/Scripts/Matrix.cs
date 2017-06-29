@@ -168,12 +168,16 @@ public class Matrix
             startcell = new Coord(0, vDim - 1);
 
         while (values.ContainsKey(startcell)) {
-            goalCell = new Coord(startcell.x, startcell.y); actualCell = new Coord(startcell.x - gravity.x, startcell.y - gravity.y);
+            goalCell = new Coord(startcell.x, startcell.y); actualCell = startcell - gravity;
             while (values.ContainsKey(actualCell))
             {
-                if (values[goalCell] != -1)
-                    goalCell = goalCell - gravity;
-                else if (values[actualCell] != -1) {
+				if (values [goalCell] != -1)
+					goalCell = goalCell - gravity;
+				else if (values [actualCell] == -2) {
+					goalCell = actualCell - gravity;
+					actualCell = goalCell - gravity;
+				}
+				else if (values[actualCell] != -1) {
                     values[goalCell] = values[actualCell];
                     values[actualCell] = -1;
                     goalCell = goalCell - gravity;

@@ -45,6 +45,8 @@ public class GameHandler : MonoBehaviour {
         variant = VariantSelector.variant;
 
         typePlayer = OpponentSelector.opponents;
+		if (typePlayer.Contains ("IA") && typePlayer.Contains ("human"))
+			typePlayer = Random.Range (0f, 1f) > 0.5f ? new List<string> (){ "IA", "human" } : new List<string> (){ "human", "IA" };
         GameObject.Find("IAHandler").GetComponent<IAMain>().typePlayers = typePlayer;
 
         /// [switchVar]
