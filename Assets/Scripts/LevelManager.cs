@@ -12,15 +12,17 @@ public class LevelManager : MonoBehaviour {
         public string levelText;
         public int levelId;
     }
-
     public GameObject levelButton;
     public Transform Spacer;
     public List<LevelButtonInfo> listLevel;
     string json;
     private LevelHolder levels;
-    private string levelDataFileName = "levelData.json";
+    private string levelDataFileName = "levelDataVariant";
+    private int variant;
 
     void Start () {
+        variant = VariantSelector.variant;
+        LoadLevelData ();
         FillList ();
     }
 
@@ -48,7 +50,9 @@ public class LevelManager : MonoBehaviour {
     public void LoadLevelData () {
         // Path.Combine combines strings into a file path
         // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
-        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileName);
+        variant = VariantSelector.variant;
+        string levelDataFileNameLoading = levelDataFileName + variant.ToString () + ".json";
+        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileNameLoading);
 
         if (File.Exists (filePath)) {
             // Read the json from the file into a string

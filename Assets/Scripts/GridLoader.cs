@@ -12,13 +12,15 @@ public class GridLoader : MonoBehaviour {
     public int gridIndex;
     public Transform cellPrefab;
     public Transform gridPrefab;
-    private string levelDataFileName = "levelData.json";
+    private string levelDataFileName = "levelDataVariant";
     public string json { get; set; }
+    private int variant;
     List<Coord> allCellCoords;
     GridHolder currentGrid;
 
     void Start () {
         gridIndex = LevelSelector.level;
+        variant = VariantSelector.variant;
     }
 
     /// <summary>
@@ -29,7 +31,9 @@ public class GridLoader : MonoBehaviour {
     public void LoadLevelData () {
         // Path.Combine combines strings into a file path
         // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
-        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileName);
+        variant = VariantSelector.variant;
+        string levelDataFileNameLoading = levelDataFileName + variant.ToString () + ".json";
+        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileNameLoading);
 
         if (File.Exists (filePath)) {
             /// Read the json from the file into a string

@@ -16,6 +16,7 @@ public class Cell : MonoBehaviour {
     //cell cachée et non jouable -> mur
     public bool full = false;
     // Peut-on placer un pion dessus ?
+    [HideInInspector]
     public bool available = true;
 
     [System.Serializable]

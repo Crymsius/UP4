@@ -8,11 +8,12 @@ public class GridGenerator : MonoBehaviour {
     public LevelHolder levels;
     public List<GridHolder> grids;
     //index de la grid qu'on regarde
-    public int gridIndex;
     public Transform cellPrefab;
     public Transform gridPrefab;
-    private string levelDataFileName = "levelData.json";
+    private static string levelDataFileName = "levelDataVariant";
     public string json { get; set; }
+    public int gridIndex;
+    public int variant;
     List<Coord> allCellCoords;
     GridHolder currentGrid;
 
@@ -33,6 +34,7 @@ public class GridGenerator : MonoBehaviour {
     public void GenerateEditor () {
         GenerateGrid ();
         UpdateCountCells ();
+        CheckAvailability ();
         DisplayFromSave ();
     }
 
@@ -50,7 +52,8 @@ public class GridGenerator : MonoBehaviour {
     /// Génère un string json des grilles contenues dans l'editor
     /// </summary>
     public void GenerateJson () {
-        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileName);
+        string levelDataFileNameGeneration = levelDataFileName + variant.ToString () + ".json";
+        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileNameGeneration);
 
         levels.grids = grids;
         json = JsonUtility.ToJson(levels, false);
@@ -63,9 +66,31 @@ public class GridGenerator : MonoBehaviour {
         }
         else {
             File.Create (Application.streamingAssetsPath);
-            GenerateJson();
+            GenerateJson ();
         }
         
+    }
+
+    /// <summary>
+    /// 1) Load le json des niveaux
+    /// </summary>
+    public void LoadLevelDataSoft () {
+        // Path.Combine combines strings into a file path
+        // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
+        string levelDataFileNameLoading = levelDataFileName + variant.ToString () + ".json";
+        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileNameLoading);
+
+        if (File.Exists (filePath)) {
+            // Read the json from the file into a string
+            json = File.ReadAllText (filePath);
+            // Pass the json to JsonUtility, and tell it to create a GameData object from it
+            levels = JsonUtility.FromJson<LevelHolder> (json);
+            print ("Json chargé");
+            grids = levels.grids;
+        }
+        else {
+            Debug.LogError ("Cannot load game data!");
+        }
     }
 
     /// <summary>
@@ -76,7 +101,8 @@ public class GridGenerator : MonoBehaviour {
     public void LoadLevelData () {
         // Path.Combine combines strings into a file path
         // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
-        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileName);
+        string levelDataFileNameLoading = levelDataFileName + variant.ToString () + ".json";
+        string filePath = Path.Combine (Application.streamingAssetsPath, levelDataFileNameLoading);
 
         if (File.Exists (filePath)) {
             // Read the json from the file into a string
@@ -152,6 +178,9 @@ public class GridGenerator : MonoBehaviour {
         grids [gridIndex].cells.Clear ();
         Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
+
+            cellChild.GetComponent<Cell> ().available = !cellChild.GetComponent<Cell> ().full;
+
             grids[gridIndex].cells.Add (
                 //on attribue les carac de la cell physiques à une nouvelle cell virtuelle
                 new CellHolder {
@@ -163,6 +192,15 @@ public class GridGenerator : MonoBehaviour {
                     full = cellChild.GetComponent<Cell> ().full
                 }
             );
+        }
+    }
+
+    /// <summary>
+    /// Ajuste le paramètre available de chaque cell en fonction du paramètre full.
+    /// </summary>
+    public void CheckAvailability () {
+        foreach (CellHolder cell in currentGrid.cells) {
+            cell.available = !cell.full;
         }
     }
 

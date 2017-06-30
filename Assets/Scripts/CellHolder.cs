@@ -12,5 +12,6 @@ public class CellHolder {
     public Cell.Trigger triggers;
     public bool hidden;
     public bool full;
+    [HideInInspector]
     public bool available;
 }
