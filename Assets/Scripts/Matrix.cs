@@ -173,9 +173,11 @@ public class Matrix
             {
 				if (values [goalCell] != -1)
 					goalCell = goalCell - gravity;
+				else if (isBlocked (actualCell + gravity, new Coord (-gravity.x, -gravity.y)))
+					goalCell = new Coord (actualCell.x, actualCell.y);
 				else if (values [actualCell] == -2) {
 					goalCell = actualCell - gravity;
-					actualCell = goalCell - gravity;
+					actualCell = actualCell - gravity;
 				}
 				else if (values[actualCell] != -1) {
                     values[goalCell] = values[actualCell];
