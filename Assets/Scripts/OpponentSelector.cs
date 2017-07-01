@@ -5,6 +5,6 @@ using System.Collections.Generic;
 /// opponents
 /// </summary>
 public class OpponentSelector {
-    public static int opponent = 0;
+    public static int opponent = 1;
     public static List<string> opponents = new List<string> () { "IA", "human" };
 }

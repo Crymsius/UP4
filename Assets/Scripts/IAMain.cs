@@ -18,6 +18,7 @@ public class IAMain : MonoBehaviour {
     void Start () {
         bugReportText = GameObject.Find ("BugReportText").GetComponent<TMP_Text> ();
         bugReportPanel = GameObject.Find ("BugReportPanel");
+		overlayPanel = GameObject.Find ("OverlayPanel");
         bugReportPanel.SetActive (false);
     }
 
@@ -46,10 +47,10 @@ public class IAMain : MonoBehaviour {
 
         if (mainNode.children.ContainsKey (play))
             mainNode = mainNode.children [play]; // Le reste est envoyé au GarbageCollector, normalement...
-        else { // détection d'un bug !
+		else{ // détection d'un bug !
             string crashText = "L'IA a crashé" +
-                               "\n\n Félicitations, vous avez débusqué un bug !" +
-                               "\nPour nous aider à corriger l'application, envoyez-nous un screenshot comportant l'aperçu du plateau et du code suivant :" +
+                               "\n\nFélicitations, vous avez débusqué un bug !" +
+                               "\nPour nous aider à corriger l'application, envoyez-nous un screenshot de cet écran" +
                                "\n\n" + recapGame;
             bugReportText.text = crashText;
             bugReportPanel.SetActive (true);
@@ -118,7 +119,7 @@ public class IAMain : MonoBehaviour {
                     select = false;
             }
 
-            print("Score choisi : "+ (choice+1));
+            // print("Score choisi : "+ (choice+1));
 
             return myPlays [indSorted[choice]];
 
@@ -137,6 +138,6 @@ public class IAMain : MonoBehaviour {
     
     // Update is called once per frame
     void Update () {
-        
+		
     }
 }
