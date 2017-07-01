@@ -47,48 +47,64 @@ public class IAMain : MonoBehaviour {
     public void IA_Play() { // compare les scores de chaque coup et joue le meilleur
         mainNode.MAJ_Scores();
 
-        Dictionary<float,Coord> scores = new Dictionary<float, Coord>();
-        foreach (Coord play in mainNode.children.Keys)
-            scores.Add(mainNode.children[play].score + Random.Range(-0.01f,0.01f), play);
-        
+		List<Coord> myPlays = new List<Coord> (); 
+		List<float> myScores = new List<float> ();
+		foreach (Coord play in mainNode.children.Keys) {
+			myPlays.Add (play);
+			myScores.Add (mainNode.children [play].score);
+		}
+
 		if (!mainNode.position.isVictory) {
-			Coord decision = VariantSelector.variant==0 ? RandomizeDecision (scores) : mainNode.position.GetHighestPlayPosition(RandomizeDecision (scores), mainNode.gravity) ;
+			Coord decision = VariantSelector.variant==0 ? RandomizeDecision (myPlays, myScores) : mainNode.position.GetHighestPlayPosition(RandomizeDecision (myPlays, myScores), mainNode.gravity) ;
 			StartCoroutine (GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().PutAPawn (myAtlas.gridDictionary [decision]));
 		}
     }
-    public Coord RandomizeDecision(Dictionary<float,Coord> scores) {
-        if (scores.Count != 1)
-        {
-            List<float> scoresInit = new List<float>(scores.Keys);
+	
+	public Coord RandomizeDecision(List<Coord> myPlays, List<float> myScores){
+		if (myScores.Count != 1) {
 
-            scoresInit.Sort();
-            float min = scoresInit[0];
-            float max = scoresInit[scoresInit.Count - 1];
+			float sMin = myScores[0], sMax = myScores[0];
+			int iMin = 0, iMax = 0;
+			for (int i=0; i<myScores.Count; i++) { // get score min and max
+				iMin = myScores [i] < sMin ? i : iMin;
+				sMin = myScores [i] < sMin ? myScores [i] : sMin;
+				iMax = myScores [i] > sMax ? i : iMax;
+				sMax = myScores [i] > sMax ? myScores [i] : sMax;
+			}
 
-            List<float> scoresConsidered = new List<float>();
-            foreach (float i in scoresInit)
-                if (i > min + 0.9 * (max - min))
-                    scoresConsidered.Add(i);
+			List<int> indConsidered = new List<int>(); //get only interesting scores
+			for (int i=0; i<myScores.Count; i++)
+				if (myScores [i] > sMin + 0.9 * (sMax - sMin))
+					indConsidered.Add(i);
 
-            //print(scoresConsidered.Count + " scores considérés.");
+			int nb = indConsidered.Count;
+			List<int> indSorted = new List<int> ();
+			while (indSorted.Count<nb) {
+				iMax = indConsidered[0]; sMax = myScores [iMax];
+				for (int i = 0; i < indConsidered.Count; i++) {
+					iMax = myScores [i] > sMax ? i : iMax;
+					sMax = myScores [i] > sMax ? myScores [i] : sMax;
+				}
+				indSorted.Add (iMax);
+				indConsidered.Remove (iMax);
+			}
 
-            scoresConsidered.Sort(); //scoresConsidered.Reverse();
-            int choice = scoresConsidered.Count - 1; bool select = true;
-            while (select && choice - 1 >= 0)
-            {
-                if (Random.Range(0f, 1f) < 0.3f) // influer sur cette proba pour donner à l'IA un choix plus ou moins random
-                    choice--;
-                else
-                    select = false;
-            }
+			int choice = 0; bool select = true;
+			while (select && choice < indSorted.Count-1)
+			{
+				if (Random.Range(0f, 1f) < 0.3f) // influer sur cette proba pour donner à l'IA un choix plus ou moins random
+					choice++;
+				else
+					select = false;
+			}
 
-            //print("Score choisi : "+ (scoresConsidered.Count-choice));
+			print("Score choisi : "+ (choice+1));
 
-            return scores[scoresConsidered[choice]];
-        }
-        else
-            return scores[new List<float>(scores.Keys)[0]];
-    }
+			return myPlays [indSorted[choice]];
+
+		} else
+			return myPlays [0];
+	}
 
     public void PrintAllPlays() { // fonction d'observation
         string s = "";
