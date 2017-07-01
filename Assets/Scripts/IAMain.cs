@@ -5,6 +5,7 @@ using UnityEngine;
 public class IAMain : MonoBehaviour {
 
     public Atlas myAtlas;
+	public string recapGame;
 
     public DecisionTreeNode mainNode;
     public List<string> typePlayers;
@@ -18,6 +19,8 @@ public class IAMain : MonoBehaviour {
     {
         Matrix board = new Matrix(c, myAtlas);
         Matrix trigPositions = new Matrix(c, myAtlas);
+
+		recapGame = "";
 
         foreach (Cell cell in myAtlas.gridDictionary.Values)
             if (cell.full)
@@ -33,10 +36,18 @@ public class IAMain : MonoBehaviour {
     }
 
     public void GetCurrentPlay(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
-        if (mainNode.children.ContainsKey(play))
-            mainNode = mainNode.children[play]; // Le reste est envoyé au GarbageCollector, normalement...
-		else
-            print("JE CRASHE !"); // Pour une raison obscure, un coup joué n'a pas été prévu par la grille... Enquêter sur le pourquoi...
+		recapGame += play.Stringify()+"-";
+
+		if (mainNode.children.ContainsKey (play))
+			mainNode = mainNode.children [play]; // Le reste est envoyé au GarbageCollector, normalement...
+		else { // détection d'un bug !
+			string crashText = "L'IA a crashé" +
+			                   "\n\n Félicitations, vous avez débusqué un bug !" +
+			                   "\nPour nous aider à corriger l'application, envoyez-nous un screenshot comportant l'aperçu du plateau et du code suivant :" +
+			                   "\n\n" + recapGame;
+			// ROMAIN : afficher popup ici, affichant la string crashText. Attention : la popup ne doit pas masquer la grille pour faciliter le screenshot.
+			print ("JE CRASHE !");
+		}
 
         //PrintAllPlays();
 
