@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
+
 
     [ExecuteInEditMode]
 public class GridCreatorManager : MonoBehaviour {
@@ -23,10 +25,9 @@ public class GridCreatorManager : MonoBehaviour {
     }
 
     void Awake () {
-    #if UNITY_EDITOR
         gridGenerator = GameObject.Find ("GridHolder");
         generatedGrid = GameObject.Find ("Generated Grid(Clone)");
         // gridGenerator.GetComponent<GridGenerator> ().LoadLevelData ();
-    #endif
     }
 }
+    #endif
