@@ -9,7 +9,9 @@ using System.Collections.Generic;
 public class CellHolder {
     public Coord coordinates;
     public Cell.Walls walls;
+    public Cell.Nets nets;
     public Cell.Trigger triggers;
+    public Cell.Pawn pawns;
     public bool hidden;
     public bool full;
     [HideInInspector]

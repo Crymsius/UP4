@@ -10,7 +10,9 @@ public class Cell : MonoBehaviour {
     
     public Coord coordinates;
     public Walls walls;
+    public Nets nets;
     public Trigger trigger;
+    public Pawn pawn;
     //cell cachée mais jouable
     public bool hidden = false;
     //cell cachée et non jouable -> mur
@@ -25,12 +27,25 @@ public class Cell : MonoBehaviour {
         public bool wally;
         public bool wallxy;
     }
+    [System.Serializable]
+    public struct Nets {
+        public bool netx;
+        public bool nety;
+    }
 
     [System.Serializable]
     public struct Trigger {
         public bool isTrigger;
-        [Range(0,3)]
-        public int triggerType; //0 : 90r | 1 : 90l | 2 : 180 | 3 : gravity
+        [Range(0,8)]
+         //0 : 90r | 1 : 90l | 2 : 180 | 3 : gravity | 4 : rotationChoice | 5 : translationR | 6 : translationL | 7 : translationU | 8 : translationD
+        public int triggerType;
+    }
+
+    [System.Serializable]
+    public struct Pawn {
+        public bool isPawn;
+        [Range(-1,2)]
+        public int pawnType; //-1 : neutral | 0 : player1 | 1 : player 2 | 2 : common
     }
 
     #if UNITY_EDITOR

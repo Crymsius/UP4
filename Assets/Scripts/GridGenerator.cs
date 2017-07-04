@@ -186,7 +186,9 @@ public class GridGenerator : MonoBehaviour {
                 new CellHolder {
                     coordinates = cellChild.GetComponent<Cell> ().coordinates,
                     walls = cellChild.GetComponent<Cell> ().walls,
+                    nets = cellChild.GetComponent<Cell> ().nets,
                     triggers = cellChild.GetComponent<Cell> ().trigger,
+                    pawns = cellChild.GetComponent<Cell> ().pawn,
                     available = cellChild.GetComponent<Cell> ().available,
                     hidden = cellChild.GetComponent<Cell> ().hidden,
                     full = cellChild.GetComponent<Cell> ().full
@@ -210,7 +212,15 @@ public class GridGenerator : MonoBehaviour {
     public void DisplayFromSave () {
         int i = 0;
         Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
-        List<string> contentNames = new List<string> () {"WallX(Clone)", "WallY(Clone)", "WallXY(Clone)", "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "GravityReset(Clone)", "CellHidden(Clone)", "CellCover(Clone)"};
+        List<string> contentNames = new List<string> () {
+            "WallX(Clone)", "WallY(Clone)", "WallXY(Clone)",
+            "NetX(Clone)", "NetY(Clone)",
+            "TurnRight(Clone)", "TurnLeft(Clone)", "TurnUpsideDown(Clone)", "TurnChoice(Clone)",
+            "GravityReset(Clone)", "RandomTrigger(Clone)",
+            "TranslateRight(Clone)", "TranslateLeft(Clone)", "TranslateUp(Clone)", "TranslateDown(Clone)",
+            "PawnNeutral(Clone)", "PawnPlayer1(Clone)", "PawnPlayer2(Clone)", "PawnCommon(Clone)",
+            "CellHidden(Clone)", "CellCover(Clone)"
+        };
         //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
             foreach (string content in contentNames) {
@@ -220,7 +230,9 @@ public class GridGenerator : MonoBehaviour {
             //on attribue les carac des cells virtuelles aux cells de la grille
             cellChild.GetComponent<Cell> ().coordinates = currentGrid.cells[i].coordinates;
             cellChild.GetComponent<Cell> ().walls = currentGrid.cells[i].walls;
+            cellChild.GetComponent<Cell> ().nets = currentGrid.cells[i].nets;
             cellChild.GetComponent<Cell> ().trigger = currentGrid.cells[i].triggers;
+            cellChild.GetComponent<Cell> ().pawn = currentGrid.cells[i].pawns;
             cellChild.GetComponent<Cell> ().hidden = currentGrid.cells [i].hidden;
             cellChild.GetComponent<Cell> ().full = currentGrid.cells [i].full;
             cellChild.GetComponent<Cell> ().available = currentGrid.cells [i].available;
@@ -241,7 +253,9 @@ public class GridGenerator : MonoBehaviour {
             }
             //spawn des murs et des triggers
             SpawnWalls (cellChild, cellChild.GetComponent<Cell> ().walls, grid);
+            SpawnNets (cellChild, cellChild.GetComponent<Cell> ().nets, grid);
             SpawnTriggers (cellChild, cellChild.GetComponent<Cell> ().trigger, grid);
+            SpawnPawns (cellChild, cellChild.GetComponent<Cell> ().pawn, grid);
             i++;
         }
     }
@@ -255,23 +269,45 @@ public class GridGenerator : MonoBehaviour {
     void SpawnWalls (Transform cellTransform, Cell.Walls walls, Grid grid) {
         //check if wallx/wally/wallxy exists and instanciate them at the correct place
         if (walls.wallx) {
-            GameObject newWallX = Instantiate (grid.firstWallX);
+            GameObject newWallX = Instantiate (grid.wallX);
             newWallX.transform.SetParent (cellTransform);
             newWallX.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -20f);
         }
 
         if (walls.wally) {
-            GameObject newWallY = Instantiate (grid.firstWallY);
+            GameObject newWallY = Instantiate (grid.wallY);
             newWallY.transform.SetParent (cellTransform);
             newWallY.GetComponent<Transform> ().localPosition = new Vector3(-0.5f, -0.5f, -20f);
         }
 
         if (walls.wallxy) {
-            GameObject newWallXY = Instantiate (grid.firstWallXY);
+            GameObject newWallXY = Instantiate (grid.wallXY);
             newWallXY.transform.SetParent (cellTransform);
             newWallXY.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -22f);
         }
     }
+
+    /// <summary>
+    /// spawn des gameobjects nets de la cell
+    /// </summary>
+    /// <param name="cellTransform"> cell to modify </param>
+    /// <param name="nets"> nets to add and display</param>
+    /// <param name="grid"> grid object </param>
+    void SpawnNets (Transform cellTransform, Cell.Nets nets, Grid grid) {
+        //check if netx/nety/netxy exists and instanciate them at the correct place
+        if (nets.netx) {
+            GameObject newNetX = Instantiate (grid.netX);
+            newNetX.transform.SetParent (cellTransform);
+            newNetX.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -20f);
+        }
+
+        if (nets.nety) {
+            GameObject newNetY = Instantiate (grid.netY);
+            newNetY.transform.SetParent (cellTransform);
+            newNetY.GetComponent<Transform> ().localPosition = new Vector3(-0.5f, -0.5f, -20f);
+        }
+    }
+
 
     /// <summary>
     /// spawn des gameobjects triggers de la cell
@@ -284,7 +320,7 @@ public class GridGenerator : MonoBehaviour {
         if (trigger.isTrigger) {
             //what trigger ?
             switch (trigger.triggerType) {
-            case 0: //trigger right 
+            case 0: //trigger right
                 GameObject newTriggerR = Instantiate (grid.rotateR);
                 newTriggerR.transform.SetParent (cellTransform);
                 newTriggerR.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
@@ -304,6 +340,31 @@ public class GridGenerator : MonoBehaviour {
                 newTriggerGravity.transform.SetParent (cellTransform);
                 newTriggerGravity.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
                 break;
+            case 4: //trigger rotation choice
+                GameObject newTriggerTurnChoice = Instantiate (grid.rotateChoice);
+                newTriggerTurnChoice.transform.SetParent (cellTransform);
+                newTriggerTurnChoice.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            case 5: //trigger translate Right
+                GameObject newTriggerTranslateRight = Instantiate (grid.translationR);
+                newTriggerTranslateRight.transform.SetParent (cellTransform);
+                newTriggerTranslateRight.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            case 6: //trigger translate Left
+                GameObject newTriggerTranslateLeft = Instantiate (grid.translationL);
+                newTriggerTranslateLeft.transform.SetParent (cellTransform);
+                newTriggerTranslateLeft.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            case 7: //trigger translate Up
+                GameObject newTriggerTranslateUp = Instantiate (grid.translationU);
+                newTriggerTranslateUp.transform.SetParent (cellTransform);
+                newTriggerTranslateUp.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            case 8: //trigger translate Down
+                GameObject newTriggerTranslateDown = Instantiate (grid.translationD);
+                newTriggerTranslateDown.transform.SetParent (cellTransform);
+                newTriggerTranslateDown.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
             default:
                 break;
             }
@@ -311,7 +372,44 @@ public class GridGenerator : MonoBehaviour {
     }
 
     /// <summary>
-    /// Delete existing wall or trigger
+    /// spawn des gameobjects triggers de la cell
+    /// </summary>
+    /// <param name="cellTransform"> Cell to modify </param>
+    /// <param name="pawn"> pawn to add and display </param>
+    /// <param name="grid"> grid object </param>
+    void SpawnPawns (Transform cellTransform, Cell.Pawn pawn, Grid grid) {
+        //is there a pawn ?
+        if (pawn.isPawn) {
+            //what pawn ?
+            switch (pawn.pawnType) {
+            case -1: //pawn neutral
+                GameObject newPawnNeutral = Instantiate (grid.pawnNeutral);
+                newPawnNeutral.transform.SetParent (cellTransform);
+                newPawnNeutral.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            case 0: //pawn player1
+                GameObject newPawnPlayer1 = Instantiate (grid.pawnPlayer1);
+                newPawnPlayer1.transform.SetParent (cellTransform);
+                newPawnPlayer1.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            case 1: //pawn player2
+                GameObject newPawnPlayer2 = Instantiate (grid.pawnPlayer2);
+                newPawnPlayer2.transform.SetParent (cellTransform);
+                newPawnPlayer2.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            case 2: //pawn common
+                GameObject newPawnCommon = Instantiate (grid.pawnCommon);
+                newPawnCommon.transform.SetParent (cellTransform);
+                newPawnCommon.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Delete existing wall or trigger or pawn
     /// </summary>
     /// <param name="cell"></param>
     /// <param name="holderName"></param>

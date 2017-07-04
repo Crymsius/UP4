@@ -54,14 +54,35 @@ MonoBehaviour:
   gridSize:
     x: 0
     y: 0
-  firstWallX: {fileID: 1894569871293398, guid: 270528f721f3446da9d254e82349204a, type: 2}
-  firstWallY: {fileID: 1325803041130032, guid: 6e0798da267854be5bbff4d85e41384a, type: 2}
-  firstWallXY: {fileID: 1420593923461582, guid: 314b88d38dd97ed4480792159f154726,
-    type: 2}
+  wallX: {fileID: 1894569871293398, guid: 270528f721f3446da9d254e82349204a, type: 2}
+  wallY: {fileID: 1325803041130032, guid: 6e0798da267854be5bbff4d85e41384a, type: 2}
+  wallXY: {fileID: 1420593923461582, guid: 314b88d38dd97ed4480792159f154726, type: 2}
+  netX: {fileID: 1894569871293398, guid: c079b13a2635a184ab4584b6bcc0b157, type: 2}
+  netY: {fileID: 1325803041130032, guid: 8785ce3f85e59bb499a9dad265bacd2a, type: 2}
+  netXY: {fileID: 0}
   rotateR: {fileID: 1200301251190946, guid: 02a5fe924fa52c547b9610aa41b1e681, type: 2}
   rotateL: {fileID: 1925535464171184, guid: 19bda87e96813af42a941b81cf13993a, type: 2}
   rotateUD: {fileID: 1718711726885984, guid: 74ad22afd9e73c243a74f15d23d3847c, type: 2}
+  rotateChoice: {fileID: 1200301251190946, guid: a05fddd941c9e204d8eb240f3e571904,
+    type: 2}
   gravityReset: {fileID: 1780348446458892, guid: 0d96ef132da187541b44b7aaf38dec24,
     type: 2}
+  randomTrigger: {fileID: 1780348446458892, guid: 39df1445e635d0648a0635de0b278eb7,
+    type: 2}
+  translationR: {fileID: 1326939960259768, guid: 78d66f488887f7149abbea8d7646e7fe,
+    type: 2}
+  translationL: {fileID: 1326939960259768, guid: 925c0e46407d3db47804bbb486e389d7,
+    type: 2}
+  translationU: {fileID: 1326939960259768, guid: bd4103d2869c4864888e173af46c08ad,
+    type: 2}
+  translationD: {fileID: 1326939960259768, guid: bb5c4098eccdf3b46b18c1d8ac07ce3a,
+    type: 2}
+  pawnNeutral: {fileID: 1113597027558090, guid: b50b5ab45ca7ef547af6c4acebaab334,
+    type: 2}
+  pawnPlayer1: {fileID: 1983645049407452, guid: b95ce920d1c134a45a28b7b870637867,
+    type: 2}
+  pawnPlayer2: {fileID: 1719082650311746, guid: ae08de94ce51fc1438d589afa3e4d403,
+    type: 2}
+  pawnCommon: {fileID: 1052731807929236, guid: 0be9d0a7e6f33f24084bf0e8d8be3de8, type: 2}
   cellHidden: {fileID: 1459083670220234, guid: 7c67f8d0d3ac04a00be9f23f887bea84, type: 2}
   cellCover: {fileID: 1162294615715538, guid: 855fc0eaf9a88ab44965725c7b056798, type: 2}
