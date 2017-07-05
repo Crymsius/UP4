@@ -3531,7 +3531,7 @@ MonoBehaviour:
           netx: 0
           nety: 0
         triggers:
-          isTrigger: 1
+          isTrigger: 0
           triggerType: 8
         pawns:
           isPawn: 0
@@ -3721,7 +3721,7 @@ MonoBehaviour:
           netx: 0
           nety: 0
         triggers:
-          isTrigger: 1
+          isTrigger: 0
           triggerType: 8
         pawns:
           isPawn: 0
@@ -10697,7 +10697,7 @@ MonoBehaviour:
         netx: 0
         nety: 0
       triggers:
-        isTrigger: 1
+        isTrigger: 0
         triggerType: 8
       pawns:
         isPawn: 0
@@ -10887,7 +10887,7 @@ MonoBehaviour:
         netx: 0
         nety: 0
       triggers:
-        isTrigger: 1
+        isTrigger: 0
         triggerType: 8
       pawns:
         isPawn: 0
