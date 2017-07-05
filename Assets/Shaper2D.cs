@@ -25,7 +25,7 @@ public class Shaper2D : MonoBehaviour {
     [Range(0,360)]
     public float rotation=90;
     float rotationPrev;
-    [Range(0.1f,10f)]
+    [Range(0.01f,10f)]
     public float outterRadius=2f;
     float outterRadiusPrev;
     [Range(0f,10f)]

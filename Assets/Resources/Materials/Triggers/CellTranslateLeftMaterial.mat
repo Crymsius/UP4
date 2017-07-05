@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: CellTranslateMaterial
-  m_Shader: {fileID: 4800000, guid: 18d9b7d220b2faa41ac6399d3132336f, type: 3}
+  m_Name: CellTranslateLeftMaterial
+  m_Shader: {fileID: 4800000, guid: b9a00537a5a5fc245a4ff414b2d63b1f, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
@@ -75,5 +75,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.09558824, g: 0.11764705, b: 0.71323526, a: 1}
+    - _Color: {r: 0.22794116, g: 0.65938586, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

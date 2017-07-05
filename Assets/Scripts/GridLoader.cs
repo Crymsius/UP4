@@ -191,13 +191,13 @@ public class GridLoader : MonoBehaviour {
         if (nets.netx) {
             GameObject newNetX = Instantiate (grid.netX);
             newNetX.transform.SetParent (cellTransform);
-            newNetX.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -20f);
+            newNetX.GetComponent<Transform> ().localPosition = new Vector3(0.5f, -0.5f, -15f);
         }
 
         if (nets.nety) {
             GameObject newNetY = Instantiate (grid.netY);
             newNetY.transform.SetParent (cellTransform);
-            newNetY.GetComponent<Transform> ().localPosition = new Vector3(-0.5f, -0.5f, -20f);
+            newNetY.GetComponent<Transform> ().localPosition = new Vector3(-0.5f, -0.5f, -15f);
         }
     }
 

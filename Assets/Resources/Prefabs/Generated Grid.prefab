@@ -57,9 +57,8 @@ MonoBehaviour:
   wallX: {fileID: 1894569871293398, guid: 270528f721f3446da9d254e82349204a, type: 2}
   wallY: {fileID: 1325803041130032, guid: 6e0798da267854be5bbff4d85e41384a, type: 2}
   wallXY: {fileID: 1420593923461582, guid: 314b88d38dd97ed4480792159f154726, type: 2}
-  netX: {fileID: 1894569871293398, guid: c079b13a2635a184ab4584b6bcc0b157, type: 2}
+  netX: {fileID: 1626240996654234, guid: be76733941a23c7428d2263123e3b519, type: 2}
   netY: {fileID: 1325803041130032, guid: 8785ce3f85e59bb499a9dad265bacd2a, type: 2}
-  netXY: {fileID: 0}
   rotateR: {fileID: 1200301251190946, guid: 02a5fe924fa52c547b9610aa41b1e681, type: 2}
   rotateL: {fileID: 1925535464171184, guid: 19bda87e96813af42a941b81cf13993a, type: 2}
   rotateUD: {fileID: 1718711726885984, guid: 74ad22afd9e73c243a74f15d23d3847c, type: 2}

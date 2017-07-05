@@ -3402,7 +3402,7 @@ MonoBehaviour:
           triggerType: 0
         pawns:
           isPawn: 0
-          pawnType: 0
+          pawnType: -1
         hidden: 0
         full: 0
         available: 1
@@ -3532,7 +3532,7 @@ MonoBehaviour:
           nety: 0
         triggers:
           isTrigger: 0
-          triggerType: 0
+          triggerType: 8
         pawns:
           isPawn: 0
           pawnType: 0
@@ -3611,7 +3611,7 @@ MonoBehaviour:
           triggerType: 0
         pawns:
           isPawn: 0
-          pawnType: 0
+          pawnType: 2
         hidden: 0
         full: 0
         available: 1
@@ -3722,7 +3722,7 @@ MonoBehaviour:
           nety: 0
         triggers:
           isTrigger: 0
-          triggerType: 1
+          triggerType: 8
         pawns:
           isPawn: 0
           pawnType: 0
@@ -3836,7 +3836,7 @@ MonoBehaviour:
           nety: 0
         triggers:
           isTrigger: 0
-          triggerType: 0
+          triggerType: 3
         pawns:
           isPawn: 0
           pawnType: 0
@@ -10568,7 +10568,7 @@ MonoBehaviour:
         triggerType: 0
       pawns:
         isPawn: 0
-        pawnType: 0
+        pawnType: -1
       hidden: 0
       full: 0
       available: 1
@@ -10698,7 +10698,7 @@ MonoBehaviour:
         nety: 0
       triggers:
         isTrigger: 0
-        triggerType: 0
+        triggerType: 8
       pawns:
         isPawn: 0
         pawnType: 0
@@ -10777,7 +10777,7 @@ MonoBehaviour:
         triggerType: 0
       pawns:
         isPawn: 0
-        pawnType: 0
+        pawnType: 2
       hidden: 0
       full: 0
       available: 1
@@ -10888,7 +10888,7 @@ MonoBehaviour:
         nety: 0
       triggers:
         isTrigger: 0
-        triggerType: 1
+        triggerType: 8
       pawns:
         isPawn: 0
         pawnType: 0
@@ -11002,7 +11002,7 @@ MonoBehaviour:
         nety: 0
       triggers:
         isTrigger: 0
-        triggerType: 0
+        triggerType: 3
       pawns:
         isPawn: 0
         pawnType: 0
