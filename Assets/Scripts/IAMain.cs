@@ -29,9 +29,12 @@ public class IAMain : MonoBehaviour {
 
         recapGame = "";
 
-        foreach (Cell cell in myAtlas.gridDictionary.Values)
-            if (cell.full)
-                board.values[cell.coordinates] = -2;
+		foreach (Cell cell in myAtlas.gridDictionary.Values) {
+			if (cell.full)
+				board.values [cell.coordinates] = -2;
+			else if (cell.pawn.isPawn)
+				board.values [cell.coordinates] = (cell.pawn.pawnType == -1) ? 2 : ((cell.pawn.pawnType == 2) ? 3 : cell.pawn.pawnType);
+		}
         
         if(typePlayers.Contains("IA"))
             mainNode = new DecisionTreeNode(1, 0, 4, board, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);

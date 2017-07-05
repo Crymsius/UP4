@@ -64,30 +64,31 @@ public class Matrix
         int result=0, pinter = 0, vinter = 0;
         Coord actuel = init;
 
+		//!\ Il est possible que certaines P4 ayant un pion commun en son extrémité ne soient pas prises en compte. à vérifier. 
         while (values.ContainsKey(actuel))
         {
-            if (values[actuel] == pinter)
-            {
-                vinter++;
-                if (vinter == 4) // On se rend compte qu'il existe une P4
-                {
-                    isVictory = true;
-                    result += (player == pinter) ? 10000 : 0; // Marche bien avec 100 000
-                    //vinter = 0;
-                    coordWinningLines.Add(myAtlas.gridDictionary[actuel - 3 * direction].GetComponent<Transform>().position);
-                    coordWinningLines.Add(myAtlas.gridDictionary[actuel].GetComponent<Transform>().position);
-                    for (int i = 0; i <= 3; i++) if (!inVictory[pinter].Contains(actuel - i * direction)) // On enregistre les cellules concernées pour le score au points
-                            inVictory[pinter].Add(actuel - i * direction);
-                }
-                else if (vinter > 4) if (!inVictory[pinter].Contains(actuel)) // On a plus qu'une P4
-                    {
-                        inVictory[pinter].Add(actuel);
-                        result += (player == pinter) ? 2500 : 0;
+			if (new List<int> (){ pinter, 3 }.Contains (values [actuel])) // Si l'on tombe sur un pion du joueur OU un pion commun
+			{
+				vinter++;
+				if (vinter == 4) { // On se rend compte qu'il existe une P4
+					isVictory = true;
+					result += (player == pinter) ? 10000 : 0;
+					coordWinningLines.Add (myAtlas.gridDictionary [actuel - 3 * direction].GetComponent<Transform> ().position);
+					coordWinningLines.Add (myAtlas.gridDictionary [actuel].GetComponent<Transform> ().position);
+					// On enregistre les cellules concernées pour le score aux points, on ne prend pas en compte les cellules communes
+					for (int i = 0; i <= 3; i++)
+						if (!inVictory [pinter].Contains (actuel - i * direction) && values[actuel - i * direction] != 3)
+                            inVictory [pinter].Add (actuel - i * direction);
+				} 
+				else if (vinter > 4)
+				if (!inVictory [pinter].Contains (actuel) && values[actuel] != 3) { // On a une P>=4
+						inVictory [pinter].Add (actuel);
+						result += (player == pinter) ? 2500 : 0;
 
-                        coordWinningLines.RemoveAt(coordWinningLines.Count - 1);
-                        coordWinningLines.Add(myAtlas.gridDictionary[actuel].GetComponent<Transform>().position);
-                    }
-            }
+						coordWinningLines.RemoveAt (coordWinningLines.Count - 1);
+						coordWinningLines.Add (myAtlas.gridDictionary [actuel].GetComponent<Transform> ().position);
+					}
+			}
             else if (values[actuel] == 1 - pinter)
             {
                 result += (player == pinter) ? (int)Mathf.Pow(vinter, 3) : 0;
