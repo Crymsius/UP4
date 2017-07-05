@@ -179,7 +179,7 @@ public class GridGenerator : MonoBehaviour {
         Grid grid = transform.Find ("Generated Grid(Clone)").gameObject.GetComponent<Grid> ();
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
 
-            cellChild.GetComponent<Cell> ().available = !cellChild.GetComponent<Cell> ().full;
+            cellChild.GetComponent<Cell> ().available = !cellChild.GetComponent<Cell> ().full && !cellChild.GetComponent<Cell> ().pawn.isPawn;
 
             grids[gridIndex].cells.Add (
                 //on attribue les carac de la cell physiques à une nouvelle cell virtuelle
@@ -202,7 +202,7 @@ public class GridGenerator : MonoBehaviour {
     /// </summary>
     public void CheckAvailability () {
         foreach (CellHolder cell in currentGrid.cells) {
-            cell.available = !cell.full;
+            cell.available = !cell.full && !cell.pawns.isPawn;
         }
     }
 
