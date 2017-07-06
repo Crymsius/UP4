@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4878713297452004}
   - component: {fileID: 33873243413047136}
   - component: {fileID: 23499227920166798}
+  - component: {fileID: 111044406315751324}
   m_Layer: 0
   m_Name: CellHidden
   m_TagString: Untagged
@@ -35,12 +36,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1459083670220234}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.493, y: 0, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -270}
 --- !u!23 &23499227920166798
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -80,3 +81,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1459083670220234}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!111 &111044406315751324
+Animation:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1459083670220234}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: c60a70cb5fab61941b0fbd4df2c03657, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: c60a70cb5fab61941b0fbd4df2c03657, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0

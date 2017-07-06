@@ -131,9 +131,9 @@ public class GridLoader : MonoBehaviour {
 
             //cell invisible ?
             if (cellChild.GetComponent<Cell> ().hidden) {
-                GameObject newCellCover = Instantiate (grid.cellCover);
-                newCellCover.transform.SetParent (cellChild);
-                newCellCover.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -12);
+                // GameObject newCellCover = Instantiate (grid.cellCover);
+                // newCellCover.transform.SetParent (cellChild);
+                // newCellCover.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -12);
                 GameObject newCellHidden = Instantiate (grid.cellHidden);
                 newCellHidden.transform.SetParent (cellChild);
                 newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);

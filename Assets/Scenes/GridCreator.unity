@@ -3629,11 +3629,11 @@ MonoBehaviour:
           isTrigger: 0
           triggerType: 3
         pawns:
-          isPawn: 0
+          isPawn: 1
           pawnType: 0
-        hidden: 0
+        hidden: 1
         full: 0
-        available: 1
+        available: 0
       - coordinates:
           x: 2
           y: 3
@@ -3646,7 +3646,7 @@ MonoBehaviour:
           nety: 0
         triggers:
           isTrigger: 0
-          triggerType: 0
+          triggerType: -1
         pawns:
           isPawn: 0
           pawnType: 0
@@ -3819,11 +3819,11 @@ MonoBehaviour:
           isTrigger: 0
           triggerType: 5
         pawns:
-          isPawn: 0
-          pawnType: 0
-        hidden: 0
+          isPawn: 1
+          pawnType: 1
+        hidden: 1
         full: 0
-        available: 1
+        available: 0
       - coordinates:
           x: 4
           y: 3
@@ -10795,11 +10795,11 @@ MonoBehaviour:
         isTrigger: 0
         triggerType: 3
       pawns:
-        isPawn: 0
+        isPawn: 1
         pawnType: 0
-      hidden: 0
+      hidden: 1
       full: 0
-      available: 1
+      available: 0
     - coordinates:
         x: 2
         y: 3
@@ -10812,7 +10812,7 @@ MonoBehaviour:
         nety: 0
       triggers:
         isTrigger: 0
-        triggerType: 0
+        triggerType: -1
       pawns:
         isPawn: 0
         pawnType: 0
@@ -10985,11 +10985,11 @@ MonoBehaviour:
         isTrigger: 0
         triggerType: 5
       pawns:
-        isPawn: 0
-        pawnType: 0
-      hidden: 0
+        isPawn: 1
+        pawnType: 1
+      hidden: 1
       full: 0
-      available: 1
+      available: 0
     - coordinates:
         x: 4
         y: 3
