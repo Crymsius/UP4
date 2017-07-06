@@ -36,8 +36,8 @@ public class Cell : MonoBehaviour {
     [System.Serializable]
     public struct Trigger {
         public bool isTrigger;
-        [Range(0,8)]
-         //0 : 90r | 1 : 90l | 2 : 180 | 3 : gravity | 4 : rotationChoice | 5 : translationR | 6 : translationL | 7 : translationU | 8 : translationD
+        [Range(-1,8)]
+         //-1: randomtrigger | 0 : 90r | 1 : 90l | 2 : 180 | 3 : gravity | 4 : rotationChoice | 5 : translationR | 6 : translationL | 7 : translationU | 8 : translationD
         public int triggerType;
     }
 

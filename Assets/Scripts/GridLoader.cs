@@ -212,6 +212,11 @@ public class GridLoader : MonoBehaviour {
         if (trigger.isTrigger) {
             //what trigger ?
             switch (trigger.triggerType) {
+            case -1: //trigger random
+                GameObject newTriggerRandom = Instantiate (grid.randomTrigger);
+                newTriggerRandom.transform.SetParent (cellTransform);
+                newTriggerRandom.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
             case 0: //trigger right
                 GameObject newTriggerR = Instantiate (grid.rotateR);
                 newTriggerR.transform.SetParent (cellTransform);
