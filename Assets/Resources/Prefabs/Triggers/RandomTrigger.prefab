@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4552853006133248}
   - component: {fileID: 33106207507413214}
   - component: {fileID: 114038236057555762}
+  - component: {fileID: 111314218103642198}
   m_Layer: 0
   m_Name: RandomTrigger
   m_TagString: Untagged
@@ -35,7 +36,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1780348446458892}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: -5}
+  m_LocalPosition: {x: -0.0039135516, y: -0.0003837347, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -48,6 +49,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1780348446458892}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!111 &111314218103642198
+Animation:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1780348446458892}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 7f29d06c1b34c454a9386d76a9a9fe50, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 7f29d06c1b34c454a9386d76a9a9fe50, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!114 &114038236057555762
 MonoBehaviour:
   m_ObjectHideFlags: 1
