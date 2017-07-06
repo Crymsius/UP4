@@ -41,7 +41,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -3.066986, y: 0, z: -6.202237}
 --- !u!23 &23909222619372404
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -87,11 +87,11 @@ Animation:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1200301251190946}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 7c96ff3facea0c34b847f90bf54514db, type: 2}
+  m_Animation: {fileID: 7400000, guid: 5ee4ea45665778749a62956a8172243c, type: 2}
   m_Animations:
-  - {fileID: 7400000, guid: 7c96ff3facea0c34b847f90bf54514db, type: 2}
+  - {fileID: 7400000, guid: 5ee4ea45665778749a62956a8172243c, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
