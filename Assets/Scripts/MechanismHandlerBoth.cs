@@ -338,6 +338,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
         float elapsedTime = 0.0f;
         switch (triggerType) {
         //gravity -> 0: down | 1: left | 2: up | 3: right 
+        case -2: //nothing
+            break;
         case 0: //90r
             rotate = 90;
             gravity = (gravity + 3) % 4;
@@ -352,6 +354,10 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         case 3: //gravity reset
             ResetGravityVariantBastien ();
+            break;
+        case 4: //trigger rotation choice
+            yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
+            yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation,1.0f));
             break;
         default:
             rotate = 0;
@@ -688,7 +694,9 @@ public class MechanismHandlerBoth : MonoBehaviour {
         int rotate = 0;
         float elapsedTime = 0.0f;
         switch (triggerType) {
-        //gravity -> 0: down | 1: left | 2: up | 3: right 
+        //gravity -> 0: down | 1: left | 2: up | 3: right
+        case -2: //nothing
+            break;
         case 0: //90r
             rotate = 90;
             gravity = (gravity + 3) % 4;
@@ -703,6 +711,10 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         case 3: //gravity reset
             ResetGravityVariantRomain ();
+            break;
+        case 4: //trigger rotation choice
+            yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
+            yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation,1.0f));
             break;
         default:
             rotate = 0;

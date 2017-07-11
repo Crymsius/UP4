@@ -390,22 +390,22 @@ public class GridGenerator : MonoBehaviour {
             case -1: //pawn neutral
                 GameObject newPawnNeutral = Instantiate (grid.pawnNeutral);
                 newPawnNeutral.transform.SetParent (cellTransform);
-                newPawnNeutral.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnNeutral.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             case 0: //pawn player1
                 GameObject newPawnPlayer1 = Instantiate (grid.pawnPlayer1);
                 newPawnPlayer1.transform.SetParent (cellTransform);
-                newPawnPlayer1.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnPlayer1.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             case 1: //pawn player2
                 GameObject newPawnPlayer2 = Instantiate (grid.pawnPlayer2);
                 newPawnPlayer2.transform.SetParent (cellTransform);
-                newPawnPlayer2.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnPlayer2.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             case 2: //pawn common
                 GameObject newPawnCommon = Instantiate (grid.pawnCommon);
                 newPawnCommon.transform.SetParent (cellTransform);
-                newPawnCommon.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnCommon.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             default:
                 break;
