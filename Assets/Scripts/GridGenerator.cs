@@ -238,9 +238,9 @@ public class GridGenerator : MonoBehaviour {
             cellChild.GetComponent<Cell> ().available = currentGrid.cells [i].available;
             //cell invisible ?
             if (cellChild.GetComponent<Cell> ().hidden) {
-                GameObject newCellCover = Instantiate (grid.cellCover);
-                newCellCover.transform.SetParent (cellChild);
-                newCellCover.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -12);
+                // GameObject newCellCover = Instantiate (grid.cellCover);
+                // newCellCover.transform.SetParent (cellChild);
+                // newCellCover.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -12);
                 GameObject newCellHidden = Instantiate (grid.cellHidden);
                 newCellHidden.transform.SetParent (cellChild);
                 newCellHidden.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -15);
@@ -320,6 +320,11 @@ public class GridGenerator : MonoBehaviour {
         if (trigger.isTrigger) {
             //what trigger ?
             switch (trigger.triggerType) {
+            case -1: //trigger random
+                GameObject newTriggerRandom = Instantiate (grid.randomTrigger);
+                newTriggerRandom.transform.SetParent (cellTransform);
+                newTriggerRandom.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
             case 0: //trigger right
                 GameObject newTriggerR = Instantiate (grid.rotateR);
                 newTriggerR.transform.SetParent (cellTransform);
@@ -385,22 +390,22 @@ public class GridGenerator : MonoBehaviour {
             case -1: //pawn neutral
                 GameObject newPawnNeutral = Instantiate (grid.pawnNeutral);
                 newPawnNeutral.transform.SetParent (cellTransform);
-                newPawnNeutral.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnNeutral.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             case 0: //pawn player1
                 GameObject newPawnPlayer1 = Instantiate (grid.pawnPlayer1);
                 newPawnPlayer1.transform.SetParent (cellTransform);
-                newPawnPlayer1.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnPlayer1.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             case 1: //pawn player2
                 GameObject newPawnPlayer2 = Instantiate (grid.pawnPlayer2);
                 newPawnPlayer2.transform.SetParent (cellTransform);
-                newPawnPlayer2.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnPlayer2.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             case 2: //pawn common
                 GameObject newPawnCommon = Instantiate (grid.pawnCommon);
                 newPawnCommon.transform.SetParent (cellTransform);
-                newPawnCommon.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                newPawnCommon.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, 0);
                 break;
             default:
                 break;

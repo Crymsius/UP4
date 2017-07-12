@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: CellHiddenMaterial
-  m_Shader: {fileID: 4800000, guid: e2c239b2de1444d42815fd7ebf44e989, type: 3}
+  m_Shader: {fileID: 4800000, guid: a4ca0f0c622274e408bff4786303d30c, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -57,23 +57,27 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Dropoff: 0.73
+    - _Dropoff: 0.0425
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _InnerRadius: 0.25
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OuterRadius: 0.378
     - _Parallax: 0.02
-    - _Radius: 0.364
-    - _Rays: 2.47
+    - _Radius: 0.312
+    - _Rays: 2.5
     - _SmoothnessTextureChannel: 0
+    - _Space: 0.5
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Thickness: 0.026
+    - _Thickness: 0.417
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.16862746, g: 0.14509805, b: 0.14509805, a: 1}
+    - _Color: {r: 0.20784315, g: 0.15686275, b: 0.13725491, a: 1}
+    - _ColorBackground: {r: 0.97647065, g: 1, b: 0.8588236, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

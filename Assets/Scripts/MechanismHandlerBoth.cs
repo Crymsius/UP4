@@ -16,7 +16,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
     public GameObject winningLine;
     GameObject loadingPanel;
     GameObject overlayPanel;
-
+    //used as the max id trigger to draw for random trigger
+    private int maxIdTrigger = 4;
     public int gravity { get; set; } // direction de chute des pions
     public bool loading;
 
@@ -106,12 +107,17 @@ public class MechanismHandlerBoth : MonoBehaviour {
             currentCell = gridAtlas.gridDictionary[interCoords] as Cell;
             Cell nextCell = NextCellVariantBastien (currentCell, gravity);
             if (nextCell.available &&
-                !nextCell.Equals (currentCell) &&
-                (gravity == 0 && !currentCell.walls.wally
+                !nextCell.Equals (currentCell) && (
+                    gravity == 0 && !currentCell.walls.wally
                     || gravity == 1 && !nextCell.walls.wallx
                     || gravity == 2 && !nextCell.walls.wally
                     || gravity == 3 && !currentCell.walls.wallx
-                )) {
+                ) && (
+                    gravity == 0 && !currentCell.nets.nety
+                    || gravity == 1 && !nextCell.nets.netx
+                    || gravity == 2 && !nextCell.nets.nety
+                    || gravity == 3 && !currentCell.nets.netx
+                ) ) {
                 interCoords = nextCell.coordinates;
             } else {
                 falling = false;
@@ -252,6 +258,14 @@ public class MechanismHandlerBoth : MonoBehaviour {
             do {
                 startCoords += fallIntegers[gravity];
                 if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
+                    if (gridAtlas.gridDictionary[startCoords].trigger.triggerType == -1) {
+                        //setup du trigger random : moche, à changer un jour ?
+                        int idTrig = Random.Range (0, maxIdTrigger + 1);
+                        while (idTrig == 4) {
+                            idTrig = Random.Range (0, maxIdTrigger + 1);
+                        }
+                        gridAtlas.gridDictionary[startCoords].trigger.triggerType = idTrig;
+                    }
                     triggers.Add (gridAtlas.gridDictionary[startCoords].trigger);
                 }
             } while (!startCoords.Equals (endCell.coordinates)) ; // On a collecté tous les triggers traversés
@@ -338,6 +352,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
         float elapsedTime = 0.0f;
         switch (triggerType) {
         //gravity -> 0: down | 1: left | 2: up | 3: right 
+        case -2: //nothing
+            break;
         case 0: //90r
             rotate = 90;
             gravity = (gravity + 3) % 4;
@@ -352,6 +368,10 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         case 3: //gravity reset
             ResetGravityVariantBastien ();
+            break;
+        case 4: //trigger rotation choice
+            yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
+            yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation ,1.0f));
             break;
         default:
             rotate = 0;
@@ -477,11 +497,16 @@ public class MechanismHandlerBoth : MonoBehaviour {
             currentCell = gridAtlas.gridDictionary[interCoords] as Cell;
             Cell nextCell = NextCellVariantRomain (currentCell, gravity);
             if (nextCell.available &&
-                !nextCell.Equals (currentCell) &&
-                (gravity == 0 && !currentCell.walls.wally
+                !nextCell.Equals (currentCell) && (
+                    gravity == 0 && !currentCell.walls.wally
                     || gravity == 1 && !nextCell.walls.wallx
                     || gravity == 2 && !nextCell.walls.wally
                     || gravity == 3 && !currentCell.walls.wallx
+                ) && (
+                    gravity == 0 && !currentCell.nets.nety
+                    || gravity == 1 && !nextCell.nets.netx
+                    || gravity == 2 && !nextCell.nets.nety
+                    || gravity == 3 && !currentCell.nets.netx
                 )) {
                 interCoords = nextCell.coordinates;
                 if (currentCell.trigger.isTrigger && !reset && (currentCell.coordinates != startCell.coordinates || click)) {
@@ -500,7 +525,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
         }
         //script de vérification de la puissance 4
         //CheckAlign4VariantRomain (currentCell, player);
-		CheckAlign4VariantBastien ();
+        CheckAlign4VariantBastien ();
     }
 
     /// <summary>
@@ -622,18 +647,26 @@ public class MechanismHandlerBoth : MonoBehaviour {
         }
 
         if (endCell.trigger.isTrigger && !reset && (startCell.coordinates != endCell.coordinates || click)) {
+            if (endCell.trigger.triggerType == -1) {
+                //setup du trigger random : moche, à changer un jour ?
+                int idTrig = Random.Range (0, maxIdTrigger + 1);
+                while (idTrig == 4) {
+                    idTrig = Random.Range (0, maxIdTrigger + 1);
+                }
+                endCell.trigger.triggerType = idTrig;
+            }
             yield return StartCoroutine (ExecuteTriggerVariantRomain (endCell.trigger.triggerType, 1.0f));
             if (endCell.trigger.triggerType != 3) {
                 yield return StartCoroutine (PawnFallCalculationVariantRomain (endCell, player, false, false));
             }
         }
-		if (click) {
-			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
-			CheckAlign4VariantBastien();
-		}
+        if (click) {
+            GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+            CheckAlign4VariantBastien();
+        }
         if (reset) {
             //CheckAlign4VariantRomain (endCell, pawn.GetComponent<Pawn> ().player);
-			CheckAlign4VariantBastien ();
+            CheckAlign4VariantBastien ();
         }
     }
 
@@ -689,7 +722,9 @@ public class MechanismHandlerBoth : MonoBehaviour {
         int rotate = 0;
         float elapsedTime = 0.0f;
         switch (triggerType) {
-        //gravity -> 0: down | 1: left | 2: up | 3: right 
+        //gravity -> 0: down | 1: left | 2: up | 3: right
+        case -2: //nothing
+            break;
         case 0: //90r
             rotate = 90;
             gravity = (gravity + 3) % 4;
@@ -704,6 +739,10 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         case 3: //gravity reset
             ResetGravityVariantRomain ();
+            break;
+        case 4: //trigger rotation choice
+            yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
+            yield return StartCoroutine (this.ExecuteTriggerVariantRomain (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation,1.0f));
             break;
         default:
             rotate = 0;
