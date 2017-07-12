@@ -43,8 +43,9 @@ public class DecisionTreeNode {
 	}
     public void DeploymentTree() { // Fonction récursive mettant à jour l'arbre de décision.
 		if (depth == depthMax)
-            /*do nothing*/
-            ;
+			// Do nothing
+			;
+		
 		else if (children.Count == 0 && !position.isVictory) { // On ne considère la suite que si la position actuelle n'est pas une position de victoire
 			List<Coord> playables = new List<Coord> (); // enregistrement de tous les coups jouables
 			for (int i = 0; i < position.hDim; i++)
@@ -130,13 +131,13 @@ public class DecisionTreeNode {
     public bool isPlayable(Coord cell, Coord gravity) {
         bool result = false;
         if (gravity == new Coord(0, -1))
-            result = result || myAtlas.gridDictionary[cell].walls.wally;
+			result = result || myAtlas.gridDictionary[cell].walls.wally || myAtlas.gridDictionary[cell].nets.nety;
         else if (gravity == new Coord(1, 0))
-            result = result || myAtlas.gridDictionary[cell].walls.wallx;
+			result = result || myAtlas.gridDictionary[cell].walls.wallx || myAtlas.gridDictionary[cell].nets.netx;
         else if (gravity == new Coord(0, 1))
-            result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && myAtlas.gridDictionary[cell + gravity].walls.wally);
+			result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && (myAtlas.gridDictionary[cell + gravity].walls.wally || myAtlas.gridDictionary[cell + gravity].nets.nety));
         else
-            result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && myAtlas.gridDictionary[cell + gravity].walls.wallx);
+			result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && (myAtlas.gridDictionary[cell + gravity].walls.wallx || myAtlas.gridDictionary[cell + gravity].nets.netx));
 		
 		if (variant == 1) // on ajoute le jeu au-dessus / en dessous des triggers dans la variante Romaing
 			result = result || (myAtlas.gridDictionary [cell].trigger.isTrigger);

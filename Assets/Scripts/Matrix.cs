@@ -58,7 +58,7 @@ public class Matrix
         for (int i = 3; i <= hDim + vDim - 5; i++)
             d2score += intermediateCalculus(new Coord(Mathf.Max(0, i + 1 - vDim), Mathf.Max(0, vDim - i - 1)), new Coord(1, 1), player);
 
-        return hscore + vscore + d1score + d2score - 2500 * inVictory[1 - player].Count; // Le dernier terme prend en co^mpte le fait que l'adversaire peut obtenir une P4 en même temps
+        return hscore + vscore + d1score + d2score - 2500 * inVictory[1 - player].Count; // Le dernier terme prend en compte le fait que l'adversaire peut obtenir une P4 en même temps
     }
     public int intermediateCalculus(Coord init, Coord direction, int player) { // Calcule le score d'un joueur sur une ligne directionnelle
         int result=0, pinter = 0, vinter = 0;
@@ -67,8 +67,7 @@ public class Matrix
 		//!\ Il est possible que certaines P4 ayant un pion commun en son extrémité ne soient pas prises en compte. à vérifier. 
         while (values.ContainsKey(actuel))
         {
-			if (new List<int> (){ pinter, 3 }.Contains (values [actuel])) // Si l'on tombe sur un pion du joueur OU un pion commun
-			{
+			if (new List<int> (){ pinter, 3 }.Contains (values [actuel])) { // Si l'on tombe sur un pion du joueur OU un pion commun
 				vinter++;
 				if (vinter == 4) { // On se rend compte qu'il existe une P4
 					isVictory = true;
@@ -77,25 +76,26 @@ public class Matrix
 					coordWinningLines.Add (myAtlas.gridDictionary [actuel].GetComponent<Transform> ().position);
 					// On enregistre les cellules concernées pour le score aux points, on ne prend pas en compte les cellules communes
 					for (int i = 0; i <= 3; i++)
-						if (!inVictory [pinter].Contains (actuel - i * direction) && values[actuel - i * direction] != 3)
-                            inVictory [pinter].Add (actuel - i * direction);
+						if (!inVictory [pinter].Contains (actuel - i * direction) && values [actuel - i * direction] != 3)
+							inVictory [pinter].Add (actuel - i * direction);
 				} 
 				else if (vinter > 4)
-				if (!inVictory [pinter].Contains (actuel) && values[actuel] != 3) { // On a une P>=4
+					if (!inVictory [pinter].Contains (actuel) && values [actuel] != 3) { // On a une P>=4
 						inVictory [pinter].Add (actuel);
 						result += (player == pinter) ? 2500 : 0;
 
 						coordWinningLines.RemoveAt (coordWinningLines.Count - 1);
 						coordWinningLines.Add (myAtlas.gridDictionary [actuel].GetComponent<Transform> ().position);
 					}
+			} 
+			else if (values [actuel] == 1 - pinter || willChange (actuel, direction, pinter)) // La 2nde condition gère les cas où le pion commun peut compter dans le jeu adverse
+			{
+				result += (player == pinter) ? (int)Mathf.Pow (vinter, 3) : 0;
+				pinter = 1 - pinter;
+				vinter = 1;
 			}
-            else if (values[actuel] == 1 - pinter)
-            {
-                result += (player == pinter) ? (int)Mathf.Pow(vinter, 3) : 0;
-                pinter = 1 - pinter;
-                vinter = 1;
-            }
-            else {
+            else 
+			{
                 result += (player == pinter) ? (int)Mathf.Pow(vinter, 3) : 0;
                 vinter = 0;
             }
@@ -104,9 +104,20 @@ public class Matrix
             actuel = actuel + direction;
         }
         result += (player == pinter) ? (int)Mathf.Pow(vinter, 3) : 0;
-       
+
         return result;
     }
+	public bool willChange(Coord init, Coord direction, int currentPlayer){ // Dans le cas précis, sur un pion commun, de voir si on a besoin de commencer à compter pour le joueur adverse
+		bool result = false;
+		Coord actuel = init;
+
+		while (values[actuel]==3 && values.ContainsKey(actuel+direction)) {
+			result = result || values [actuel + direction] == 1 - currentPlayer;
+			actuel = actuel + direction;
+		}
+
+		return result;
+	}
     public bool isBlocked(Coord actuel, Coord direction) {
         bool result = false;
         if (direction == new Coord(0, 1))
@@ -120,6 +131,7 @@ public class Matrix
 
         return result;
     }
+
     public List<int> CheckTriggers(Coord play, Coord gravity)
     {
         List<int> results = new List<int>();
@@ -191,6 +203,12 @@ public class Matrix
             startcell = startcell + new Coord(-gravity.y, gravity.x);
         }
     }
+
+	public void Translate(Coord direction){
+		Grid myGrid = GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>();
+		//Translation de la grille virtuelle
+		//Translation de l'Atlas
+	}
         
     public void Stringify()
     {
