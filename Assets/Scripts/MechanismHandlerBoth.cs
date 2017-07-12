@@ -106,12 +106,17 @@ public class MechanismHandlerBoth : MonoBehaviour {
             currentCell = gridAtlas.gridDictionary[interCoords] as Cell;
             Cell nextCell = NextCellVariantBastien (currentCell, gravity);
             if (nextCell.available &&
-                !nextCell.Equals (currentCell) &&
-                (gravity == 0 && !currentCell.walls.wally
+                !nextCell.Equals (currentCell) && (
+                    gravity == 0 && !currentCell.walls.wally
                     || gravity == 1 && !nextCell.walls.wallx
                     || gravity == 2 && !nextCell.walls.wally
                     || gravity == 3 && !currentCell.walls.wallx
-                )) {
+                ) && (
+                    gravity == 0 && !currentCell.nets.nety
+                    || gravity == 1 && !nextCell.nets.netx
+                    || gravity == 2 && !nextCell.nets.nety
+                    || gravity == 3 && !currentCell.nets.netx
+                ) ) {
                 interCoords = nextCell.coordinates;
             } else {
                 falling = false;
@@ -482,11 +487,16 @@ public class MechanismHandlerBoth : MonoBehaviour {
             currentCell = gridAtlas.gridDictionary[interCoords] as Cell;
             Cell nextCell = NextCellVariantRomain (currentCell, gravity);
             if (nextCell.available &&
-                !nextCell.Equals (currentCell) &&
-                (gravity == 0 && !currentCell.walls.wally
+                !nextCell.Equals (currentCell) && (
+                    gravity == 0 && !currentCell.walls.wally
                     || gravity == 1 && !nextCell.walls.wallx
                     || gravity == 2 && !nextCell.walls.wally
                     || gravity == 3 && !currentCell.walls.wallx
+                ) && (
+                    gravity == 0 && !currentCell.nets.nety
+                    || gravity == 1 && !nextCell.nets.netx
+                    || gravity == 2 && !nextCell.nets.nety
+                    || gravity == 3 && !currentCell.nets.netx
                 )) {
                 interCoords = nextCell.coordinates;
                 if (currentCell.trigger.isTrigger && !reset && (currentCell.coordinates != startCell.coordinates || click)) {
