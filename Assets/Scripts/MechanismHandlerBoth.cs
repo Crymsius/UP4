@@ -16,7 +16,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
     public GameObject winningLine;
     GameObject loadingPanel;
     GameObject overlayPanel;
-
+    //used as the max id trigger to draw for random trigger
+    private int maxIdTrigger = 4;
     public int gravity { get; set; } // direction de chute des pions
     public bool loading;
 
@@ -257,6 +258,14 @@ public class MechanismHandlerBoth : MonoBehaviour {
             do {
                 startCoords += fallIntegers[gravity];
                 if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
+                    if (gridAtlas.gridDictionary[startCoords].trigger.triggerType == -1) {
+                        //setup du trigger random : moche, à changer un jour ?
+                        int idTrig = Random.Range (0, maxIdTrigger + 1);
+                        while (idTrig == 4) {
+                            idTrig = Random.Range (0, maxIdTrigger + 1);
+                        }
+                        gridAtlas.gridDictionary[startCoords].trigger.triggerType = idTrig;
+                    }
                     triggers.Add (gridAtlas.gridDictionary[startCoords].trigger);
                 }
             } while (!startCoords.Equals (endCell.coordinates)) ; // On a collecté tous les triggers traversés
@@ -362,7 +371,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         case 4: //trigger rotation choice
             yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
-            yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation,1.0f));
+            yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation ,1.0f));
             break;
         default:
             rotate = 0;
@@ -515,7 +524,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
         }
         //script de vérification de la puissance 4
         //CheckAlign4VariantRomain (currentCell, player);
-		CheckAlign4VariantBastien ();
+        CheckAlign4VariantBastien ();
     }
 
     /// <summary>
@@ -637,18 +646,26 @@ public class MechanismHandlerBoth : MonoBehaviour {
         }
 
         if (endCell.trigger.isTrigger && !reset && (startCell.coordinates != endCell.coordinates || click)) {
+            if (endCell.trigger.triggerType == -1) {
+                //setup du trigger random : moche, à changer un jour ?
+                int idTrig = Random.Range (0, maxIdTrigger + 1);
+                while (idTrig == 4) {
+                    idTrig = Random.Range (0, maxIdTrigger + 1);
+                }
+                endCell.trigger.triggerType = idTrig;
+            }
             yield return StartCoroutine (ExecuteTriggerVariantRomain (endCell.trigger.triggerType, 1.0f));
             if (endCell.trigger.triggerType != 3) {
                 yield return StartCoroutine (PawnFallCalculationVariantRomain (endCell, player, false, false));
             }
         }
-		if (click) {
-			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
-			CheckAlign4VariantBastien();
-		}
+        if (click) {
+            GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+            CheckAlign4VariantBastien();
+        }
         if (reset) {
             //CheckAlign4VariantRomain (endCell, pawn.GetComponent<Pawn> ().player);
-			CheckAlign4VariantBastien ();
+            CheckAlign4VariantBastien ();
         }
     }
 
@@ -724,7 +741,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         case 4: //trigger rotation choice
             yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
-            yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation,1.0f));
+            yield return StartCoroutine (this.ExecuteTriggerVariantRomain (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation,1.0f));
             break;
         default:
             rotate = 0;
