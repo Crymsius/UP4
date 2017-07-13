@@ -24,6 +24,8 @@ GameObject:
   - component: {fileID: 61552632040523136}
   - component: {fileID: 114920625558833236}
   - component: {fileID: 114597530505193570}
+  - component: {fileID: 114764419912547852}
+  - component: {fileID: 50702574039502908}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Untagged
@@ -153,6 +155,26 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1917984426667678}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!50 &50702574039502908
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1158813940416926}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!61 &61552632040523136
 BoxCollider2D:
   m_ObjectHideFlags: 1
@@ -191,6 +213,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myHandler: {fileID: 0}
   myCell: {fileID: 114920625558833236}
+--- !u!114 &114764419912547852
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1158813940416926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7342ac382c826c4498fd27a67f17242f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colliderRight: {fileID: 0}
 --- !u!114 &114920625558833236
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -209,9 +243,15 @@ MonoBehaviour:
     wallx: 0
     wally: 0
     wallxy: 0
+  nets:
+    netx: 0
+    nety: 0
   trigger:
     isTrigger: 0
     triggerType: 0
+  pawn:
+    isPawn: 0
+    pawnType: 0
   hidden: 0
   full: 0
   available: 1
