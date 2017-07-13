@@ -34,9 +34,9 @@ public class IAMain : MonoBehaviour {
 		foreach (Cell cell in myAtlas.gridDictionary.Values) {
 			if (cell.full)
 				board.values [cell.coordinates] = -2;
-			else if (cell.pawn.isPawn)
+			else if (!cell.available)
 				board.values [cell.coordinates] = (cell.pawn.pawnType == -1) ? 2 : ((cell.pawn.pawnType == 2) ? 3 : cell.pawn.pawnType);
-
+			
 			hasWishTriggers = hasWishTriggers || (cell.trigger.isTrigger && cell.trigger.triggerType == 4);
 		}
         
@@ -51,8 +51,10 @@ public class IAMain : MonoBehaviour {
         //PrintAllPlays();
     }
 	public void CheckSettingGrid(){ // L'arbre de décision n'a aucune profondeur si la map contient un trigger à choix. Le cas échéant, on le reconstruit.
-		if (hasWishTriggers)
-			settingGrid (GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize);
+		if (hasWishTriggers) {
+			settingGrid (GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ().gridSize);
+			mainNode.position.MeasureScore (0); // Juste pour vérifier s'il s'agit d'une position de victoire
+		}
 	}
 
     public void GetCurrentPlay(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.

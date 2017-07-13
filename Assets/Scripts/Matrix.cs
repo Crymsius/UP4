@@ -64,8 +64,7 @@ public class Matrix
         int result=0, pinter = 0, vinter = 0;
         Coord actuel = init;
 
-		//!\ Il est possible que certaines P4 ayant un pion commun en son extrémité ne soient pas prises en compte. à vérifier. 
-        while (values.ContainsKey(actuel))
+		while (values.ContainsKey(actuel))
         {
 			if (new List<int> (){ pinter, 3 }.Contains (values [actuel])) { // Si l'on tombe sur un pion du joueur OU un pion commun
 				vinter++;

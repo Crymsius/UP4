@@ -224,6 +224,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
     /// <returns></returns>
     public IEnumerator PawnFallDoVariantBastien (Transform pawn, Cell endCell, int player, bool reset, Cell startCell) {
         List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
+		bool needResetVirtalGreed = false;
 
         //rend la case finale non disponible pour les futurs pions
         endCell.available = false;
@@ -264,7 +265,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
                 if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
                     if (gridAtlas.gridDictionary[startCoords].trigger.triggerType == -1) {
                         //setup du trigger random : moche, à changer un jour ?
-                        int idTrig = Random.Range (0, maxIdTrigger + 1);
+						needResetVirtalGreed = true;
+						int idTrig = Random.Range (0, maxIdTrigger + 1);
                         while (idTrig == 4) {
                             idTrig = Random.Range (0, maxIdTrigger + 1);
                         }
@@ -294,12 +296,11 @@ public class MechanismHandlerBoth : MonoBehaviour {
 
         //appelle l'IA pour mettre à jour son arbre.
         if (!reset) {
-            GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+			if (needResetVirtalGreed)
+				GameObject.Find ("IAHandler").GetComponent<IAMain> ().settingGrid (myGrid.gridSize);
+			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
             CheckAlign4VariantBastien();
         }
-
-        //if (reset) 
-        //    CheckAlign4 ();
         
     }
 
@@ -667,6 +668,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
         endCell.available = false;
         Transform pawn;
 
+		bool needResetVirtalGreed = false;
+
         if (startCell.GetComponentInChildren<Pawn> () != null) {
             pawn = startCell.GetComponentInChildren<Pawn> ().transform;
         } else {
@@ -701,7 +704,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
         if (endCell.trigger.isTrigger && !reset && (startCell.coordinates != endCell.coordinates || click)) {
             if (endCell.trigger.triggerType == -1) {
                 //setup du trigger random : moche, à changer un jour ?
-                int idTrig = Random.Range (0, maxIdTrigger + 1);
+				needResetVirtalGreed = true;
+				int idTrig = Random.Range (0, maxIdTrigger + 1);
                 while (idTrig == 4) {
                     idTrig = Random.Range (0, maxIdTrigger + 1);
                 }
@@ -713,7 +717,9 @@ public class MechanismHandlerBoth : MonoBehaviour {
             }
         }
         if (click) {
-            GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+			if (needResetVirtalGreed)
+				GameObject.Find ("IAHandler").GetComponent<IAMain> ().settingGrid (myGrid.gridSize);
+			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
             CheckAlign4VariantBastien();
         }
         if (reset) {
