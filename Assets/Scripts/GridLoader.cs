@@ -12,6 +12,7 @@ public class GridLoader : MonoBehaviour {
     public int gridIndex;
     public Transform cellPrefab;
     public Transform gridPrefab;
+    public GameObject edgePrefab;
     private string levelDataFileName = "levelDataVariant";
     public string json { get; set; }
     private int variant;
@@ -151,6 +152,10 @@ public class GridLoader : MonoBehaviour {
             SpawnPawns (cellChild, cellChild.GetComponent<Cell> ().pawn, grid);
             i++;
         }
+        foreach (GameObject edge in GameObject.FindGameObjectsWithTag ("Edge")) {
+            DeleteExistingEdge (edge);
+        }
+        SpawnEdges ();
     }
 
     /// <summary>
@@ -268,7 +273,6 @@ public class GridLoader : MonoBehaviour {
         }
     }
 
-    
     /// <summary>
     /// spawn des gameobjects triggers de la cell
     /// </summary>
@@ -306,6 +310,44 @@ public class GridLoader : MonoBehaviour {
         }
     }
 
+    public void SpawnEdges () {
+        Transform parent = GameObject.Find ("GridHolder").GetComponent<Transform> ();
+        
+        //right
+        GameObject edgeCopyRight = GameObject.Instantiate (edgePrefab, new Vector3 (CoordToPosition (currentGrid.gridSize.x, 0).x + 0.3f, 0, 0), Quaternion.identity, parent);
+        edgeCopyRight.name = "EdgeCopyRight";
+        edgeCopyRight.GetComponent<Transform> ().localScale += new Vector3 (0, currentGrid.gridSize.y - 1, 0);
+        //left
+        GameObject edgeCopyLeft = GameObject.Instantiate (edgePrefab, new Vector3 (-CoordToPosition (currentGrid.gridSize.x, 0).x - 0.3f, 0, 0), Quaternion.identity, parent);
+        edgeCopyLeft.name = "EdgeCopyLeft";
+        edgeCopyLeft.GetComponent<Transform> ().localScale += new Vector3 (0, currentGrid.gridSize.y - 1, 0);
+        //top
+        GameObject edgeCopyTop = GameObject.Instantiate (edgePrefab, new Vector3 (0, CoordToPosition (0, currentGrid.gridSize.y).y + 0.3f, 0), Quaternion.identity, parent);
+        edgeCopyTop.name = "EdgeCopyTop";
+        edgeCopyTop.GetComponent<Transform> ().localScale += new Vector3 (currentGrid.gridSize.x - 1, 0, 0);
+        //bottom
+        GameObject edgeCopyBottom = GameObject.Instantiate (edgePrefab, new Vector3 (0, -CoordToPosition (0, currentGrid.gridSize.y).y - 0.3f, 0), Quaternion.identity, parent);
+        edgeCopyBottom.name = "EdgeCopyBottom";
+        edgeCopyBottom.GetComponent<Transform> ().localScale += new Vector3 (currentGrid.gridSize.x - 1, 0, 0);
+        
+        if (currentGrid.gridSize.x % 2 != 0 ) {
+            edgeCopyRight.GetComponent<Transform> ().Translate(Vector3.left * 0.5f);
+            edgeCopyLeft.GetComponent<Transform> ().Translate(- Vector3.left * 0.5f);
+        }
+        if (currentGrid.gridSize.y % 2 != 0 ) {
+            edgeCopyTop.GetComponent<Transform> ().Translate(Vector3.down * 0.5f);
+            edgeCopyBottom.GetComponent<Transform> ().Translate(-Vector3.down * 0.5f);
+        }
+        GameObject edgeDestroyRight = GameObject.Instantiate (edgeCopyRight, edgeCopyRight.GetComponent<Transform> ().position + 0.5f * Vector3.right, Quaternion.identity, parent);
+        edgeDestroyRight.name = "EdgeDestroyRight";
+        GameObject edgeDestroyLeft = GameObject.Instantiate (edgeCopyLeft, edgeCopyLeft.GetComponent<Transform> ().position + 0.5f * Vector3.left, Quaternion.identity, parent);
+        edgeDestroyLeft.name = "EdgeDestroyLeft";
+        GameObject edgeDestroyTop = GameObject.Instantiate (edgeCopyTop, edgeCopyTop.GetComponent<Transform> ().position + 0.5f * Vector3.up, Quaternion.identity, parent);
+        edgeDestroyTop.name = "EdgeDestroyTop";
+        GameObject edgeDestroyBottom = GameObject.Instantiate (edgeCopyBottom, edgeCopyBottom.GetComponent<Transform> ().position + 0.5f * Vector3.down, Quaternion.identity, parent);
+        edgeDestroyBottom.name = "EdgeDestroyBottom";
+    }
+
     /// <summary>
     /// Delete existing wall or trigger or pawn
     /// </summary>
@@ -315,6 +357,15 @@ public class GridLoader : MonoBehaviour {
         if (cell.Find (holderName)) {
             DestroyImmediate (cell.Find (holderName).gameObject);
         }
+    }
+
+    /// <summary>
+    /// Delete existing edge
+    /// </summary>
+    /// <param name="edgeToDestroy"></param>
+    void DeleteExistingEdge (GameObject edgeToDestroy) {
+            DestroyImmediate (edgeToDestroy);
+        
     }
 
     /// <summary>

@@ -20,6 +20,10 @@ public class MechanismHandlerBoth : MonoBehaviour {
     private int maxIdTrigger = 4;
     public int gravity { get; set; } // direction de chute des pions
     public bool loading;
+    public bool isTranslatingRight = false;
+    public bool isTranslatingLeft = false;
+    public bool isTranslatingUp = false;
+    public bool isTranslatingDown = false;
 
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
     public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
@@ -373,6 +377,26 @@ public class MechanismHandlerBoth : MonoBehaviour {
             yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
             yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation ,1.0f));
             break;
+        case 5: //translation right
+            isTranslatingRight = true;
+            yield return StartCoroutine (TranslationVariantBastien (Vector3.right, 1f));
+            isTranslatingRight = false;
+            break;
+        case 6: //translation left
+            isTranslatingLeft = true;
+            yield return StartCoroutine (TranslationVariantBastien (Vector3.left, 1f));
+            isTranslatingLeft = false;
+            break;
+        case 7: //translation up
+            isTranslatingUp = true;
+            yield return StartCoroutine (TranslationVariantBastien (Vector3.up, 1f));
+            isTranslatingUp = false;
+            break;
+        case 8: //translation down
+            isTranslatingDown = true;
+            yield return StartCoroutine (TranslationVariantBastien (Vector3.down, 1f));
+            isTranslatingDown = false;
+            break;
         default:
             rotate = 0;
             break;
@@ -383,12 +407,40 @@ public class MechanismHandlerBoth : MonoBehaviour {
         while (elapsedTime < time) {
             elapsedTime += Time.deltaTime; // <- move elapsedTime increment here 
             // Rotations
-            mainCamera.GetComponent<Transform> ().rotation = Quaternion.Slerp(startingRotation, targetRotation,  (elapsedTime / time)  );
+            mainCamera.GetComponent<Transform> ().rotation = Quaternion.Slerp(startingRotation, targetRotation, (elapsedTime / time));
             yield return new WaitForEndOfFrame ();
         }
         foreach( GameObject pawnObject in GameObject.FindGameObjectsWithTag ("Pawn")) {
             pawnObject.GetComponent <PawnShape> ().TurnPawnShape (gravity);
         };
+    }
+
+    public IEnumerator TranslationVariantBastien (Vector3 direction, float time) {
+        foreach (Transform cellChild in myGrid.GetComponent<Transform> ()) {
+            //coordonnées
+            cellChild.GetComponent<Cell> ().coordinates += new Coord((int) direction.x, (int) direction.y);
+            //Cas spéciaux
+            if (cellChild.GetComponent<Cell> ().coordinates.x == myGrid.GetComponent<Grid>().gridSize.x) {
+                cellChild.GetComponent<Cell> ().coordinates.x = 0;
+            } else if (cellChild.GetComponent<Cell> ().coordinates.x < 0) {
+                cellChild.GetComponent<Cell> ().coordinates.x = myGrid.GetComponent<Grid>().gridSize.x - 1;
+            } else if (cellChild.GetComponent<Cell> ().coordinates.y == myGrid.GetComponent<Grid>().gridSize.y) {
+                cellChild.GetComponent<Cell> ().coordinates.y = 0;
+            } else if (cellChild.GetComponent<Cell> ().coordinates.y < 0) {
+                cellChild.GetComponent<Cell> ().coordinates.y = myGrid.GetComponent<Grid>().gridSize.y - 1;
+            }
+        }
+        Vector3 start_pos = myGrid.GetComponent<Transform> ().position; //Starting position.
+        Vector3 end_pos = myGrid.GetComponent<Transform> ().position + direction; //Ending position.
+
+        float elapsedTime = 0.0f;
+        while (elapsedTime < time) {
+            elapsedTime += Time.deltaTime; // <- move elapsedTime increment here
+            // Translation
+            myGrid.GetComponent<Transform> ().position = Vector3.Lerp(start_pos, end_pos, (elapsedTime / time));
+            yield return new WaitForEndOfFrame ();
+        }
+        gridAtlas = GenerateAtlas ();
     }
 
     /// <summary>
@@ -525,7 +577,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
         }
         //script de vérification de la puissance 4
         //CheckAlign4VariantRomain (currentCell, player);
-        CheckAlign4VariantBastien ();
+        CheckAlign4VariantBastien (); //CHELOU TODO n'existe pas dans la version bastien
     }
 
     /// <summary>
@@ -536,7 +588,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
     /// <returns>the next cell if any, else returns calling cell</returns>
     public Cell NextCellVariantRomain (Cell currentCell, int gravity) {
         //0: down | 1: left | 2: up | 3: right 
-        Coord currentCoordinates = currentCell.coordinates; 
+        Coord currentCoordinates = currentCell.coordinates;
         switch (gravity) {
         case 0:
             currentCoordinates.y = currentCoordinates.y-1;
@@ -614,7 +666,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
         startCell.available = true;
         endCell.available = false;
         Transform pawn;
-        
+
         if (startCell.GetComponentInChildren<Pawn> () != null) {
             pawn = startCell.GetComponentInChildren<Pawn> ().transform;
         } else {
@@ -657,7 +709,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
             }
             yield return StartCoroutine (ExecuteTriggerVariantRomain (endCell.trigger.triggerType, 1.0f));
             if (endCell.trigger.triggerType != 3) {
-                yield return StartCoroutine (PawnFallCalculationVariantRomain (endCell, player, false, false));
+                yield return StartCoroutine (PawnFallCalculationVariantRomain (gridAtlas.gridDictionary[endCell.coordinates], player, false, false));
             }
         }
         if (click) {
@@ -744,6 +796,26 @@ public class MechanismHandlerBoth : MonoBehaviour {
             yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
             yield return StartCoroutine (this.ExecuteTriggerVariantRomain (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation,1.0f));
             break;
+        case 5: //translation right
+            isTranslatingRight = true;
+            yield return StartCoroutine (TranslationVariantRomain (Vector3.right, 1f));
+            isTranslatingRight = false;
+            break;
+        case 6: //translation left
+            isTranslatingLeft = true;
+            yield return StartCoroutine (TranslationVariantRomain (Vector3.left, 1f));
+            isTranslatingLeft = false;
+            break;
+        case 7: //translation up
+            isTranslatingUp = true;
+            yield return StartCoroutine (TranslationVariantRomain (Vector3.up, 1f));
+            isTranslatingUp = false;
+            break;
+        case 8: //translation down
+            isTranslatingDown = true;
+            yield return StartCoroutine (TranslationVariantRomain (Vector3.down, 1f));
+            isTranslatingDown = false;
+            break;
         default:
             rotate = 0;
             break;
@@ -760,6 +832,33 @@ public class MechanismHandlerBoth : MonoBehaviour {
         foreach( GameObject pawnObject in GameObject.FindGameObjectsWithTag ("Pawn")) {
             pawnObject.GetComponent <PawnShape> ().TurnPawnShape (gravity);
         };
+    }
+        public IEnumerator TranslationVariantRomain (Vector3 direction, float time) {
+        foreach (Transform cellChild in myGrid.GetComponent<Transform> ()) {
+            //coordonnées
+            cellChild.GetComponent<Cell> ().coordinates += new Coord((int) direction.x, (int) direction.y);
+            //Cas spéciaux
+            if (cellChild.GetComponent<Cell> ().coordinates.x == myGrid.GetComponent<Grid>().gridSize.x) {
+                cellChild.GetComponent<Cell> ().coordinates.x = 0;
+            } else if (cellChild.GetComponent<Cell> ().coordinates.x < 0) {
+                cellChild.GetComponent<Cell> ().coordinates.x = myGrid.GetComponent<Grid>().gridSize.x - 1;
+            } else if (cellChild.GetComponent<Cell> ().coordinates.y == myGrid.GetComponent<Grid>().gridSize.y) {
+                cellChild.GetComponent<Cell> ().coordinates.y = 0;
+            } else if (cellChild.GetComponent<Cell> ().coordinates.y < 0) {
+                cellChild.GetComponent<Cell> ().coordinates.y = myGrid.GetComponent<Grid>().gridSize.y - 1;
+            }
+        }
+        Vector3 start_pos = myGrid.GetComponent<Transform> ().position; //Starting position.
+        Vector3 end_pos = myGrid.GetComponent<Transform> ().position + direction; //Ending position.
+
+        float elapsedTime = 0.0f;
+        while (elapsedTime < time) {
+            elapsedTime += Time.deltaTime; // <- move elapsedTime increment here
+            // Translation
+            myGrid.GetComponent<Transform> ().position = Vector3.Lerp (start_pos, end_pos, (elapsedTime / time));
+            yield return new WaitForEndOfFrame ();
+        }
+        gridAtlas = GenerateAtlas ();
     }
 
     /// <summary>
