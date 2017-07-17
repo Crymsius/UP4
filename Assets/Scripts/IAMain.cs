@@ -14,6 +14,8 @@ public class IAMain : MonoBehaviour {
     public GameObject bugReportPanel;
     public GameObject overlayPanel;
 
+	public bool hasWishTriggers;
+
     // Use this for initialization
     void Start () {
         bugReportText = GameObject.Find ("BugReportText").GetComponent<TMP_Text> ();
@@ -25,44 +27,59 @@ public class IAMain : MonoBehaviour {
     public void settingGrid(Coord c)
     {
         Matrix board = new Matrix(c, myAtlas);
-        Matrix trigPositions = new Matrix(c, myAtlas);
-
+        
         recapGame = "";
+		hasWishTriggers = false;
 
-        foreach (Cell cell in myAtlas.gridDictionary.Values)
-            if (cell.full)
-                board.values[cell.coordinates] = -2;
+		foreach (Cell cell in myAtlas.gridDictionary.Values) {
+			if (cell.full)
+				board.values [cell.coordinates] = -2;
+			else if (!cell.available)
+				board.values [cell.coordinates] = (cell.pawn.pawnType == -1) ? 2 : ((cell.pawn.pawnType == 2) ? 3 : cell.pawn.pawnType);
+			
+			hasWishTriggers = hasWishTriggers || (cell.trigger.isTrigger && cell.trigger.triggerType == 4);
+		}
         
         if(typePlayers.Contains("IA"))
             mainNode = new DecisionTreeNode(1, 0, 4, board, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
-        else 
+		else if (!hasWishTriggers)
             mainNode = new DecisionTreeNode(1, 0, 1, board, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
+		else
+			mainNode = new DecisionTreeNode(1, 0, 0, board, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
         mainNode.DeploymentTree();
 
         //PrintAllPlays();
     }
+	public void CheckSettingGrid(){ // L'arbre de décision n'a aucune profondeur si la map contient un trigger à choix. Le cas échéant, on le reconstruit.
+		if (hasWishTriggers) {
+			settingGrid (GameObject.Find ("Generated Grid(Clone)").GetComponent<Grid> ().gridSize);
+			mainNode.position.MeasureScore (0); // Juste pour vérifier s'il s'agit d'une position de victoire
+		}
+	}
 
     public void GetCurrentPlay(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
-        recapGame += play.Stringify()+"-";
+		if (!hasWishTriggers) {
+			recapGame += play.Stringify () + "-";
 
-        if (mainNode.children.ContainsKey (play))
-            mainNode = mainNode.children [play]; // Le reste est envoyé au GarbageCollector, normalement...
-		else{ // détection d'un bug !
-            string crashText = "L'IA a crashé" +
-                               "\n\nFélicitations, vous avez débusqué un bug !" +
-                               "\nPour nous aider à corriger l'application, envoyez-nous un screenshot de cet écran" +
-                               "\n\n" + recapGame;
-            bugReportText.text = crashText;
-            bugReportPanel.SetActive (true);
-            overlayPanel.SetActive (true);
+			if (mainNode.children.ContainsKey (play))
+				mainNode = mainNode.children [play]; // Le reste est envoyé au GarbageCollector, normalement...
+			else { // détection d'un bug !
+				string crashText = "L'IA a crashé" +
+				                           "\n\nFélicitations, vous avez débusqué un bug !" +
+				                           "\nPour nous aider à corriger l'application, envoyez-nous un screenshot de cet écran" +
+				                           "\n\n" + recapGame;
+				bugReportText.text = crashText;
+				bugReportPanel.SetActive (true);
+				overlayPanel.SetActive (true);
 
-            print ("JE CRASHE !");
-        }
+				print ("JE CRASHE !");
+			}
 
-        //PrintAllPlays();
+			//PrintAllPlays();
 
-        mainNode.Maj_Depth(0);
-        mainNode.DeploymentTree();
+			mainNode.Maj_Depth (0);
+			mainNode.DeploymentTree ();
+		}
     }
 
     public void IA_Play() { // compare les scores de chaque coup et joue le meilleur

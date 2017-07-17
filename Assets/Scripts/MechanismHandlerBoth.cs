@@ -224,6 +224,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
     /// <returns></returns>
     public IEnumerator PawnFallDoVariantBastien (Transform pawn, Cell endCell, int player, bool reset, Cell startCell) {
         List<Cell.Trigger> triggers = new List<Cell.Trigger> ();
+		bool needResetVirtalGreed = false;
 
         //rend la case finale non disponible pour les futurs pions
         endCell.available = false;
@@ -264,7 +265,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
                 if (gridAtlas.gridDictionary[startCoords].trigger.isTrigger) {
                     if (gridAtlas.gridDictionary[startCoords].trigger.triggerType == -1) {
                         //setup du trigger random : moche, à changer un jour ?
-                        int idTrig = Random.Range (0, maxIdTrigger + 1);
+						needResetVirtalGreed = true;
+						int idTrig = Random.Range (0, maxIdTrigger + 1);
                         while (idTrig == 4) {
                             idTrig = Random.Range (0, maxIdTrigger + 1);
                         }
@@ -294,12 +296,11 @@ public class MechanismHandlerBoth : MonoBehaviour {
 
         //appelle l'IA pour mettre à jour son arbre.
         if (!reset) {
-            GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+			if (needResetVirtalGreed)
+				GameObject.Find ("IAHandler").GetComponent<IAMain> ().settingGrid (myGrid.gridSize);
+			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
             CheckAlign4VariantBastien();
         }
-
-        //if (reset) 
-        //    CheckAlign4 ();
         
     }
 
@@ -508,7 +509,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
     /// Check un puissance 4 comprennant le pion venant d'être placé
     /// </summary>
     public void CheckAlign4VariantBastien () {
-        if (GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.isVictory)
+		GameObject.Find ("IAHandler").GetComponent<IAMain> ().CheckSettingGrid ();
+		if (GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.isVictory)
         {
             List<Vector3> linesToDraw = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.coordWinningLines;
             for(int i=0; i<linesToDraw.Count; i+=2)
@@ -666,6 +668,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
         endCell.available = false;
         Transform pawn;
 
+		bool needResetVirtalGreed = false;
+
         if (startCell.GetComponentInChildren<Pawn> () != null) {
             pawn = startCell.GetComponentInChildren<Pawn> ().transform;
         } else {
@@ -700,7 +704,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
         if (endCell.trigger.isTrigger && !reset && (startCell.coordinates != endCell.coordinates || click)) {
             if (endCell.trigger.triggerType == -1) {
                 //setup du trigger random : moche, à changer un jour ?
-                int idTrig = Random.Range (0, maxIdTrigger + 1);
+				needResetVirtalGreed = true;
+				int idTrig = Random.Range (0, maxIdTrigger + 1);
                 while (idTrig == 4) {
                     idTrig = Random.Range (0, maxIdTrigger + 1);
                 }
@@ -712,7 +717,9 @@ public class MechanismHandlerBoth : MonoBehaviour {
             }
         }
         if (click) {
-            GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+			if (needResetVirtalGreed)
+				GameObject.Find ("IAHandler").GetComponent<IAMain> ().settingGrid (myGrid.gridSize);
+			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
             CheckAlign4VariantBastien();
         }
         if (reset) {
@@ -920,78 +927,6 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         }
     }
-
-    /// <summary>
-    /// Check un puissance 4 comprennant le pion venant d'être placé
-    /// </summary>
-    /// <param name="newFilled"> cell that just got filled </param>
-    /// <param name="player"></param>
-    /*public void CheckAlign4VariantRomain (Cell newFilled, int player) {
-        Coord currentCoords = newFilled.coordinates;
-        Coord startCoords; 
-        
-        //test selon les 4 directions
-        foreach (string i in new List<string> () {"right", "UR", "up", "UL"}) {
-            startCoords = currentCoords;
-            while(gridAtlas.gridDictionary.ContainsKey (startCoords - fallIntegers[directionConversionStringVariantRomain (i)])){
-                // On a rejoint le bord du graphique, prêts à balayer en sens inverse.
-                startCoords -= fallIntegers[directionConversionStringVariantRomain (i)];
-            }
-            int count = 0;
-            // On compte les pions CONSECUTIFS du joueur suivant la direction. Arrivé à 4 c'est la victoire.
-            while (gridAtlas.gridDictionary.ContainsKey (startCoords)) {
-                if (gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> () && gridAtlas.gridDictionary[startCoords].GetComponentInChildren<Pawn> ().player == player) {
-                    if (count + 1 >= 4) {
-                        Coord originCoords = new Coord ();
-                        Coord destCoords = new Coord ();
-
-                        originCoords = startCoords;
-                        destCoords = originCoords - 3 * fallIntegers [directionConversionStringVariantRomain (i)];
-
-                        GameObject newLine = Instantiate (winningLine);
-                        Vector3 originPosition = gridAtlas.gridDictionary[originCoords].GetComponent<Transform> ().position;
-                        Vector3 destinationPosition = gridAtlas.gridDictionary[destCoords].GetComponent<Transform> ().position;
-                        newLine.GetComponent<WinningLine> ().DisplayLine (originPosition, destinationPosition);
-
-                        GameObject.Find ("GeneralHandler").GetComponent<GameHandler> ().GameOver ();
-                    }
-                    else if (!IsBlockedVariantRomain (startCoords, i)) count++;
-                    else count = 0;
-                }
-                else count = 0;
-                startCoords += fallIntegers[directionConversionStringVariantRomain (i)];
-            }
-        }
-        return;
-    }
-    //vérifie si un mur ne bloque pas l'établissement de la puissance 4
-    public bool IsBlockedVariantRomain (Coord coords, string direction) {
-        switch (direction) {
-        case "right":
-            if (gridAtlas.gridDictionary [coords].walls.wallx) {
-                return true;
-            } else
-                break;
-        case "up":
-            if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(0,1)) && gridAtlas.gridDictionary[coords + new Coord(0,1)].walls.wally) {
-                return true;
-            } else
-                break;
-        case "UR":
-            if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(1,1)) && gridAtlas.gridDictionary[coords + new Coord(1,1)].walls.wallxy) {
-                return true;
-            } else
-                break;
-        case "UL":
-            if (gridAtlas.gridDictionary.ContainsKey (coords + new Coord(-1,1)) &&gridAtlas.gridDictionary[coords + new Coord(-1,1)].walls.wallxy) {
-                return true;
-            } else
-                break;
-        default:
-            break;
-        }
-            return false;
-    }*/
 
     /// <summary>
     /// simple conversion method for old usage of strings for directions
