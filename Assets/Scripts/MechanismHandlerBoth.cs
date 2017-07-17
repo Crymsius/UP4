@@ -294,6 +294,9 @@ public class MechanismHandlerBoth : MonoBehaviour {
             }
         }
 
+        if (endCell.hidden && !reset) {
+            endCell.GetComponentInChildren<Animation> ().Play ("CellHiddenRevealAnimation");
+        }
         //appelle l'IA pour mettre à jour son arbre.
         if (!reset) {
 			if (needResetVirtalGreed)
