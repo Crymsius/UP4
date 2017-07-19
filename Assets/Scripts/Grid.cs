@@ -28,6 +28,8 @@ public class Grid : MonoBehaviour {
     public GameObject translationU;
     public GameObject translationD;
 
+    public GameObject swap;
+
     public GameObject pawnNeutral;
     public GameObject pawnPlayer1;
     public GameObject pawnPlayer2;
