@@ -9,6 +9,7 @@ public class Matrix
 
     public Dictionary<Coord, int> values;
     public Atlas myAtlas { get; set; }
+	public Coord forecastedTranslate { get; set;}
 
     public bool isVictory { get; set; }
     public Dictionary<int,List<Coord>> inVictory = new Dictionary<int, List<Coord>>();
@@ -27,6 +28,8 @@ public class Matrix
         isVictory = false;
         inVictory.Add(0, new List<Coord>());
         inVictory.Add(1, new List<Coord>());
+
+		forecastedTranslate = new Coord (0, 0);
     }
 
     public Matrix(Matrix copy, Atlas _myatlas) { // Copie d'une autre matrice
@@ -40,7 +43,9 @@ public class Matrix
 
         isVictory = false;
         inVictory.Add(0, new List<Coord>());
-        inVictory.Add(1, new List<Coord>());
+		inVictory.Add(1, new List<Coord>());
+
+		forecastedTranslate = copy.forecastedTranslate;
     }
 
     public int MeasureScore(int player) { // Calcule le score instantané d'un joueur sur la grille
@@ -71,8 +76,8 @@ public class Matrix
 				if (vinter == 4) { // On se rend compte qu'il existe une P4
 					isVictory = true;
 					result += (player == pinter) ? 10000 : 0;
-					coordWinningLines.Add (myAtlas.gridDictionary [actuel - 3 * direction].GetComponent<Transform> ().position);
-					coordWinningLines.Add (myAtlas.gridDictionary [actuel].GetComponent<Transform> ().position);
+					coordWinningLines.Add (GetAtlasCell (actuel - 3 * direction).GetComponent<Transform> ().position);
+					coordWinningLines.Add (GetAtlasCell (actuel).GetComponent<Transform> ().position);
 					// On enregistre les cellules concernées pour le score aux points, on ne prend pas en compte les cellules communes
 					for (int i = 0; i <= 3; i++)
 						if (!inVictory [pinter].Contains (actuel - i * direction) && values [actuel - i * direction] != 3)
@@ -84,7 +89,7 @@ public class Matrix
 						result += (player == pinter) ? 2500 : 0;
 
 						coordWinningLines.RemoveAt (coordWinningLines.Count - 1);
-						coordWinningLines.Add (myAtlas.gridDictionary [actuel].GetComponent<Transform> ().position);
+						coordWinningLines.Add (GetAtlasCell (actuel).GetComponent<Transform> ().position);
 					}
 			} 
 			else if (values [actuel] == 1 - pinter || willChange (actuel, direction, pinter)) // La 2nde condition gère les cas où le pion commun peut compter dans le jeu adverse
@@ -119,15 +124,15 @@ public class Matrix
 	}
     public bool isBlocked(Coord actuel, Coord direction) {
         bool result = false;
-        if (direction == new Coord(0, 1))
-            result = result || (myAtlas.gridDictionary.ContainsKey(actuel + direction) && myAtlas.gridDictionary[actuel + direction].walls.wally);
+        if (direction == new Coord(0, 1)) // DEBUT DU DAAAAAAANGER
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustCoord(actuel) + direction) && myAtlas.gridDictionary[adjustCoord(actuel) + direction].walls.wally);
         else if (direction == new Coord(1, 0))
-            result = result || myAtlas.gridDictionary[actuel].walls.wallx;
+			result = result || GetAtlasCell(actuel).walls.wallx;
         else if (direction == new Coord(1, 1))
-            result = result || (myAtlas.gridDictionary.ContainsKey(actuel + new Coord(0,1)) && myAtlas.gridDictionary[actuel + new Coord(0, 1)].walls.wallxy);
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustCoord(actuel) + new Coord(0,1)) && myAtlas.gridDictionary[adjustCoord(actuel) + new Coord(0, 1)].walls.wallxy);
         else if (direction == new Coord(-1, 1))
-            result = result || (myAtlas.gridDictionary.ContainsKey(actuel + direction) && myAtlas.gridDictionary[actuel + direction].walls.wallxy);
-
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustCoord(actuel) + direction) && myAtlas.gridDictionary[adjustCoord(actuel) + direction].walls.wallxy);
+		
         return result;
     }
 
@@ -136,13 +141,13 @@ public class Matrix
         List<int> results = new List<int>();
 
         Coord startCell = play;
-        while (myAtlas.gridDictionary.ContainsKey(startCell - gravity))
+		while (myAtlas.gridDictionary.ContainsKey(adjustCoord(startCell) - gravity))
             startCell = startCell - gravity;
 
         while (startCell != play + gravity)
         {
-            if (myAtlas.gridDictionary[startCell].trigger.isTrigger)
-                results.Add(myAtlas.gridDictionary[startCell].trigger.triggerType);
+			if (GetAtlasCell(startCell).trigger.isTrigger)
+				results.Add(GetAtlasCell(startCell).trigger.triggerType);
             startCell = startCell + gravity;
         }
         return results;
@@ -150,9 +155,9 @@ public class Matrix
 	public Coord CheckNextFloorOrTrigger(Coord play, Coord gravity){
 		Coord startCell = play;
 		bool next = true;
-		while (!isBlocked(startCell,gravity) && values.ContainsKey (startCell + gravity) && values[startCell + gravity]==-1 && !myAtlas.gridDictionary[startCell + gravity].full && next) {
+		while (!isBlocked(startCell,gravity) && values.ContainsKey (startCell + gravity) && values[startCell + gravity]==-1 && !myAtlas.gridDictionary[adjustCoord(startCell) + gravity].full && next) {
 			startCell = startCell + gravity;
-			next = next && !myAtlas.gridDictionary [startCell].trigger.isTrigger;
+			next = next && !GetAtlasCell(startCell).trigger.isTrigger;
 		}
 		return startCell;
 	}
@@ -160,8 +165,8 @@ public class Matrix
 	public Coord GetHighestPlayPosition(Coord play, Coord gravity){
 		Coord startCell = play;
 
-		while (!isBlocked(startCell,new Coord(-gravity.x, -gravity.y)) && values.ContainsKey (startCell - gravity) && values[startCell - gravity]==-1 && !myAtlas.gridDictionary[startCell - gravity].full && 
-			!myAtlas.gridDictionary [startCell - gravity].trigger.isTrigger)
+		while (!isBlocked(startCell,new Coord(-gravity.x, -gravity.y)) && values.ContainsKey (startCell - gravity) && values[startCell - gravity]==-1 && 
+			!myAtlas.gridDictionary[adjustCoord(startCell) - gravity].full && !myAtlas.gridDictionary [adjustCoord(startCell) - gravity].trigger.isTrigger)
 			startCell = startCell - gravity;
 		
 		return startCell;
@@ -204,9 +209,46 @@ public class Matrix
     }
 
 	public void Translate(Coord direction){
-		Grid myGrid = GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>();
-		//Translation de la grille virtuelle
-		//Translation de l'Atlas
+		Coord myGridSize = GameObject.Find("Generated Grid(Clone)").GetComponent<Grid>().gridSize;
+		//Translation de la grille virtuelle, l'Atlas est déjà modifié
+		Coord iterTranslate, iterNormal, startCoord, startNewCoord;
+
+		iterTranslate = direction;
+		iterNormal = new Coord (direction.y, direction.x);
+
+		bool isNegative = direction.x < 0 || direction.y < 0;
+		bool isX = direction.x != 0;
+
+		startCoord = isNegative ? new Coord (0, 0) : new Coord (myGridSize.x - 1, myGridSize.y - 1);
+		startNewCoord = isNegative ? new Coord (myGridSize.x - 1, myGridSize.y - 1) : new Coord (0, 0);
+
+		Dictionary<Coord, int> temporary = new Dictionary<Coord, int> ();
+		for (int i = 0; i < (isX ? myGridSize.y : myGridSize.x); i++) 
+			temporary.Add (startCoord - i * iterNormal, values [startCoord - i * iterNormal]);
+
+		for (int n = 1; n < (isX ? myGridSize.x - 1 : myGridSize.y - 1); n++)
+			for (int m = 0; m < (isX ? myGridSize.y : myGridSize.x); m++) 
+				values [startCoord - n * iterTranslate - m * iterNormal] = values [startCoord - (n + 1) * iterTranslate - m * iterNormal];
+
+		for (int i = 0; i < (isX ? myGridSize.y : myGridSize.x); i++) 
+			values [startNewCoord + i * iterNormal] = temporary [startCoord - ((isX ? myGridSize.y - 1 : myGridSize.x - 1) - i) * iterNormal];
+
+		forecastedTranslate = forecastedTranslate + direction;
+	}
+
+	public Cell GetAtlasCell(Coord position){
+		return myAtlas.gridDictionary [adjustCoord (position)];
+	}
+	public Coord adjustCoord(Coord aCoord){
+		Coord truePosition = aCoord + forecastedTranslate;
+
+		int adjustedX = truePosition.x % hDim;
+		int adjustedY = truePosition.x % vDim;
+
+		adjustedX += adjustedX < 0 ? hDim : 0;
+		adjustedY += adjustedY < 0 ? vDim : 0;
+
+		return new Coord (adjustedX, adjustedY);
 	}
         
     public void Stringify()

@@ -15,7 +15,7 @@ public class DecisionTreeNode {
     public Coord gravity { get; set; }
     public List<string> typePlayers;
 
-    public float score { get; set; }
+	public float score { get; set; }
     public bool considered { get; set; }
     
     public Dictionary<Coord, DecisionTreeNode> children;
@@ -97,14 +97,14 @@ public class DecisionTreeNode {
 	public void TriggeredUntilPlayed_RomainVersion(Coord play){
 		Coord currentPlay = play, nextPlay;
 		bool next = true;
-		while (myAtlas.gridDictionary [currentPlay].trigger.isTrigger && myAtlas.gridDictionary [currentPlay].trigger.triggerType != 3 && next) {
-			ExecuteTrigger66 (play, myAtlas.gridDictionary [currentPlay].trigger.triggerType);
+		while (GetAtlasCell(currentPlay).trigger.isTrigger && GetAtlasCell(currentPlay).trigger.triggerType != 3 && next) {
+			ExecuteTrigger66 (play, GetAtlasCell(currentPlay).trigger.triggerType);
 			nextPlay = children [play].position.CheckNextFloorOrTrigger (currentPlay, children [play].gravity);
 			next = nextPlay != currentPlay;
 			currentPlay = nextPlay;
 		}
 		children[play].position.values[currentPlay] = 1 - player;
-		if(myAtlas.gridDictionary [currentPlay].trigger.isTrigger && next) // la seule possibilité est la présence d'un reset gravity
+		if(GetAtlasCell(currentPlay).trigger.isTrigger && next) // la seule possibilité est la présence d'un reset gravity
 			ExecuteTrigger66 (play, 3);
 	}
 
@@ -123,6 +123,9 @@ public class DecisionTreeNode {
 		case 3:
 			children[play].position.ResetGravity(children[play].gravity);
 			break;
+		case 5:
+			children [play].position.Translate (new Coord (1, 0));
+			break;
 		default:
 			break;
 		}
@@ -131,19 +134,25 @@ public class DecisionTreeNode {
     public bool isPlayable(Coord cell, Coord gravity) {
         bool result = false;
         if (gravity == new Coord(0, -1))
-			result = result || myAtlas.gridDictionary[cell].walls.wally || myAtlas.gridDictionary[cell].nets.nety;
+			result = result || GetAtlasCell(cell).walls.wally || GetAtlasCell(cell).nets.nety;
         else if (gravity == new Coord(1, 0))
-			result = result || myAtlas.gridDictionary[cell].walls.wallx || myAtlas.gridDictionary[cell].nets.netx;
+			result = result || GetAtlasCell(cell).walls.wallx || GetAtlasCell(cell).nets.netx;
         else if (gravity == new Coord(0, 1))
-			result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && (myAtlas.gridDictionary[cell + gravity].walls.wally || myAtlas.gridDictionary[cell + gravity].nets.nety));
+			result = result || (myAtlas.gridDictionary.ContainsKey(position.adjustCoord(cell) + gravity) && (myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].walls.wally 
+				|| myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].nets.nety));
         else
-			result = result || (myAtlas.gridDictionary.ContainsKey(cell + gravity) && (myAtlas.gridDictionary[cell + gravity].walls.wallx || myAtlas.gridDictionary[cell + gravity].nets.netx));
+			result = result || (myAtlas.gridDictionary.ContainsKey(position.adjustCoord(cell) + gravity) && (myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].walls.wallx 
+				|| myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].nets.netx));
 		
 		if (variant == 1) // on ajoute le jeu au-dessus / en dessous des triggers dans la variante Romaing
-			result = result || (myAtlas.gridDictionary [cell].trigger.isTrigger);
+			result = result || (GetAtlasCell(cell).trigger.isTrigger);
 
         return position.values[cell] == -1 && (result || !position.values.ContainsKey(cell + gravity) || position.values[cell + gravity] != -1);
     }
+
+	public Cell GetAtlasCell(Coord aPosition){ // Juste pour raccourcir l'appel
+		return position.GetAtlasCell(aPosition);
+	}
 
     public void MAJ_Scores() // Fonction récursive mettant à jour les scores de chaque coup
     {

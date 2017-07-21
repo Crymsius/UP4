@@ -48,7 +48,7 @@ public class IAMain : MonoBehaviour {
 			mainNode = new DecisionTreeNode(1, 0, 0, board, myAtlas, new Coord(0,-1), 0, new Dictionary<Coord, DecisionTreeNode>(), typePlayers);
         mainNode.DeploymentTree();
 
-        //PrintAllPlays();
+        PrintAllPlays();
     }
 	public void CheckSettingGrid(){ // L'arbre de décision n'a aucune profondeur si la map contient un trigger à choix. Le cas échéant, on le reconstruit.
 		if (hasWishTriggers) {
@@ -75,7 +75,7 @@ public class IAMain : MonoBehaviour {
 				print ("JE CRASHE !");
 			}
 
-			//PrintAllPlays();
+			PrintAllPlays();
 
 			mainNode.Maj_Depth (0);
 			mainNode.DeploymentTree ();
@@ -136,7 +136,7 @@ public class IAMain : MonoBehaviour {
                     select = false;
             }
 
-            // print("Score choisi : "+ (choice+1));
+            print("Score choisi : "+ (choice+1));
 
             return myPlays [indSorted[choice]];
 
@@ -145,7 +145,7 @@ public class IAMain : MonoBehaviour {
     }
 
     public void PrintAllPlays() { // fonction d'observation
-        string s = "";
+		string s = "";
         foreach (Coord key in mainNode.children.Keys)
             s += key.Stringify() + " : " + mainNode.children[key].score + " // ";
         print(s);
