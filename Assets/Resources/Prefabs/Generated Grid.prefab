@@ -76,6 +76,7 @@ MonoBehaviour:
     type: 2}
   translationD: {fileID: 1326939960259768, guid: bb5c4098eccdf3b46b18c1d8ac07ce3a,
     type: 2}
+  swap: {fileID: 1780348446458892, guid: b6958b7ec775a4044a146a18ee1ecea5, type: 2}
   pawnNeutral: {fileID: 1113597027558090, guid: b50b5ab45ca7ef547af6c4acebaab334,
     type: 2}
   pawnPlayer1: {fileID: 1983645049407452, guid: b95ce920d1c134a45a28b7b870637867,

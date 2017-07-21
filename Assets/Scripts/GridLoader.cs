@@ -267,6 +267,11 @@ public class GridLoader : MonoBehaviour {
                 newTriggerTranslateDown.transform.SetParent (cellTransform);
                 newTriggerTranslateDown.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
                 break;
+            case 9: //trigger swap
+                GameObject newTriggerSwap = Instantiate (grid.swap);
+                newTriggerSwap.transform.SetParent (cellTransform);
+                newTriggerSwap.GetComponent<Transform> ().localPosition = new Vector3 (0, 0, -10);
+                break;
             default:
                 break;
             }
