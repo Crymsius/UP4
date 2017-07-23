@@ -124,14 +124,17 @@ public class Matrix
 	}
     public bool isBlocked(Coord actuel, Coord direction) {
         bool result = false;
+
+		Coord adjustedCoord = adjustCoord (actuel);
+
         if (direction == new Coord(0, 1)) // DEBUT DU DAAAAAAANGER
-			result = result || (myAtlas.gridDictionary.ContainsKey(adjustCoord(actuel) + direction) && myAtlas.gridDictionary[adjustCoord(actuel) + direction].walls.wally);
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustedCoord + direction) && myAtlas.gridDictionary[adjustedCoord + direction].walls.wally);
         else if (direction == new Coord(1, 0))
 			result = result || GetAtlasCell(actuel).walls.wallx;
         else if (direction == new Coord(1, 1))
-			result = result || (myAtlas.gridDictionary.ContainsKey(adjustCoord(actuel) + new Coord(0,1)) && myAtlas.gridDictionary[adjustCoord(actuel) + new Coord(0, 1)].walls.wallxy);
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustedCoord + new Coord(0,1)) && myAtlas.gridDictionary[adjustedCoord + new Coord(0, 1)].walls.wallxy);
         else if (direction == new Coord(-1, 1))
-			result = result || (myAtlas.gridDictionary.ContainsKey(adjustCoord(actuel) + direction) && myAtlas.gridDictionary[adjustCoord(actuel) + direction].walls.wallxy);
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustedCoord + direction) && myAtlas.gridDictionary[adjustedCoord + direction].walls.wallxy);
 		
         return result;
     }
@@ -226,7 +229,7 @@ public class Matrix
 		for (int i = 0; i < (isX ? myGridSize.y : myGridSize.x); i++) 
 			temporary.Add (startCoord - i * iterNormal, values [startCoord - i * iterNormal]);
 
-		for (int n = 1; n < (isX ? myGridSize.x - 1 : myGridSize.y - 1); n++)
+		for (int n = 0; n < (isX ? myGridSize.x - 1 : myGridSize.y - 1); n++)
 			for (int m = 0; m < (isX ? myGridSize.y : myGridSize.x); m++) 
 				values [startCoord - n * iterTranslate - m * iterNormal] = values [startCoord - (n + 1) * iterTranslate - m * iterNormal];
 
@@ -239,16 +242,19 @@ public class Matrix
 	public Cell GetAtlasCell(Coord position){
 		return myAtlas.gridDictionary [adjustCoord (position)];
 	}
-	public Coord adjustCoord(Coord aCoord){
-		Coord truePosition = aCoord + forecastedTranslate;
+	public Coord adjustCoord(Coord aCoord){ // Provoque boucle infinie OU explosion du temps de calcul
+		if (forecastedTranslate != new Coord (0, 0)) {
+			Coord truePosition = aCoord - forecastedTranslate;
 
-		int adjustedX = truePosition.x % hDim;
-		int adjustedY = truePosition.x % vDim;
+			int adjustedX = truePosition.x % hDim;
+			int adjustedY = truePosition.y % vDim;
 
-		adjustedX += adjustedX < 0 ? hDim : 0;
-		adjustedY += adjustedY < 0 ? vDim : 0;
+			adjustedX += (adjustedX < 0 ? hDim : 0);
+			adjustedY += (adjustedY < 0 ? vDim : 0);
 
-		return new Coord (adjustedX, adjustedY);
+			return new Coord (adjustedX, adjustedY);
+		} else
+			return aCoord;
 	}
         
     public void Stringify()

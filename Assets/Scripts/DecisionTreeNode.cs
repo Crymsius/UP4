@@ -68,7 +68,7 @@ public class DecisionTreeNode {
 				children [play].score = children [play].position.MeasureScore (children [play].player);
 				if (children [play].position.isVictory)
 					existsVictory = true;
-			}
+			} 
 
 			foreach (Coord play in playables) {
 				if (!existsVictory || (existsVictory && children [play].position.isVictory)) {
@@ -79,6 +79,8 @@ public class DecisionTreeNode {
 				} else
 					children [play].considered = false;
 			}
+
+			// A ce stade là forecasted translation est correcte
 		} else
 			foreach (Coord key in children.Keys)
 				if (children [key].considered) {
@@ -133,19 +135,23 @@ public class DecisionTreeNode {
 
     public bool isPlayable(Coord cell, Coord gravity) {
         bool result = false;
-        if (gravity == new Coord(0, -1))
-			result = result || GetAtlasCell(cell).walls.wally || GetAtlasCell(cell).nets.nety;
+        
+		Coord adjustedCoord = position.adjustCoord (cell);
+		Cell inspectedCell = GetAtlasCell (cell);
+
+		if (gravity == new Coord(0, -1))
+			result = result || inspectedCell.walls.wally || inspectedCell.nets.nety;
         else if (gravity == new Coord(1, 0))
-			result = result || GetAtlasCell(cell).walls.wallx || GetAtlasCell(cell).nets.netx;
+			result = result || inspectedCell.walls.wallx || inspectedCell.nets.netx;
         else if (gravity == new Coord(0, 1))
-			result = result || (myAtlas.gridDictionary.ContainsKey(position.adjustCoord(cell) + gravity) && (myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].walls.wally 
-				|| myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].nets.nety));
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustedCoord + gravity) && (myAtlas.gridDictionary[adjustedCoord + gravity].walls.wally 
+				|| myAtlas.gridDictionary[adjustedCoord + gravity].nets.nety));
         else
-			result = result || (myAtlas.gridDictionary.ContainsKey(position.adjustCoord(cell) + gravity) && (myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].walls.wallx 
-				|| myAtlas.gridDictionary[position.adjustCoord(cell) + gravity].nets.netx));
+			result = result || (myAtlas.gridDictionary.ContainsKey(adjustedCoord + gravity) && (myAtlas.gridDictionary[adjustedCoord + gravity].walls.wallx 
+				|| myAtlas.gridDictionary[adjustedCoord + gravity].nets.netx));
 		
 		if (variant == 1) // on ajoute le jeu au-dessus / en dessous des triggers dans la variante Romaing
-			result = result || (GetAtlasCell(cell).trigger.isTrigger);
+			result = result || (inspectedCell.trigger.isTrigger);
 
         return position.values[cell] == -1 && (result || !position.values.ContainsKey(cell + gravity) || position.values[cell + gravity] != -1);
     }

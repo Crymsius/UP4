@@ -25,6 +25,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
     public bool isTranslatingUp = false;
     public bool isTranslatingDown = false;
 
+	public Coord sumAllTranslations;
+
     //0: down | 1: left | 2: up | 3: right | 4: upLeft | 5: upRight
     public Dictionary<int, Coord> fallIntegers = new Dictionary<int, Coord> () {
         { 0, new Coord (0,-1) },
@@ -42,6 +44,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
         overlayPanel = GameObject.Find ("OverlayPanel");
         loadingPanel = GameObject.Find ("LoadingPanel");
 
+		sumAllTranslations = new Coord (0, 0);
         //attente que la grille d'editor soit détruite puis que la grille de jeu soit chargée.
 
         GameObject.Find ("GridHolder").GetComponent <GridLoader> ().LoadLevelData ();
@@ -301,7 +304,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
         if (!reset) {
 			if (needResetVirtalGreed)
 				GameObject.Find ("IAHandler").GetComponent<IAMain> ().settingGrid (myGrid.gridSize);
-			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates, sumAllTranslations);
             CheckAlign4VariantBastien();
         }
         
@@ -381,23 +384,27 @@ public class MechanismHandlerBoth : MonoBehaviour {
             yield return StartCoroutine (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().ChooseRotation ());
             yield return StartCoroutine (this.ExecuteTriggerVariantBastien (GameObject.Find ("TurnChoice(Clone)").GetComponent<TurnChoiceController> ().idRotation ,1.0f));
             break;
-        case 5: //translation right
-            isTranslatingRight = true;
+		case 5: //translation right
+			isTranslatingRight = true;
+			sumAllTranslations = sumAllTranslations + new Coord (1, 0);
             yield return StartCoroutine (TranslationVariantBastien (Vector3.right, 1f));
             isTranslatingRight = false;
             break;
         case 6: //translation left
             isTranslatingLeft = true;
+			sumAllTranslations = sumAllTranslations + new Coord (-1, 0);
             yield return StartCoroutine (TranslationVariantBastien (Vector3.left, 1f));
             isTranslatingLeft = false;
             break;
         case 7: //translation up
             isTranslatingUp = true;
+			sumAllTranslations = sumAllTranslations + new Coord (0, 1);
             yield return StartCoroutine (TranslationVariantBastien (Vector3.up, 1f));
             isTranslatingUp = false;
             break;
         case 8: //translation down
             isTranslatingDown = true;
+			sumAllTranslations = sumAllTranslations + new Coord (0, -1);
             yield return StartCoroutine (TranslationVariantBastien (Vector3.down, 1f));
             isTranslatingDown = false;
             break;
@@ -722,7 +729,7 @@ public class MechanismHandlerBoth : MonoBehaviour {
         if (click) {
 			if (needResetVirtalGreed)
 				GameObject.Find ("IAHandler").GetComponent<IAMain> ().settingGrid (myGrid.gridSize);
-			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates);
+			GameObject.Find("IAHandler").GetComponent<IAMain> ().GetCurrentPlay (endCell.coordinates, sumAllTranslations);
             CheckAlign4VariantBastien();
         }
         if (reset) {
@@ -807,21 +814,25 @@ public class MechanismHandlerBoth : MonoBehaviour {
             break;
         case 5: //translation right
             isTranslatingRight = true;
+			sumAllTranslations = sumAllTranslations + new Coord (1, 0);
             yield return StartCoroutine (TranslationVariantRomain (Vector3.right, 1f));
             isTranslatingRight = false;
             break;
         case 6: //translation left
             isTranslatingLeft = true;
+			sumAllTranslations = sumAllTranslations + new Coord (-1, 0);
             yield return StartCoroutine (TranslationVariantRomain (Vector3.left, 1f));
             isTranslatingLeft = false;
             break;
         case 7: //translation up
             isTranslatingUp = true;
+			sumAllTranslations = sumAllTranslations + new Coord (0, 1);
             yield return StartCoroutine (TranslationVariantRomain (Vector3.up, 1f));
             isTranslatingUp = false;
             break;
         case 8: //translation down
             isTranslatingDown = true;
+			sumAllTranslations = sumAllTranslations + new Coord (0, -1);
             yield return StartCoroutine (TranslationVariantRomain (Vector3.down, 1f));
             isTranslatingDown = false;
             break;

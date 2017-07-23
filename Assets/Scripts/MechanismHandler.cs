@@ -262,7 +262,7 @@ public class MechanismHandler : MonoBehaviour {
         //appelle l'IA pour mettre à jour son arbre.
         if (!reset)
         {
-            GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates);
+			GameObject.Find("IAHandler").GetComponent<IAMain>().GetCurrentPlay(endCell.coordinates, new Coord(0,0));//CAREFUL : not working
             CheckAlign4();
         }
 

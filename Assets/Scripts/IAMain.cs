@@ -57,16 +57,30 @@ public class IAMain : MonoBehaviour {
 		}
 	}
 
-    public void GetCurrentPlay(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
+	public void GetCurrentPlay(Coord aCoord, Coord transl){ // Provoque boucle infinie OU explosion du temps de calcul
+		if (transl != new Coord (0, 0)) {
+			Coord truePosition = aCoord - transl + mainNode.position.forecastedTranslate;
+
+			int adjustedX = truePosition.x % mainNode.position.hDim;
+			int adjustedY = truePosition.y % mainNode.position.vDim;
+
+			adjustedX += (adjustedX < 0 ? mainNode.position.hDim : 0);
+			adjustedY += (adjustedY < 0 ? mainNode.position.vDim : 0);
+
+			GetCurrentPlayDo(new Coord (adjustedX, adjustedY));
+		} else
+			GetCurrentPlayDo(aCoord);
+	}
+	public void GetCurrentPlayDo(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
 		if (!hasWishTriggers) {
 			recapGame += play.Stringify () + "-";
 
-			if (mainNode.children.ContainsKey (play))
+			if (mainNode.children.ContainsKey (play)) 
 				mainNode = mainNode.children [play]; // Le reste est envoyé au GarbageCollector, normalement...
 			else { // détection d'un bug !
 				string crashText = "L'IA a crashé" +
 				                           "\n\nFélicitations, vous avez débusqué un bug !" +
-				                           "\nPour nous aider à corriger l'application, envoyez-nous un screenshot de cet écran" +
+				                           "\nPour nous 			aider à corriger l'application, envoyez-nous un screenshot de cet écran" +
 				                           "\n\n" + recapGame;
 				bugReportText.text = crashText;
 				bugReportPanel.SetActive (true);
