@@ -4,42 +4,49 @@ using UnityEngine;
 
 public class CellWrapping : MonoBehaviour {
     public MechanismHandlerBoth mechanism;
+    private Coord gridSize;
 
     void Start () {
         mechanism = GameObject.Find ("GeneralHandler").GetComponent<MechanismHandlerBoth> ();
     }
     void OnTriggerEnter2D (Collider2D col) {
-        if (col.name == "EdgeCopyRight" && mechanism.isTranslatingRight){
-            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position - new Vector3 (6f,0,0), Quaternion.identity, GameObject.Find("Generated Grid(Clone)").GetComponent<Transform> ());
-            cellClone.name = "Cell(Clone)";
-            cellClone.GetComponent<Collider2D> ().isTrigger = false;
+        if (col.name == "EdgeCopyRight" && mechanism.isTranslatingRight && gameObject.name == "Cell(Clone)") {
+            gridSize = mechanism.myGrid.gridSize;
+            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position, Quaternion.identity, GameObject.Find ("Generated Grid(Clone)").GetComponent<Transform> ());
+            cellClone.name = "Cell(Ghost)";
+            gameObject.transform.Translate (new Vector3 (- gridSize.x, 0, 0));
+            
         }
-        if (col.name == "EdgeCopyLeft" && mechanism.isTranslatingLeft){
-            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position + new Vector3 (6f,0,0), Quaternion.identity, GameObject.Find("Generated Grid(Clone)").GetComponent<Transform> ());
-            cellClone.name = "Cell(Clone)";
-            cellClone.GetComponent<Collider2D> ().isTrigger = false;
+        if (col.name == "EdgeCopyLeft" && mechanism.isTranslatingLeft && gameObject.name == "Cell(Clone)") {
+            gridSize = mechanism.myGrid.gridSize;
+            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position, Quaternion.identity, GameObject.Find ("Generated Grid(Clone)").GetComponent<Transform> ());
+            cellClone.name = "Cell(Ghost)";
+            gameObject.transform.Translate (new Vector3 (gridSize.x, 0, 0));
         }
-        if (col.name == "EdgeCopyTop" && mechanism.isTranslatingUp){
-            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position - new Vector3 (0,6f,0), Quaternion.identity, GameObject.Find("Generated Grid(Clone)").GetComponent<Transform> ());
-            cellClone.name = "Cell(Clone)";
-            cellClone.GetComponent<Collider2D> ().isTrigger = false;
+        if (col.name == "EdgeCopyTop" && mechanism.isTranslatingUp && gameObject.name == "Cell(Clone)") {
+            gridSize = mechanism.myGrid.gridSize;
+            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position, Quaternion.identity, GameObject.Find ("Generated Grid(Clone)").GetComponent<Transform> ());
+            cellClone.name = "Cell(Ghost)";
+            gameObject.transform.Translate (new Vector3 (0, - gridSize.y, 0));
         }
-        if (col.name == "EdgeCopyBottom" && mechanism.isTranslatingDown){
-            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position - new Vector3 (0,-6f,0), Quaternion.identity, GameObject.Find("Generated Grid(Clone)").GetComponent<Transform> ());
-            cellClone.name = "Cell(Clone)";
-            cellClone.GetComponent<Collider2D> ().isTrigger = false;
+        if (col.name == "EdgeCopyBottom" && mechanism.isTranslatingDown && gameObject.name == "Cell(Clone)") {
+            gridSize = mechanism.myGrid.gridSize;
+            GameObject cellClone = GameObject.Instantiate (gameObject, gameObject.GetComponent<Transform> ().position, Quaternion.identity, GameObject.Find ("Generated Grid(Clone)").GetComponent<Transform> ());
+            cellClone.name = "Cell(Ghost)";
+            gameObject.transform.Translate (new Vector3 (0, gridSize.y, 0));
         }
-        if (col.name == "EdgeDestroyRight" && mechanism.isTranslatingRight){
-            Destroy(gameObject);
+
+        if (col.name == "EdgeDestroyRight" && mechanism.isTranslatingRight && gameObject.name == "Cell(Ghost)") {
+            Destroy (gameObject);
         }
-        if (col.name == "EdgeDestroyLeft" && mechanism.isTranslatingLeft){
-            Destroy(gameObject);
+        if (col.name == "EdgeDestroyLeft" && mechanism.isTranslatingLeft && gameObject.name == "Cell(Ghost)") {
+            Destroy (gameObject);
         }
-        if (col.name == "EdgeDestroyTop" && mechanism.isTranslatingUp){
-            Destroy(gameObject);
+        if (col.name == "EdgeDestroyTop" && mechanism.isTranslatingUp && gameObject.name == "Cell(Ghost)") {
+            Destroy (gameObject);
         }
-        if (col.name == "EdgeDestroyBottom" && mechanism.isTranslatingDown){
-            Destroy(gameObject);
+        if (col.name == "EdgeDestroyBottom" && mechanism.isTranslatingDown && gameObject.name == "Cell(Ghost)") {
+            Destroy (gameObject);
         }
     }
 }
