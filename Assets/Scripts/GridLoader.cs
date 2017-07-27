@@ -112,7 +112,8 @@ public class GridLoader : MonoBehaviour {
             "GravityReset(Clone)", "RandomTrigger(Clone)",
             "TranslateRight(Clone)", "TranslateLeft(Clone)", "TranslateUp(Clone)", "TranslateDown(Clone)",
             "PawnNeutral(Clone)", "PawnPlayer1(Clone)", "PawnPlayer2(Clone)", "PawnCommon(Clone)",
-            "CellHidden(Clone)", "CellCover(Clone)"
+            "CellHidden(Clone)", "CellCover(Clone)",
+            "SwapTrigger(Clone)"
         };
         //parcourt de toute la grille physique
         foreach (Transform cellChild in grid.GetComponent<Transform> ()) {
