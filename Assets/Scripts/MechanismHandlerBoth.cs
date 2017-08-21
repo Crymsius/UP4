@@ -522,7 +522,8 @@ public class MechanismHandlerBoth : MonoBehaviour {
 		GameObject.Find ("IAHandler").GetComponent<IAMain> ().CheckSettingGrid ();
 		if (GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.isVictory)
         {
-            List<Vector3> linesToDraw = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.coordWinningLines;
+			GameObject.Find ("IAHandler").GetComponent<IAMain> ().mainNode.position.MeasureScore (0); // Juste pour reset correctement les coords de la winning line après des translations. Le 0 est random.
+			List<Vector3> linesToDraw = GameObject.Find("IAHandler").GetComponent<IAMain>().mainNode.position.coordWinningLines;
             for(int i=0; i<linesToDraw.Count; i+=2)
             {
                 GameObject newLine = Instantiate(winningLine);

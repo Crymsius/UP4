@@ -128,6 +128,15 @@ public class DecisionTreeNode {
 		case 5:
 			children [play].position.Translate (new Coord (1, 0));
 			break;
+		case 6:
+			children [play].position.Translate (new Coord (-1, 0));
+			break;
+		case 7:
+			children [play].position.Translate (new Coord (0, 1));
+			break;
+		case 8:
+			children [play].position.Translate (new Coord (0, -1));
+			break;
 		default:
 			break;
 		}

@@ -50,6 +50,7 @@ public class Matrix
 
     public int MeasureScore(int player) { // Calcule le score instantané d'un joueur sur la grille
         int hscore =0, vscore=0, d1score=0, d2score=0;
+		coordWinningLines  = new List<Vector3>();
 
         for (int i = 0; i < hDim; i++)
             hscore += intermediateCalculus(new Coord(i, 0), new Coord(0, 1), player);
@@ -144,7 +145,7 @@ public class Matrix
         List<int> results = new List<int>();
 
         Coord startCell = play;
-		while (myAtlas.gridDictionary.ContainsKey(adjustCoord(startCell) - gravity))
+		while (myAtlas.gridDictionary.ContainsKey(startCell - gravity))
             startCell = startCell - gravity;
 
         while (startCell != play + gravity)
@@ -155,7 +156,7 @@ public class Matrix
         }
         return results;
     }
-	public Coord CheckNextFloorOrTrigger(Coord play, Coord gravity){
+	public Coord CheckNextFloorOrTrigger(Coord play, Coord gravity){ // Peut provoquer des problèmes avec les translates. Si ça bug, c'est ici qu'il faut regarder
 		Coord startCell = play;
 		bool next = true;
 		while (!isBlocked(startCell,gravity) && values.ContainsKey (startCell + gravity) && values[startCell + gravity]==-1 && !myAtlas.gridDictionary[adjustCoord(startCell) + gravity].full && next) {
@@ -242,7 +243,7 @@ public class Matrix
 	public Cell GetAtlasCell(Coord position){
 		return myAtlas.gridDictionary [adjustCoord (position)];
 	}
-	public Coord adjustCoord(Coord aCoord){ // Provoque boucle infinie OU explosion du temps de calcul
+	public Coord adjustCoord(Coord aCoord){
 		if (forecastedTranslate != new Coord (0, 0)) {
 			Coord truePosition = aCoord - forecastedTranslate;
 

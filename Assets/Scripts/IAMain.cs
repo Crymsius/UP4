@@ -57,8 +57,9 @@ public class IAMain : MonoBehaviour {
 		}
 	}
 
-	public void GetCurrentPlay(Coord aCoord, Coord transl){ // Provoque boucle infinie OU explosion du temps de calcul
+	public void GetCurrentPlay(Coord aCoord, Coord transl){
 		if (transl != new Coord (0, 0)) {
+			recapGame += aCoord.Stringify () + "-";
 			Coord truePosition = aCoord - transl + mainNode.position.forecastedTranslate;
 
 			int adjustedX = truePosition.x % mainNode.position.hDim;
@@ -73,14 +74,12 @@ public class IAMain : MonoBehaviour {
 	}
 	public void GetCurrentPlayDo(Coord play) { // Récupère le play qui vient d'être joué pour actualiser l'arbre de décision.
 		if (!hasWishTriggers) {
-			recapGame += play.Stringify () + "-";
-
 			if (mainNode.children.ContainsKey (play)) 
 				mainNode = mainNode.children [play]; // Le reste est envoyé au GarbageCollector, normalement...
 			else { // détection d'un bug !
 				string crashText = "L'IA a crashé" +
 				                           "\n\nFélicitations, vous avez débusqué un bug !" +
-				                           "\nPour nous 			aider à corriger l'application, envoyez-nous un screenshot de cet écran" +
+				                           "\nPour nous aider à corriger l'application, envoyez-nous un screenshot de cet écran" +
 				                           "\n\n" + recapGame;
 				bugReportText.text = crashText;
 				bugReportPanel.SetActive (true);
