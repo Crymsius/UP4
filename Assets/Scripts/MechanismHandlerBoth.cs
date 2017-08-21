@@ -722,11 +722,17 @@ public class MechanismHandlerBoth : MonoBehaviour {
                 }
                 endCell.trigger.triggerType = idTrig;
             }
+            
             yield return StartCoroutine (ExecuteTriggerVariantRomain (endCell.trigger.triggerType, 1.0f));
             if (endCell.trigger.triggerType != 3) {
                 yield return StartCoroutine (PawnFallCalculationVariantRomain (gridAtlas.gridDictionary[endCell.coordinates], player, false, false));
             }
         }
+
+        if (endCell.hidden && !reset) {
+                    endCell.GetComponentInChildren<Animation> ().Play ("CellHiddenRevealAnimation");
+        }
+
         if (click) {
 			if (needResetVirtalGreed)
 				GameObject.Find ("IAHandler").GetComponent<IAMain> ().settingGrid (myGrid.gridSize);
