@@ -6,9 +6,11 @@ UP4 is a Video Game inspired by connect four, designed by Bastien Lextrait and m
 The whole game is done with Unity3D.
 
 Example of a level with rotation triggers and reset gravity cells
+
 ![Example of a level with rotation cells and reset gravity cells](https://media.giphy.com/media/3o751VeltaVSvrXThe/giphy.gif)
 
 Example with walls blocking the connect four, 180 degrees rotation triggers and a winner
+
 ![Example with walls blocking the connect four, 180 degrees rotation triggers and a winner](https://media.giphy.com/media/3o751Tuf6RsOE9k2LC/giphy.gif)
 
 
